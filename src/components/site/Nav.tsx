@@ -47,7 +47,7 @@ export function Nav() {
         </a>
         <a
           href="#cta"
-          className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded transition-all"
+          className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded-full transition-all"
         >
           Scopri il tuo profilo →
         </a>

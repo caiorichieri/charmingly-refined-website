@@ -17,11 +17,11 @@ export function Footer() {
             <input
               type="email"
               placeholder="La tua email"
-              className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-2.5 text-[13px] text-white placeholder:text-white/35 focus:outline-none focus:border-brand-green transition-colors"
+              className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-[13px] text-white placeholder:text-white/35 focus:outline-none focus:border-brand-green transition-colors"
             />
             <button
               type="button"
-              className="font-display font-bold text-[13px] tracking-wide bg-brand-green text-white px-4 rounded hover:brightness-110 transition-all"
+              className="font-display font-bold text-[13px] tracking-wide bg-brand-green text-white px-5 rounded-full hover:brightness-110 transition-all"
             >
               Iscriviti
             </button>

@@ -18,7 +18,7 @@ const pilastri = [
     h: "Continua ad allenarti tra le sessioni",
     p: "L'app accompagna il percorso tra una sessione e l'altra con esercizi, diario mentale, routine e monitoraggio. Nei piani avanzati, strumenti AI supportano la continuità del lavoro.",
     img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=85",
-    color: "var(--brand-yellow)",
+    color: "var(--brand-red)",
   },
 ];
 
