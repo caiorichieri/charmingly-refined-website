@@ -1,10 +1,14 @@
+import photoBreak from "@/assets/photo-break.jpg";
+
 export function PhotoBreak() {
   return (
     <div className="relative h-[440px] overflow-hidden">
       <img
-        src="https://images.unsplash.com/photo-1526676037777-05a232554f77?w=1600&q=85"
+        src={photoBreak}
         alt="atleta in stato di flow pre-gara"
         loading="lazy"
+        width={1600}
+        height={900}
         className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
       />
       <div className="absolute inset-0 bg-ink-deep/65" />
