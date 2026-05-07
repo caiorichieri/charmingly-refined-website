@@ -1,26 +1,68 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Nav } from "@/components/site/Nav";
+import { Hero } from "@/components/site/Hero";
+import { ProofBar } from "@/components/site/ProofBar";
+import { Marquee } from "@/components/site/Marquee";
+import { Problema } from "@/components/site/Problema";
+import { PhotoBreak } from "@/components/site/PhotoBreak";
+import { Posizionamento } from "@/components/site/Posizionamento";
+import { ComeFunziona } from "@/components/site/ComeFunziona";
+import { VRSection } from "@/components/site/VRSection";
+import { DueFigure } from "@/components/site/DueFigure";
+import { Benefici } from "@/components/site/Benefici";
+import { Pilastri } from "@/components/site/Pilastri";
+import { Testimonial } from "@/components/site/Testimonial";
+import { Prezzi } from "@/components/site/Prezzi";
+import { Blog } from "@/components/site/Blog";
+import { FAQ } from "@/components/site/FAQ";
+import { CTAFinal } from "@/components/site/CTAFinal";
+import { Footer } from "@/components/site/Footer";
+import { useReveal } from "@/hooks/use-reveal";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "MeMindSport — Psicologia dello sport, mental coaching e ambienti immersivi" },
+      {
+        name: "description",
+        content:
+          "MeMindSport è il percorso di allenamento mentale per sportivi che integra psicologia dello sport, mental coaching, app e ambienti immersivi per migliorare concentrazione, gestione della pressione e performance agonistica.",
+      },
+      {
+        name: "keywords",
+        content:
+          "psicologia sportiva online, mental coaching sportivo, allenamento mentale, psicologo sportivo online, mental coach atleti, performance sportiva, ansia da prestazione, realtà virtuale sport, ambienti immersivi, preparazione mentale gara",
+      },
+      { property: "og:title", content: "MeMindSport — Allenamento mentale per atleti" },
+      { property: "og:description", content: "Psicologia dello sport, mental coaching e ambienti immersivi per migliorare concentrazione, pressione e performance." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  useReveal();
+  return (
+    <main className="bg-background">
+      <Nav />
+      <Hero />
+      <ProofBar />
+      <Problema />
+      <Marquee />
+      <Posizionamento />
+      <PhotoBreak />
+      <ComeFunziona />
+      <VRSection />
+      <DueFigure />
+      <Benefici />
+      <Pilastri />
+      <Testimonial />
+      <Prezzi />
+      <Blog />
+      <FAQ />
+      <CTAFinal />
+      <Footer />
+    </main>
+  );
 }
