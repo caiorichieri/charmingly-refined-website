@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 
 const links = [
-  { href: "#come-funziona", label: "Come funziona" },
-  { href: "#professionisti", label: "I professionisti" },
-  { href: "#immersivo", label: "Ambienti immersivi" },
-  { href: "#prezzi", label: "Prezzi" },
-  { href: "#blog", label: "Blog" },
+  { href: "/#come-funziona", label: "Come funziona" },
+  { href: "/#professionisti", label: "I professionisti" },
+  { href: "/#immersivo", label: "Ambienti immersivi" },
+  { href: "/#prezzi", label: "Prezzi" },
+  { href: "/blog", label: "Blog", isRoute: true },
 ];
 
 export function Nav() {
