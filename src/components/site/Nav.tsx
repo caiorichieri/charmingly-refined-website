@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 
 const links = [
@@ -7,7 +6,7 @@ const links = [
   { href: "/#professionisti", label: "I professionisti" },
   { href: "/#immersivo", label: "Ambienti immersivi" },
   { href: "/#prezzi", label: "Prezzi" },
-  { href: "/blog", label: "Blog", isRoute: true },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function Nav() {
