@@ -26,7 +26,7 @@ export function Nav() {
           : "bg-white/60 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <a href="#" className="flex items-center">
+      <a href="/" className="flex items-center">
         <Logo variant="light" className="h-11 w-auto" />
       </a>
       <ul className="hidden lg:flex gap-7 list-none">
