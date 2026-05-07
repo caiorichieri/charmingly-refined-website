@@ -163,7 +163,7 @@
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--font-display); font-weight: 700; letter-spacing: 0.04em;
   background: var(--gradient-green); color: white;
-  padding: 16px 32px; border-radius: 4px;
+  padding: 16px 32px; border-radius: 999px;
   transition: transform .25s var(--transition-smooth), box-shadow .25s var(--transition-smooth);
   box-shadow: var(--shadow-glow);
 }
@@ -172,7 +172,7 @@
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--font-display); font-weight: 700; letter-spacing: 0.04em;
   border: 1px solid color-mix(in oklab, white 30%, transparent); color: white;
-  padding: 14px 28px; border-radius: 4px; backdrop-filter: blur(8px);
+  padding: 14px 28px; border-radius: 999px; backdrop-filter: blur(8px);
   background: color-mix(in oklab, white 5%, transparent);
   transition: background .2s, border-color .2s;
 }
