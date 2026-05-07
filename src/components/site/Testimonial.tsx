@@ -37,7 +37,7 @@ export function Testimonial() {
               <div className="font-display text-6xl text-brand-green/25 leading-none absolute top-3 right-5 select-none">
                 "
               </div>
-              <div className="text-brand-yellow text-[15px] tracking-[2px]">★★★★★</div>
+              <div className="text-[15px] tracking-[2px]" style={{ color: "oklch(0.78 0.16 75)" }}>★★★★★</div>
               <blockquote className="text-[14.5px] leading-relaxed italic text-foreground">
                 {t.text}
               </blockquote>

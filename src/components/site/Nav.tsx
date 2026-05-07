@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 
 const links = [
-  { href: "#come-funziona", label: "Come funziona" },
-  { href: "#professionisti", label: "I professionisti" },
-  { href: "#immersivo", label: "Ambienti immersivi" },
-  { href: "#prezzi", label: "Prezzi" },
-  { href: "#blog", label: "Blog" },
+  { href: "/#come-funziona", label: "Come funziona" },
+  { href: "/#professionisti", label: "I professionisti" },
+  { href: "/#immersivo", label: "Ambienti immersivi" },
+  { href: "/#prezzi", label: "Prezzi" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function Nav() {
@@ -26,7 +26,7 @@ export function Nav() {
           : "bg-white/60 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <a href="#" className="flex items-center">
+      <a href="/" className="flex items-center">
         <Logo variant="light" className="h-11 w-auto" />
       </a>
       <ul className="hidden lg:flex gap-7 list-none">
@@ -47,7 +47,7 @@ export function Nav() {
         </a>
         <a
           href="#cta"
-          className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded transition-all"
+          className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded-full transition-all"
         >
           Scopri il tuo profilo →
         </a>

@@ -132,7 +132,7 @@ export function DueFigure() {
                   <p className="text-[12px] text-muted-foreground mb-4">{f.note}</p>
                   <a
                     href="#"
-                    className="flex items-center justify-center gap-2 font-display font-bold text-[15px] tracking-wide text-white rounded py-3.5 transition-all hover:brightness-110"
+                    className="flex items-center justify-center gap-2 font-display font-bold text-[15px] tracking-wide text-white rounded-full py-3.5 transition-all hover:brightness-110"
                     style={{ background: accent }}
                   >
                     {f.cta} →
