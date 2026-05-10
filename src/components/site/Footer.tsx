@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="bg-[oklch(0.1_0.005_270)] text-white px-6 md:px-12 pt-16 pb-8">
       <div className="max-w-[1180px] mx-auto grid grid-cols-1 md:grid-cols-[1.2fr_2fr_1fr] gap-12 items-start">
         <div>
-          <Logo variant="dark" className="h-10 w-auto mb-4" />
+          <Logo variant="dark" className="h-32 w-auto -ml-3 mb-2" />
           <p className="text-[13px] text-white/35 leading-relaxed max-w-[260px]">
             MetaCare SRL — Centro sanitario autorizzato
             <br />

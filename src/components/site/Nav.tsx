@@ -20,14 +20,14 @@ export function Nav() {
 
   return (
     <nav
-      className={`fixed inset-x-0 top-0 z-50 flex h-[68px] items-center justify-between px-6 md:px-12 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 flex h-[96px] items-center justify-between px-6 md:px-12 transition-all duration-300 ${
         scrolled
           ? "bg-white/90 backdrop-blur-xl border-b border-line shadow-[0_4px_24px_-12px_rgba(0,0,0,0.12)]"
           : "bg-white/60 backdrop-blur-md border-b border-transparent"
       }`}
     >
       <a href="/" className="flex items-center">
-        <Logo variant="light" className="h-11 w-auto" />
+        <Logo variant="light" className="h-36 w-auto -my-6 drop-shadow-[0_4px_16px_rgba(0,0,0,0.12)]" />
       </a>
       <ul className="hidden lg:flex gap-7 list-none">
         {links.map((l) => (
