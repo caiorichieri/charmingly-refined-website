@@ -4,6 +4,20 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { supabase } from "@/integrations/supabase/client";
 import { QUIZ_OPEN_EVENT } from "./openQuiz";
 import { toast } from "sonner";
+import {
+  PROFILE_COLORS,
+  PROFILE_LABELS,
+  TYPE_COORDS,
+  ZONES,
+  FRASE_MAPPA,
+  buildInsight,
+  buildTags,
+  computeProfile,
+  formatSummary,
+  type ProfileResult,
+} from "@/lib/quiz-profile";
+import { MappaDelCampo } from "./MappaDelCampo";
+import { RagnatelaProfilo } from "./RagnatelaProfilo";
 
 type Option = { id: string; text: string; profile_tag: string; display_order: number };
 type Question = {
@@ -13,46 +27,7 @@ type Question = {
   quiz_options: Option[];
 };
 
-type Step = "contact" | "questions" | "done";
-
-const PROFILE_LABELS: Record<string, { name: string; tagline: string; description: string }> = {
-  perfezionatore: {
-    name: "Il Perfezionatore",
-    tagline: "Standard altissimi, analisi continua, poca tregua interna.",
-    description:
-      "Funzioni grazie al controllo e alla precisione: l'errore ti resta dentro a lungo e nulla è mai abbastanza. Il percorso giusto ti aiuta ad alleggerire l'autocritica senza perdere il tuo rigore.",
-  },
-  anticipatore: {
-    name: "L'Anticipatore",
-    tagline: "Mente che corre avanti, scenari, ansia anticipatoria.",
-    description:
-      "Vivi la gara prima della gara: scenari, previsioni, piani B. La tua forza è la lettura del contesto; il limite è non riuscire a spegnere. Impariamo a riportarti nel presente.",
-  },
-  intenso: {
-    name: "L'Intenso",
-    tagline: "Adrenalina, picchi emotivi, reattività esplosiva.",
-    description:
-      "L'emozione è il tuo carburante: ti accende ma a volte ti travolge. Lavoriamo per trasformare l'intensità in energia funzionale, senza spegnere il fuoco che ti rende unico/a.",
-  },
-  confermatore: {
-    name: "Il Confermatore",
-    tagline: "Autostima legata al giudizio e al confronto.",
-    description:
-      "Hai bisogno di sentire che vali e cerchi conferme dagli altri. Costruiamo una base di fiducia interna che non dipenda dal risultato di ogni singola gara.",
-  },
-  percettivo: {
-    name: "Il Percettivo",
-    tagline: "Il corpo parla prima della testa: ipersensibilità ai segnali.",
-    description:
-      "Senti tutto, e lo senti per primo/a nel corpo. È una risorsa enorme ma ti espone al sovraccarico. Ti diamo strumenti per leggere i segnali senza esserne sopraffatto/a.",
-  },
-  recuperante: {
-    name: "Il Recuperante",
-    tagline: "Distacco, motivazione bassa, rischio burnout.",
-    description:
-      "Qualcosa si è spento: dentro c'è più stanchezza che desiderio. Non è debolezza, è un segnale. Il percorso parte dall'ascolto e dalla decompressione, non dalla performance.",
-  },
-};
+type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags";
 
 const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
 
@@ -61,20 +36,16 @@ function maskEmail(email: string) {
   if (!name || !domain) return "email-non-valida";
   return `${name.slice(0, 2)}***@${domain}`;
 }
-
 function maskPhone(phone: string) {
   const digits = phone.replace(/\D/g, "");
   return digits.length > 4 ? `***${digits.slice(-4)}` : "telefono-breve";
 }
-
 function makeQuizId() {
   return crypto?.randomUUID?.() ?? `quiz-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
-
 function quizLog(message: string, data?: Record<string, unknown>) {
   console.debug(QUIZ_DEBUG_PREFIX, message, data ?? {});
 }
-
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -83,48 +54,20 @@ function shuffle<T>(arr: T[]): T[] {
   }
   return a;
 }
-
-type ProfileResult = {
-  primary: string;
-  secondary: string | null;
-  counts: Record<string, number>;
-  total: number;
-};
-
-function computeProfile(answers: Record<string, { optionId: string; tag: string }>): ProfileResult {
-  const counts: Record<string, number> = {};
-  Object.values(answers).forEach((a) => {
-    counts[a.tag] = (counts[a.tag] ?? 0) + 1;
-  });
-  const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const primary = ranked[0]?.[0] ?? "perfezionatore";
-  const primaryScore = ranked[0]?.[1] ?? 0;
-  const secondary = ranked[1] && primaryScore - ranked[1][1] <= 2 ? ranked[1][0] : null;
-  return { primary, secondary, counts, total: Object.keys(answers).length };
-}
-
-function formatSummary(result: ProfileResult): string {
-  const labelOf = (k: string) => PROFILE_LABELS[k]?.name ?? k;
-  const dist = Object.entries(result.counts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([k, v]) => `${labelOf(k)} ${v}/${result.total}`)
-    .join(" · ");
-  const primary = `Prevalente: ${labelOf(result.primary)} ${result.counts[result.primary]}/${result.total}`;
-  const secondary = result.secondary
-    ? ` · Secondario: ${labelOf(result.secondary)} ${result.counts[result.secondary]}/${result.total}`
-    : "";
-  return `${primary}${secondary} · Distribuzione: ${dist}`;
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/).slice(0, 2);
+  return parts.map((p) => p[0]?.toUpperCase() ?? "").join("") || "•";
 }
 
 export function QuizModal() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("contact");
   const [contact, setContact] = useState({ name: "", email: "", phone: "" });
+  const [consent, setConsent] = useState(false);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { optionId: string; tag: string }>>({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ProfileResult | null>(null);
-  // Bumped on every open so options re-shuffle each time the quiz is opened
   const [shuffleSeed, setShuffleSeed] = useState(0);
 
   useEffect(() => {
@@ -134,6 +77,7 @@ export function QuizModal() {
       setCurrent(0);
       setAnswers({});
       setResult(null);
+      setConsent(false);
       setShuffleSeed((s) => s + 1);
     };
     window.addEventListener(QUIZ_OPEN_EVENT, handler);
@@ -159,7 +103,6 @@ export function QuizModal() {
     enabled: open,
   });
 
-  // Shuffle options independently per question, re-shuffled each time the modal opens.
   const questions = useMemo<Question[] | undefined>(() => {
     if (!rawQuestions) return rawQuestions;
     return rawQuestions.map((q) => ({ ...q, quiz_options: shuffle(q.quiz_options) }));
@@ -167,12 +110,23 @@ export function QuizModal() {
   }, [rawQuestions, shuffleSeed]);
 
   const total = questions?.length ?? 0;
-  const progress = step === "contact" ? 0 : step === "done" ? 100 : Math.round(((current + 1) / Math.max(total, 1)) * 100);
+  const progress =
+    step === "contact" ? 0 :
+    step === "questions" ? Math.round(((current + 1) / Math.max(total, 1)) * 90) :
+    100;
+
+  // Auto-advance transition → mappa
+  useEffect(() => {
+    if (step !== "transition") return;
+    const t = setTimeout(() => setStep("mappa"), 2400);
+    return () => clearTimeout(t);
+  }, [step]);
 
   function validateContact() {
     if (!contact.name.trim()) return "Inserisci il tuo nome";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) return "Email non valida";
     if (!/^[\d+\s()-]{6,}$/.test(contact.phone)) return "Telefono non valido";
+    if (!consent) return "Devi accettare l'informativa sulla privacy per continuare";
     return null;
   }
 
@@ -203,7 +157,7 @@ export function QuizModal() {
       setCurrent((c) => c + 1);
       return;
     }
-    // finalize
+
     setSubmitting(true);
     try {
       const computed = computeProfile(newAnswers);
@@ -238,8 +192,8 @@ export function QuizModal() {
 
       // best-effort email (server function may not exist yet)
       try {
-        const primaryProfile = PROFILE_LABELS[computed.primary];
-        const secondaryProfile = computed.secondary ? PROFILE_LABELS[computed.secondary] : null;
+        const insight = buildInsight(computed);
+        const tags = buildTags(computed);
         await fetch("/lovable/email/transactional/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -249,11 +203,12 @@ export function QuizModal() {
             idempotencyKey: `quiz-${leadId}`,
             templateData: {
               name: contact.name.trim(),
-              profile: primaryProfile?.name,
-              tagline: primaryProfile?.tagline,
-              description: primaryProfile?.description,
-              secondaryProfile: secondaryProfile?.name ?? null,
-              secondaryDescription: secondaryProfile?.description ?? null,
+              profile: PROFILE_LABELS[computed.primary].name,
+              fraseMappa: FRASE_MAPPA[computed.primary],
+              insight,
+              tagForza: tags.forza,
+              tagLavoro: tags.lavoro,
+              secondaryProfile: computed.secondary ? PROFILE_LABELS[computed.secondary].name : null,
             },
           }),
         });
@@ -267,7 +222,7 @@ export function QuizModal() {
       }
 
       setResult(computed);
-      setStep("done");
+      setStep("transition");
     } catch (e: any) {
       console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", e);
       toast.error("Si è verificato un errore. Riprova tra poco.");
@@ -292,13 +247,17 @@ export function QuizModal() {
   const q = questions?.[current];
   const selectedId = q ? answers[q.id]?.optionId : undefined;
 
-  const primaryProfile = result ? PROFILE_LABELS[result.primary] : null;
-  const secondaryProfile = result?.secondary ? PROFILE_LABELS[result.secondary] : null;
+  const primaryLabel = result ? PROFILE_LABELS[result.primary] : null;
+  const secondaryLabel = result?.secondary ? PROFILE_LABELS[result.secondary] : null;
+  const primaryColor = result ? PROFILE_COLORS[result.primary] : "#000";
+  const tags = result ? buildTags(result) : { forza: [], lavoro: [] };
+  const insight = result ? buildInsight(result) : "";
+  const fraseMappa = result ? FRASE_MAPPA[result.primary] : "";
+  const zoneInfo = result ? ZONES[TYPE_COORDS[result.primary].zone] : null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-xl border-border bg-card p-0 sm:rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        {/* progress bar */}
         <div className="h-1 w-full bg-muted sticky top-0 z-10">
           <div
             className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300"
@@ -323,6 +282,7 @@ export function QuizModal() {
                   placeholder="Nome e cognome *"
                   value={contact.name}
                   onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                  maxLength={120}
                 />
                 <input
                   className="input w-full"
@@ -330,6 +290,7 @@ export function QuizModal() {
                   placeholder="Email *"
                   value={contact.email}
                   onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                  maxLength={200}
                 />
                 <input
                   className="input w-full"
@@ -337,12 +298,23 @@ export function QuizModal() {
                   placeholder="Telefono *"
                   value={contact.phone}
                   onChange={(e) => setContact({ ...contact, phone: e.target.value })}
+                  maxLength={40}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                Riceverai il risultato della tua analisi via email all'indirizzo indicato.
-              </p>
-              <button onClick={startQuiz} className="btn-primary w-full justify-center">
+
+              <label className="flex items-start gap-3 text-xs text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                />
+                <span>
+                  Acconsento al trattamento dei miei dati personali (nome, email, telefono e risposte al questionario) ai fini della elaborazione del mio profilo psicologico-sportivo e della ricezione del risultato via email, ai sensi del Reg. UE 2016/679 (GDPR). I dati non saranno ceduti a terzi e potrò richiederne in qualsiasi momento la cancellazione scrivendo a <span className="text-foreground font-medium">caiorichieri@gmail.com</span>. *
+                </span>
+              </label>
+
+              <button onClick={startQuiz} className="btn-primary w-full justify-center" disabled={!consent}>
                 Inizia il questionario →
               </button>
             </div>
@@ -393,41 +365,145 @@ export function QuizModal() {
             </div>
           )}
 
-          {step === "done" && result && primaryProfile && (
-            <div className="space-y-5 py-2">
+          {step === "transition" && (
+            <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+              <DialogTitle className="sr-only">Elaborazione profilo</DialogTitle>
+              <div className="relative h-12 w-12">
+                <div className="absolute inset-0 rounded-full border-2 border-primary/30" />
+                <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              </div>
+              <p className="font-display text-xl text-foreground">Stiamo costruendo il tuo profilo.</p>
+              <p className="text-sm text-muted-foreground italic">Ogni risposta ha detto qualcosa di te.</p>
+            </div>
+          )}
+
+          {step === "mappa" && result && primaryLabel && zoneInfo && (
+            <div className="space-y-5">
               <div className="text-center">
-                <div className="text-xs uppercase tracking-wider text-primary mb-2">Il tuo profilo</div>
-                <DialogTitle className="font-display text-3xl text-foreground">
-                  {primaryProfile.name}
+                <div className="text-xs uppercase tracking-wider text-primary mb-1">Atto 1 — La mappa del campo</div>
+                <DialogTitle className="font-display text-2xl text-foreground">
+                  {zoneInfo.name}
                 </DialogTitle>
-                <p className="text-sm text-muted-foreground mt-2 italic">{primaryProfile.tagline}</p>
               </div>
 
-              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
-                <p className="text-sm text-foreground leading-relaxed">{primaryProfile.description}</p>
-                <div className="mt-3 text-xs text-muted-foreground">
-                  Punteggio: <span className="font-medium text-foreground">{result.counts[result.primary]}/{result.total}</span>
-                </div>
+              <MappaDelCampo result={result} athleteInitials={getInitials(contact.name)} />
+
+              <div
+                className="rounded-xl border p-4"
+                style={{ borderColor: `${primaryColor}55`, background: `${primaryColor}11` }}
+              >
+                <p className="text-sm text-foreground leading-relaxed">{fraseMappa}</p>
               </div>
 
-              {secondaryProfile && (
-                <div className="rounded-xl border border-border bg-background p-4">
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Profilo secondario</div>
-                  <div className="font-display text-lg text-foreground">{secondaryProfile.name}</div>
-                  <p className="text-xs text-muted-foreground mt-1">{secondaryProfile.description}</p>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    Punteggio: <span className="font-medium text-foreground">{result.counts[result.secondary!]}/{result.total}</span>
+              <button
+                onClick={() => setStep("ragnatela")}
+                className="btn-primary w-full justify-center"
+              >
+                Scopri la tua forma →
+              </button>
+            </div>
+          )}
+
+          {step === "ragnatela" && result && primaryLabel && (
+            <div className="space-y-5">
+              <div className="text-center">
+                <div className="text-xs uppercase tracking-wider text-primary mb-1">Atto 2 — La tua forma</div>
+                <DialogTitle className="font-display text-2xl text-foreground">
+                  {primaryLabel.name}
+                  {secondaryLabel && (
+                    <span className="text-base text-muted-foreground font-normal">
+                      {" "}× {secondaryLabel.name}
+                    </span>
+                  )}
+                </DialogTitle>
+              </div>
+
+              <RagnatelaProfilo result={result} />
+
+              <div className="flex flex-wrap justify-center gap-2 text-xs">
+                {[...PROFILE_LABELS && Object.keys(PROFILE_LABELS) as Array<keyof typeof PROFILE_LABELS>]
+                  .map((k) => k)
+                  .sort((a, b) => (result.counts[b] ?? 0) - (result.counts[a] ?? 0))
+                  .slice(0, 3)
+                  .map((k) => (
+                    <span
+                      key={k}
+                      className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1"
+                      style={{ borderColor: `${PROFILE_COLORS[k]}66`, color: PROFILE_COLORS[k] }}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: PROFILE_COLORS[k] }} />
+                      {PROFILE_LABELS[k].short} · {result.counts[k] ?? 0}/{result.total}
+                    </span>
+                  ))}
+              </div>
+
+              <div
+                className="rounded-xl border p-4"
+                style={{ borderColor: `${primaryColor}55`, background: `${primaryColor}11` }}
+              >
+                <p className="text-sm text-foreground leading-relaxed">{insight}</p>
+              </div>
+
+              <button
+                onClick={() => setStep("tags")}
+                className="btn-primary w-full justify-center"
+              >
+                Continua →
+              </button>
+            </div>
+          )}
+
+          {step === "tags" && result && primaryLabel && (
+            <div className="space-y-5">
+              <div className="text-center">
+                <div className="text-xs uppercase tracking-wider text-primary mb-1">Il tuo profilo in sintesi</div>
+                <DialogTitle className="font-display text-2xl text-foreground">
+                  Ecco cosa porti e cosa il percorso costruirà
+                </DialogTitle>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                    Punti di forza — ciò che porti già
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.forza.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full px-3 py-1.5 text-xs font-medium"
+                        style={{ background: `${primaryColor}1F`, color: primaryColor, border: `1px solid ${primaryColor}55` }}
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              )}
+
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                    Aree di lavoro — ciò su cui il percorso costruirà
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.lavoro.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs font-medium text-muted-foreground"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               <p className="text-xs text-muted-foreground text-center">
-                Una copia di questa analisi sarà inviata a <span className="text-foreground font-medium">{contact.email}</span>.
+                Una copia di questa analisi sarà inviata a <span className="text-foreground font-medium">{contact.email}</span> non appena il sistema email sarà attivo.
               </p>
 
               <div className="flex flex-col gap-2">
                 <button onClick={scrollToPlans} className="btn-primary w-full justify-center">
-                  Scopri il percorso giusto per te →
+                  Inizia il percorso col professionista →
                 </button>
                 <button onClick={close} className="text-xs text-muted-foreground hover:text-foreground">
                   Chiudi
