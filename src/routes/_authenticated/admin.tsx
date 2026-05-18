@@ -1,4 +1,5 @@
-import { createFileRoute, Outlet, Link, Navigate, useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,8 +36,15 @@ const nav: NavItem[] = [
 ];
 
 function AdminLayout() {
+  const navigate = useNavigate();
   const { isAdmin, loading } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && !isAdmin) {
+      void navigate({ to: "/", replace: true });
+    }
+  }, [isAdmin, loading, navigate]);
 
   if (loading) {
     return (
@@ -47,7 +55,11 @@ function AdminLayout() {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/" />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-off">
+        <div className="text-sm text-muted-foreground">Reindirizzamento…</div>
+      </div>
+    );
   }
 
   async function handleLogout() {
