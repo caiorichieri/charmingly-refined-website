@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
-import { createFileRoute, Navigate, Link } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const navigate = useNavigate();
   const { isAuthenticated, isAdmin, isTherapist, loading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -24,11 +25,20 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // If already logged in, push to right area
+  useEffect(() => {
+    if (!isAuthenticated || loading) return;
+    void navigate({
+      to: isAdmin ? "/admin" : isTherapist ? "/area-terapeuta" : "/",
+      replace: true,
+    });
+  }, [isAuthenticated, isAdmin, isTherapist, loading, navigate]);
+
   if (isAuthenticated && !loading) {
-    if (isAdmin) return <Navigate to="/admin" />;
-    if (isTherapist) return <Navigate to="/area-terapeuta" />;
-    return <Navigate to="/" />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-off">
+        <div className="text-sm text-muted-foreground">Accesso in corso…</div>
+      </div>
+    );
   }
 
   async function handleEmail(e: FormEvent) {

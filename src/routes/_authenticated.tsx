@@ -1,15 +1,22 @@
-import { createFileRoute, Outlet, Navigate } from "@tanstack/react-router";
-import { useAuth, useHydratedAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
-  const hydrated = useHydratedAuth();
-  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
 
-  if (!hydrated) {
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      void navigate({ to: "/auth", replace: true });
+    }
+  }, [isAuthenticated, loading, navigate]);
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-off">
         <div className="text-sm text-muted-foreground">Caricamento…</div>
@@ -18,7 +25,11 @@ function AuthenticatedLayout() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/auth" />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-off">
+        <div className="text-sm text-muted-foreground">Reindirizzamento…</div>
+      </div>
+    );
   }
 
   return <Outlet />;

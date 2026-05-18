@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Toaster } from "@/components/ui/sonner";
-import { useAuthSubscription } from "@/hooks/use-auth";
+import { AuthProvider } from "@/hooks/use-auth";
 import { QuizModal } from "@/components/quiz/QuizModal";
 import appCss from "../styles.css?url";
 
@@ -85,7 +85,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "MM Sport — Allenamento mentale per atleti" },
       {
         property: "og:description",
-        content: "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
+        content:
+          "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -122,15 +123,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthBridge />
-      <Outlet />
-      <QuizModal />
-      <Toaster position="top-right" />
+      <AuthProvider>
+        <Outlet />
+        <QuizModal />
+        <Toaster position="top-right" />
+      </AuthProvider>
     </QueryClientProvider>
   );
-}
-
-function AuthBridge() {
-  useAuthSubscription();
-  return null;
 }
