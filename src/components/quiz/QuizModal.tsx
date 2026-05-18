@@ -386,7 +386,7 @@ export function QuizModal() {
                 </DialogTitle>
               </div>
 
-              <MappaDelCampo result={result} athleteInitials={getInitials(contact.name)} />
+              <MappaDelCampo result={result} pinLabel="TU" />
 
               <div
                 className="rounded-xl border p-4"
@@ -397,10 +397,11 @@ export function QuizModal() {
 
               <button
                 onClick={() => setStep("ragnatela")}
-                className="btn-primary w-full justify-center"
+                className="btn-primary w-full justify-center sticky bottom-0"
               >
-                Scopri la tua forma →
+                Scopri la tua forma · Atto 2 →
               </button>
+
             </div>
           )}
 
