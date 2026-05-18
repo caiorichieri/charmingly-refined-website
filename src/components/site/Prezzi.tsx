@@ -15,7 +15,7 @@ type Plan = {
 function Tile({ c }: { c: Plan }) {
   return (
     <div
-      className={`reveal relative rounded-lg p-6 border-[1.5px] transition-all duration-300 hover:-translate-y-1 ${
+      className={`relative rounded-lg p-6 border-[1.5px] transition-all duration-300 hover:-translate-y-1 ${
         c.is_featured
           ? "bg-ink-deep border-ink-deep text-white shadow-glow"
           : "bg-off border-line hover:border-brand-green/40 hover:bg-white"
