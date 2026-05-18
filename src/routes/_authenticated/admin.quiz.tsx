@@ -10,11 +10,12 @@ export const Route = createFileRoute("/_authenticated/admin/quiz")({
 });
 
 const PROFILE_TAGS = [
-  { value: "fragile", label: "Sensibile" },
-  { value: "guerriero", label: "Guerriero" },
-  { value: "metodico", label: "Metodico" },
-  { value: "libero", label: "Libero" },
-  { value: "equilibrato", label: "Equilibrato" },
+  { value: "perfezionatore", label: "Il Perfezionatore" },
+  { value: "anticipatore", label: "L'Anticipatore" },
+  { value: "intenso", label: "L'Intenso" },
+  { value: "confermatore", label: "Il Confermatore" },
+  { value: "percettivo", label: "Il Percettivo" },
+  { value: "recuperante", label: "Il Recuperante" },
 ];
 
 type Option = {
