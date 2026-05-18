@@ -4,6 +4,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { useReveal } from "@/hooks/use-reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { QuizCTA } from "@/components/quiz/QuizCTA";
 
 type Post = {
   id: string;
