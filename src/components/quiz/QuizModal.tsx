@@ -421,8 +421,7 @@ export function QuizModal() {
               <RagnatelaProfilo result={result} />
 
               <div className="flex flex-wrap justify-center gap-2 text-xs">
-                {[...PROFILE_LABELS && Object.keys(PROFILE_LABELS) as Array<keyof typeof PROFILE_LABELS>]
-                  .map((k) => k)
+                {(Object.keys(PROFILE_LABELS) as Array<keyof typeof PROFILE_LABELS>)
                   .sort((a, b) => (result.counts[b] ?? 0) - (result.counts[a] ?? 0))
                   .slice(0, 3)
                   .map((k) => (
