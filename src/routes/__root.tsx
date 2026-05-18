@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/hooks/use-auth";
+import { useAuthSubscription } from "@/hooks/use-auth";
 import { QuizModal } from "@/components/quiz/QuizModal";
 import appCss from "../styles.css?url";
 
@@ -85,11 +85,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "MM Sport — Allenamento mentale per atleti" },
       {
         property: "og:description",
-        content:
-          "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
+        content: "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "MM Sport — Allenamento mentale per atleti" },
+      { name: "description", content: "MMsport is a website designed to enhance user engagement and provide clear information about training plans." },
+      { property: "og:description", content: "MMsport is a website designed to enhance user engagement and provide clear information about training plans." },
+      { name: "twitter:description", content: "MMsport is a website designed to enhance user engagement and provide clear information about training plans." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca48ca22-234d-40a1-9b18-447480655090/id-preview-6bcea930--11587f5b-b352-4fd8-a4c3-64a0cd8bbfba.lovable.app-1779123076794.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca48ca22-234d-40a1-9b18-447480655090/id-preview-6bcea930--11587f5b-b352-4fd8-a4c3-64a0cd8bbfba.lovable.app-1779123076794.png" },
     ],
     links: [
       {
@@ -123,11 +128,15 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <QuizModal />
-        <Toaster position="top-right" />
-      </AuthProvider>
+      <AuthBridge />
+      <Outlet />
+      <QuizModal />
+      <Toaster position="top-right" />
     </QueryClientProvider>
   );
+}
+
+function AuthBridge() {
+  useAuthSubscription();
+  return null;
 }
