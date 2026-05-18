@@ -14,6 +14,7 @@ import {
   Users,
   LogOut,
   Globe,
+  ClipboardList,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -28,6 +29,7 @@ const nav: NavItem[] = [
   { to: "/admin/paths", label: "Percorsi mentali", icon: RouteIcon },
   { to: "/admin/testimonials", label: "Testimonianze", icon: Quote },
   { to: "/admin/faqs", label: "FAQ", icon: HelpCircle },
+  { to: "/admin/quiz", label: "Quiz & lead", icon: ClipboardList },
   { to: "/admin/media", label: "Media", icon: ImageIcon },
   { to: "/admin/users", label: "Utenti & ruoli", icon: Users },
 ];
