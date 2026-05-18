@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Toaster } from "@/components/ui/sonner";
-import { useAuthSubscription } from "@/hooks/use-auth";
+import { AuthProvider } from "@/hooks/use-auth";
 import { QuizModal } from "@/components/quiz/QuizModal";
 import appCss from "../styles.css?url";
 
