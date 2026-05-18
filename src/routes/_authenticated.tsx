@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useAuth, useHydratedAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
@@ -8,16 +8,15 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const navigate = useNavigate();
-  const hydrated = useHydratedAuth();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    if (hydrated && !isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       void navigate({ to: "/auth", replace: true });
     }
-  }, [hydrated, isAuthenticated, navigate]);
+  }, [isAuthenticated, loading, navigate]);
 
-  if (!hydrated) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-off">
         <div className="text-sm text-muted-foreground">Caricamento…</div>
