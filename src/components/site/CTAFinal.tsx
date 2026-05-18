@@ -1,3 +1,5 @@
+import { QuizCTA } from "@/components/quiz/QuizCTA";
+
 export function CTAFinal() {
   return (
     <section id="cta" className="relative min-h-[520px] flex items-center justify-center overflow-hidden">
@@ -35,9 +37,7 @@ export function CTAFinal() {
           Si prepara nella testa, nei pensieri che scegli, nella reazione all'errore. Se vuoi migliorare, competere, vincere o tornare a credere davvero nelle tue capacità, inizia da qui.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <a href="#" className="btn-primary animate-pulse-glow">
-            Scopri il tuo profilo mentale →
-          </a>
+          <QuizCTA className="animate-pulse-glow" />
           <a href="#prezzi" className="btn-outline-light">
             Vedi i prezzi
           </a>

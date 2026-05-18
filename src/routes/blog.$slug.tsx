@@ -4,6 +4,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { useReveal } from "@/hooks/use-reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { QuizCTA } from "@/components/quiz/QuizCTA";
 
 type Post = {
   id: string;
@@ -124,9 +125,8 @@ function PostPage() {
             <p className="text-[14px] text-muted-foreground mb-5">
               Compila il questionario di orientamento e scopri il professionista più adatto a te.
             </p>
-            <Link to="/" hash="cta" className="btn-primary">
-              Scopri il tuo profilo mentale →
-            </Link>
+            <QuizCTA />
+
           </div>
         </div>
       </article>

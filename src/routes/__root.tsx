@@ -10,6 +10,7 @@ import {
 
 import { Toaster } from "@/components/ui/sonner";
 import { useAuthSubscription } from "@/hooks/use-auth";
+import { QuizModal } from "@/components/quiz/QuizModal";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -123,6 +124,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthBridge />
       <Outlet />
+      <QuizModal />
       <Toaster position="top-right" />
     </QueryClientProvider>
   );
