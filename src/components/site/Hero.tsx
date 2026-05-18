@@ -1,4 +1,5 @@
 import heroImg from "@/assets/hero-athlete.jpg";
+import { QuizCTA } from "@/components/quiz/QuizCTA";
 
 export function Hero() {
   return (

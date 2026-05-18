@@ -1,3 +1,5 @@
+import { QuizCTA } from "@/components/quiz/QuizCTA";
+
 export function CTAFinal() {
   return (
     <section id="cta" className="relative min-h-[520px] flex items-center justify-center overflow-hidden">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { QuizCTA } from "@/components/quiz/QuizCTA";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Logo } from "./Logo";
