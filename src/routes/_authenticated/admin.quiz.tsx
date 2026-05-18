@@ -332,6 +332,7 @@ function LeadsTab() {
             <th className="text-left p-3">Contatto</th>
             <th className="text-left p-3">Risultato</th>
             <th className="text-left p-3">Email</th>
+            <th className="text-left p-3">Report</th>
           </tr>
         </thead>
         <tbody>
@@ -361,10 +362,66 @@ function LeadsTab() {
                   {l.email_sent ? "Inviata" : "In coda"}
                 </span>
               </td>
+              <td className="p-3">
+                <PreviewReportButton leadId={l.id} name={l.name} email={l.email} phone={l.phone} />
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function PreviewReportButton({
+  leadId, name, email, phone,
+}: { leadId: string; name: string; email: string; phone: string | null }) {
+  const [loading, setLoading] = useState(false);
+
+  async function openPreview() {
+    setLoading(true);
+    try {
+      const { data: responses, error } = await supabase
+        .from("quiz_responses")
+        .select("question_id, option_id, quiz_options(profile_tag)")
+        .eq("lead_id", leadId);
+      if (error) throw error;
+      if (!responses?.length) {
+        toast.error("Nessuna risposta salvata per questo lead");
+        return;
+      }
+      const answers: Record<string, { optionId: string; tag: string }> = {};
+      for (const r of responses as any[]) {
+        const tag = r.quiz_options?.profile_tag;
+        if (!tag) continue;
+        answers[r.question_id] = { optionId: r.option_id, tag };
+      }
+      const profile = computeProfile(answers);
+      const html = buildReportHTML(profile, { name, email, phone });
+      const win = window.open("", "_blank");
+      if (!win) {
+        toast.error("Blocco popup attivo. Permetti i popup per vedere l'anteprima.");
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e.message ?? "Errore nel generare il report");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <button
+      onClick={openPreview}
+      disabled={loading}
+      className="text-xs px-2.5 py-1.5 rounded-lg border border-line bg-white hover:bg-off inline-flex items-center gap-1.5 disabled:opacity-50"
+      title="Anteprima del report come arriverà via email"
+    >
+      <Eye size={12} /> {loading ? "…" : "Vedi anteprima"}
+    </button>
   );
 }
