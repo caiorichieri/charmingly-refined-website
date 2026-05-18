@@ -92,12 +92,14 @@ function QuestionsTab() {
         .select("id")
         .single();
       if (error) throw error;
-      // 4 opzioni di default
+      // 6 opzioni di default, una per ogni Athlete Type
       const opts = [
-        { question_id: newQ.id, text: "Opzione 1", profile_tag: "fragile", display_order: 1 },
-        { question_id: newQ.id, text: "Opzione 2", profile_tag: "guerriero", display_order: 2 },
-        { question_id: newQ.id, text: "Opzione 3", profile_tag: "metodico", display_order: 3 },
-        { question_id: newQ.id, text: "Opzione 4", profile_tag: "libero", display_order: 4 },
+        { question_id: newQ.id, text: "Opzione Perfezionatore", profile_tag: "perfezionatore", display_order: 1 },
+        { question_id: newQ.id, text: "Opzione Anticipatore", profile_tag: "anticipatore", display_order: 2 },
+        { question_id: newQ.id, text: "Opzione Intenso", profile_tag: "intenso", display_order: 3 },
+        { question_id: newQ.id, text: "Opzione Confermatore", profile_tag: "confermatore", display_order: 4 },
+        { question_id: newQ.id, text: "Opzione Percettivo", profile_tag: "percettivo", display_order: 5 },
+        { question_id: newQ.id, text: "Opzione Recuperante", profile_tag: "recuperante", display_order: 6 },
       ];
       await supabase.from("quiz_options").insert(opts);
     },
