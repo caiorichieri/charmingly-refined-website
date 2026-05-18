@@ -1,24 +1,57 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { QUIZ_OPEN_EVENT } from "./openQuiz";
 import { toast } from "sonner";
 
+type Option = { id: string; text: string; profile_tag: string; display_order: number };
 type Question = {
   id: string;
   text: string;
   display_order: number;
-  quiz_options: { id: string; text: string; profile_tag: string; display_order: number }[];
+  quiz_options: Option[];
 };
 
 type Step = "contact" | "questions" | "done";
 
-const PROFILE_LABELS: Record<string, { name: string; tagline: string }> = {
-  fragile: { name: "Atleta Sensibile", tagline: "Hai grande potenziale ma la pressione ti pesa: il percorso giusto può fare la differenza." },
-  guerriero: { name: "Atleta Guerriero", tagline: "Vivi di sfida e adrenalina: lavoriamo per canalizzare la tua energia al meglio." },
-  metodico: { name: "Atleta Metodico", tagline: "Sei analitico e costante: il mental training ti dà gli strumenti per il salto di qualità." },
-  libero: { name: "Atleta Libero", tagline: "Vivi lo sport con leggerezza: troviamo l'equilibrio tra divertimento e prestazione." },
+const PROFILE_LABELS: Record<string, { name: string; tagline: string; description: string }> = {
+  perfezionatore: {
+    name: "Il Perfezionatore",
+    tagline: "Standard altissimi, analisi continua, poca tregua interna.",
+    description:
+      "Funzioni grazie al controllo e alla precisione: l'errore ti resta dentro a lungo e nulla è mai abbastanza. Il percorso giusto ti aiuta ad alleggerire l'autocritica senza perdere il tuo rigore.",
+  },
+  anticipatore: {
+    name: "L'Anticipatore",
+    tagline: "Mente che corre avanti, scenari, ansia anticipatoria.",
+    description:
+      "Vivi la gara prima della gara: scenari, previsioni, piani B. La tua forza è la lettura del contesto; il limite è non riuscire a spegnere. Impariamo a riportarti nel presente.",
+  },
+  intenso: {
+    name: "L'Intenso",
+    tagline: "Adrenalina, picchi emotivi, reattività esplosiva.",
+    description:
+      "L'emozione è il tuo carburante: ti accende ma a volte ti travolge. Lavoriamo per trasformare l'intensità in energia funzionale, senza spegnere il fuoco che ti rende unico/a.",
+  },
+  confermatore: {
+    name: "Il Confermatore",
+    tagline: "Autostima legata al giudizio e al confronto.",
+    description:
+      "Hai bisogno di sentire che vali e cerchi conferme dagli altri. Costruiamo una base di fiducia interna che non dipenda dal risultato di ogni singola gara.",
+  },
+  percettivo: {
+    name: "Il Percettivo",
+    tagline: "Il corpo parla prima della testa: ipersensibilità ai segnali.",
+    description:
+      "Senti tutto, e lo senti per primo/a nel corpo. È una risorsa enorme ma ti espone al sovraccarico. Ti diamo strumenti per leggere i segnali senza esserne sopraffatto/a.",
+  },
+  recuperante: {
+    name: "Il Recuperante",
+    tagline: "Distacco, motivazione bassa, rischio burnout.",
+    description:
+      "Qualcosa si è spento: dentro c'è più stanchezza che desiderio. Non è debolezza, è un segnale. Il percorso parte dall'ascolto e dalla decompressione, non dalla performance.",
+  },
 };
 
 const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
@@ -42,6 +75,47 @@ function quizLog(message: string, data?: Record<string, unknown>) {
   console.debug(QUIZ_DEBUG_PREFIX, message, data ?? {});
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+type ProfileResult = {
+  primary: string;
+  secondary: string | null;
+  counts: Record<string, number>;
+  total: number;
+};
+
+function computeProfile(answers: Record<string, { optionId: string; tag: string }>): ProfileResult {
+  const counts: Record<string, number> = {};
+  Object.values(answers).forEach((a) => {
+    counts[a.tag] = (counts[a.tag] ?? 0) + 1;
+  });
+  const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const primary = ranked[0]?.[0] ?? "perfezionatore";
+  const primaryScore = ranked[0]?.[1] ?? 0;
+  const secondary = ranked[1] && primaryScore - ranked[1][1] <= 2 ? ranked[1][0] : null;
+  return { primary, secondary, counts, total: Object.keys(answers).length };
+}
+
+function formatSummary(result: ProfileResult): string {
+  const labelOf = (k: string) => PROFILE_LABELS[k]?.name ?? k;
+  const dist = Object.entries(result.counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `${labelOf(k)} ${v}/${result.total}`)
+    .join(" · ");
+  const primary = `Prevalente: ${labelOf(result.primary)} ${result.counts[result.primary]}/${result.total}`;
+  const secondary = result.secondary
+    ? ` · Secondario: ${labelOf(result.secondary)} ${result.counts[result.secondary]}/${result.total}`
+    : "";
+  return `${primary}${secondary} · Distribuzione: ${dist}`;
+}
+
 export function QuizModal() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("contact");
@@ -49,7 +123,9 @@ export function QuizModal() {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { optionId: string; tag: string }>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [resultProfile, setResultProfile] = useState<string | null>(null);
+  const [result, setResult] = useState<ProfileResult | null>(null);
+  // Bumped on every open so options re-shuffle each time the quiz is opened
+  const [shuffleSeed, setShuffleSeed] = useState(0);
 
   useEffect(() => {
     const handler = () => {
@@ -57,13 +133,14 @@ export function QuizModal() {
       setStep("contact");
       setCurrent(0);
       setAnswers({});
-      setResultProfile(null);
+      setResult(null);
+      setShuffleSeed((s) => s + 1);
     };
     window.addEventListener(QUIZ_OPEN_EVENT, handler);
     return () => window.removeEventListener(QUIZ_OPEN_EVENT, handler);
   }, []);
 
-  const { data: questions, isLoading } = useQuery({
+  const { data: rawQuestions, isLoading } = useQuery({
     queryKey: ["quiz-questions"],
     queryFn: async (): Promise<Question[]> => {
       const { data, error } = await supabase
@@ -81,6 +158,13 @@ export function QuizModal() {
     },
     enabled: open,
   });
+
+  // Shuffle options independently per question, re-shuffled each time the modal opens.
+  const questions = useMemo<Question[] | undefined>(() => {
+    if (!rawQuestions) return rawQuestions;
+    return rawQuestions.map((q) => ({ ...q, quiz_options: shuffle(q.quiz_options) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawQuestions, shuffleSeed]);
 
   const total = questions?.length ?? 0;
   const progress = step === "contact" ? 0 : step === "done" ? 100 : Math.round(((current + 1) / Math.max(total, 1)) * 100);
@@ -113,37 +197,18 @@ export function QuizModal() {
       questionId: q.id,
       optionId,
       profileTag: tag,
-      collectedAnswers: Object.keys(newAnswers).length,
     });
 
     if (current + 1 < questions.length) {
-      quizLog("Passaggio alla domanda successiva", { nextQuestionIndex: current + 2 });
       setCurrent((c) => c + 1);
       return;
     }
     // finalize
     setSubmitting(true);
     try {
-      quizLog("Finalizzazione quiz avviata", {
-        totalQuestions: questions.length,
-        totalAnswers: Object.keys(newAnswers).length,
-        contact: {
-          hasName: Boolean(contact.name.trim()),
-          email: maskEmail(contact.email),
-          phone: maskPhone(contact.phone),
-        },
-      });
-
-      // compute dominant profile
-      const counts: Record<string, number> = {};
-      Object.values(newAnswers).forEach((a) => {
-        counts[a.tag] = (counts[a.tag] ?? 0) + 1;
-      });
-      const dominant = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "equilibrato";
-      const profile = PROFILE_LABELS[dominant];
-      const summary = profile ? `${profile.name} — ${profile.tagline}` : dominant;
-
-      quizLog("Profilo calcolato", { counts, dominant, summary });
+      const computed = computeProfile(newAnswers);
+      const summary = formatSummary(computed);
+      quizLog("Profilo calcolato", { ...computed, summary });
 
       const leadId = makeQuizId();
       const leadPayload = {
@@ -154,73 +219,57 @@ export function QuizModal() {
         result_summary: summary,
       };
 
-      quizLog("Salvataggio lead avviato", {
-        leadId,
-        payload: {
-          ...leadPayload,
-          name: leadPayload.name ? "presente" : "mancante",
-          email: maskEmail(leadPayload.email),
-          phone: maskPhone(leadPayload.phone),
-        },
-      });
-
-      const { error: leadErr } = await supabase
-        .from("quiz_leads")
-        .insert(leadPayload);
+      const { error: leadErr } = await supabase.from("quiz_leads").insert(leadPayload);
       if (leadErr) {
         console.error(QUIZ_DEBUG_PREFIX, "Errore salvataggio lead", leadErr);
         throw leadErr;
       }
-
-      quizLog("Lead salvato correttamente", { leadId });
 
       const rows = Object.entries(newAnswers).map(([questionId, a]) => ({
         lead_id: leadId,
         question_id: questionId,
         option_id: a.optionId,
       }));
-      quizLog("Salvataggio risposte avviato", {
-        leadId,
-        responseCount: rows.length,
-        rows,
-      });
       const { error: respErr } = await supabase.from("quiz_responses").insert(rows);
       if (respErr) {
         console.error(QUIZ_DEBUG_PREFIX, "Errore salvataggio risposte", respErr);
         throw respErr;
       }
 
-      quizLog("Risposte salvate correttamente", { leadId, responseCount: rows.length });
-
       // best-effort email (server function may not exist yet)
       try {
-        quizLog("Invio email best-effort avviato", { leadId, email: maskEmail(contact.email) });
-        const emailResponse = await fetch("/lovable/email/transactional/send", {
+        const primaryProfile = PROFILE_LABELS[computed.primary];
+        const secondaryProfile = computed.secondary ? PROFILE_LABELS[computed.secondary] : null;
+        await fetch("/lovable/email/transactional/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             templateName: "quiz-result",
             recipientEmail: contact.email.trim().toLowerCase(),
             idempotencyKey: `quiz-${leadId}`,
-            templateData: { name: contact.name.trim(), profile: profile?.name, tagline: profile?.tagline },
+            templateData: {
+              name: contact.name.trim(),
+              profile: primaryProfile?.name,
+              tagline: primaryProfile?.tagline,
+              description: primaryProfile?.description,
+              secondaryProfile: secondaryProfile?.name ?? null,
+              secondaryDescription: secondaryProfile?.description ?? null,
+            },
           }),
         });
-        quizLog("Invio email best-effort completato", { leadId, status: emailResponse.status, ok: emailResponse.ok });
       } catch (emailError) {
-        console.warn(QUIZ_DEBUG_PREFIX, "Email non inviata, il quiz resta valido", emailError);
-        // ignored — email infra may not be configured yet
+        console.warn(QUIZ_DEBUG_PREFIX, "Email non inviata, il quiz resta valido", {
+          leadId,
+          email: maskEmail(contact.email),
+          phone: maskPhone(contact.phone),
+          emailError,
+        });
       }
 
-      quizLog("Quiz completato correttamente", { leadId, dominant });
-      setResultProfile(dominant);
+      setResult(computed);
       setStep("done");
     } catch (e: any) {
-      console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", {
-        error: e,
-        currentQuestionIndex: current + 1,
-        totalQuestions: questions.length,
-        totalAnswers: Object.keys(newAnswers).length,
-      });
+      console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", e);
       toast.error("Si è verificato un errore. Riprova tra poco.");
     } finally {
       setSubmitting(false);
@@ -243,11 +292,14 @@ export function QuizModal() {
   const q = questions?.[current];
   const selectedId = q ? answers[q.id]?.optionId : undefined;
 
+  const primaryProfile = result ? PROFILE_LABELS[result.primary] : null;
+  const secondaryProfile = result?.secondary ? PROFILE_LABELS[result.secondary] : null;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-xl border-border bg-card p-0 sm:rounded-2xl overflow-hidden">
+      <DialogContent className="max-w-xl border-border bg-card p-0 sm:rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* progress bar */}
-        <div className="h-1 w-full bg-muted">
+        <div className="h-1 w-full bg-muted sticky top-0 z-10">
           <div
             className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -262,7 +314,7 @@ export function QuizModal() {
                   Che tipo di atleta sei?
                 </DialogTitle>
                 <DialogDescription className="mt-2 text-sm text-muted-foreground">
-                  Rispondi a {total || "poche"} brevi domande e scopri il tuo profilo mentale. Inizia con i tuoi dati di contatto.
+                  Rispondi a {total || "12"} brevi domande e scopri il tuo profilo mentale tra i 6 tipi del Profiler MeMindSport. Inizia con i tuoi dati di contatto.
                 </DialogDescription>
               </div>
               <div className="space-y-3">
@@ -341,34 +393,46 @@ export function QuizModal() {
             </div>
           )}
 
-          {step === "done" && (
-            <div className="space-y-5 text-center py-4">
-              <DialogTitle className="font-display text-2xl sm:text-3xl text-foreground">
-                Ottieni il tuo risultato
-              </DialogTitle>
-              <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <svg className="h-8 w-8 text-primary animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+          {step === "done" && result && primaryProfile && (
+            <div className="space-y-5 py-2">
+              <div className="text-center">
+                <div className="text-xs uppercase tracking-wider text-primary mb-2">Il tuo profilo</div>
+                <DialogTitle className="font-display text-3xl text-foreground">
+                  {primaryProfile.name}
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground mt-2 italic">{primaryProfile.tagline}</p>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Grazie <span className="text-foreground font-medium">{contact.name.split(" ")[0]}</span>! 
-                Stiamo elaborando la tua analisi personalizzata.<br />
-                Il risultato completo sarà inviato a <span className="text-foreground font-medium">{contact.email}</span> entro pochi minuti.
-              </p>
-              {resultProfile && PROFILE_LABELS[resultProfile] && (
-                <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-left">
-                  <div className="text-xs uppercase tracking-wider text-primary mb-1">Anteprima profilo</div>
-                  <div className="font-display text-lg text-foreground">{PROFILE_LABELS[resultProfile].name}</div>
-                  <p className="text-xs text-muted-foreground mt-1">{PROFILE_LABELS[resultProfile].tagline}</p>
+
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <p className="text-sm text-foreground leading-relaxed">{primaryProfile.description}</p>
+                <div className="mt-3 text-xs text-muted-foreground">
+                  Punteggio: <span className="font-medium text-foreground">{result.counts[result.primary]}/{result.total}</span>
+                </div>
+              </div>
+
+              {secondaryProfile && (
+                <div className="rounded-xl border border-border bg-background p-4">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Profilo secondario</div>
+                  <div className="font-display text-lg text-foreground">{secondaryProfile.name}</div>
+                  <p className="text-xs text-muted-foreground mt-1">{secondaryProfile.description}</p>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Punteggio: <span className="font-medium text-foreground">{result.counts[result.secondary!]}/{result.total}</span>
+                  </div>
                 </div>
               )}
-              <button onClick={scrollToPlans} className="btn-primary w-full justify-center">
-                Scegli il tuo piano →
-              </button>
-              <button onClick={close} className="text-xs text-muted-foreground hover:text-foreground">
-                Chiudi
-              </button>
+
+              <p className="text-xs text-muted-foreground text-center">
+                Una copia di questa analisi sarà inviata a <span className="text-foreground font-medium">{contact.email}</span>.
+              </p>
+
+              <div className="flex flex-col gap-2">
+                <button onClick={scrollToPlans} className="btn-primary w-full justify-center">
+                  Scopri il percorso giusto per te →
+                </button>
+                <button onClick={close} className="text-xs text-muted-foreground hover:text-foreground">
+                  Chiudi
+                </button>
+              </div>
             </div>
           )}
         </div>
