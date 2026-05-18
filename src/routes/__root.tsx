@@ -128,15 +128,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthBridge />
-      <Outlet />
-      <QuizModal />
-      <Toaster position="top-right" />
+      <AuthProvider>
+        <Outlet />
+        <QuizModal />
+        <Toaster position="top-right" />
+      </AuthProvider>
     </QueryClientProvider>
   );
-}
-
-function AuthBridge() {
-  useAuthSubscription();
-  return null;
 }
