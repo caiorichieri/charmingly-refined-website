@@ -183,7 +183,7 @@ export function QuizModal() {
                   Che tipo di atleta sei?
                 </DialogTitle>
                 <DialogDescription className="mt-2 text-sm text-muted-foreground">
-                  Rispondi a 10 brevi domande e scopri il tuo profilo mentale. Inizia con i tuoi dati di contatto.
+                  Rispondi a {total || "poche"} brevi domande e scopri il tuo profilo mentale. Inizia con i tuoi dati di contatto.
                 </DialogDescription>
               </div>
               <div className="space-y-3">
