@@ -90,12 +90,9 @@ export function Nav() {
             )}
           </div>
         )}
-        <a
-          href="#cta"
-          className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded-full transition-all"
-        >
-          Scopri il tuo profilo →
-        </a>
+        <QuizCTA className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded-full transition-all">
+          Che tipo di atleta sei? →
+        </QuizCTA>
       </div>
     </nav>
   );

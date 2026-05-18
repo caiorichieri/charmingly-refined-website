@@ -64,9 +64,7 @@ export function Hero() {
           </p>
 
           <div className="reveal in flex flex-wrap items-center gap-4">
-            <a href="#cta" className="btn-primary animate-pulse-glow">
-              Scopri il tuo profilo mentale →
-            </a>
+            <QuizCTA className="animate-pulse-glow" />
             <a href="#come-funziona" className="btn-outline-light">
               Come funziona
             </a>
