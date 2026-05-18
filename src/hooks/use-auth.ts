@@ -3,6 +3,15 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+type AuthState = {
+  session: Session | null;
+  user: User | undefined;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isTherapist: boolean;
+  loading: boolean;
+};
+
 export function useAuthSubscription() {
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -44,26 +53,55 @@ export function useRoles(userId: string | undefined) {
   });
 }
 
-export function useAuth() {
-  const sessionQuery = useSession();
-  const user: User | undefined = sessionQuery.data?.user;
-  const rolesQuery = useRoles(user?.id);
-  return {
-    session: sessionQuery.data,
-    user,
-    isAuthenticated: !!user,
-    isAdmin: (rolesQuery.data ?? []).includes("admin"),
-    isTherapist: (rolesQuery.data ?? []).includes("therapist"),
-    loading: sessionQuery.isLoading || (!!user && rolesQuery.isLoading),
-  };
+export function useAuth(): AuthState {
+  const [auth, setAuth] = useState<AuthState>({
+    session: null,
+    user: undefined,
+    isAuthenticated: false,
+    isAdmin: false,
+    isTherapist: false,
+    loading: true,
+  });
+
+  useEffect(() => {
+    let active = true;
+
+    async function load(session: Session | null) {
+      const user = session?.user;
+      let roles: string[] = [];
+
+      if (user) {
+        const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+        roles = (data ?? []).map((r) => r.role);
+      }
+
+      if (!active) return;
+      setAuth({
+        session,
+        user,
+        isAuthenticated: !!user,
+        isAdmin: roles.includes("admin"),
+        isTherapist: roles.includes("therapist"),
+        loading: false,
+      });
+    }
+
+    supabase.auth.getSession().then(({ data }) => load(data.session ?? null));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      void load(session);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return auth;
 }
 
 export function useHydratedAuth() {
-  // Returns true once the initial session check has resolved (client-only)
-  const [hydrated, setHydrated] = useState(false);
-  const { isLoading } = useSession();
-  useEffect(() => {
-    if (!isLoading) setHydrated(true);
-  }, [isLoading]);
-  return hydrated;
+  return !useAuth().loading;
 }
