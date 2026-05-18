@@ -21,6 +21,27 @@ const PROFILE_LABELS: Record<string, { name: string; tagline: string }> = {
   libero: { name: "Atleta Libero", tagline: "Vivi lo sport con leggerezza: troviamo l'equilibrio tra divertimento e prestazione." },
 };
 
+const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
+
+function maskEmail(email: string) {
+  const [name, domain] = email.trim().toLowerCase().split("@");
+  if (!name || !domain) return "email-non-valida";
+  return `${name.slice(0, 2)}***@${domain}`;
+}
+
+function maskPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  return digits.length > 4 ? `***${digits.slice(-4)}` : "telefono-breve";
+}
+
+function makeQuizId() {
+  return crypto?.randomUUID?.() ?? `quiz-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function quizLog(message: string, data?: Record<string, unknown>) {
+  console.debug(QUIZ_DEBUG_PREFIX, message, data ?? {});
+}
+
 export function QuizModal() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("contact");
@@ -86,13 +107,33 @@ export function QuizModal() {
     const newAnswers = { ...answers, [q.id]: { optionId, tag } };
     setAnswers(newAnswers);
 
+    quizLog("Risposta selezionata", {
+      questionIndex: current + 1,
+      totalQuestions: questions.length,
+      questionId: q.id,
+      optionId,
+      profileTag: tag,
+      collectedAnswers: Object.keys(newAnswers).length,
+    });
+
     if (current + 1 < questions.length) {
+      quizLog("Passaggio alla domanda successiva", { nextQuestionIndex: current + 2 });
       setCurrent((c) => c + 1);
       return;
     }
     // finalize
     setSubmitting(true);
     try {
+      quizLog("Finalizzazione quiz avviata", {
+        totalQuestions: questions.length,
+        totalAnswers: Object.keys(newAnswers).length,
+        contact: {
+          hasName: Boolean(contact.name.trim()),
+          email: maskEmail(contact.email),
+          phone: maskPhone(contact.phone),
+        },
+      });
+
       // compute dominant profile
       const counts: Record<string, number> = {};
       Object.values(newAnswers).forEach((a) => {
@@ -102,46 +143,84 @@ export function QuizModal() {
       const profile = PROFILE_LABELS[dominant];
       const summary = profile ? `${profile.name} — ${profile.tagline}` : dominant;
 
-      const { data: lead, error: leadErr } = await supabase
+      quizLog("Profilo calcolato", { counts, dominant, summary });
+
+      const leadId = makeQuizId();
+      const leadPayload = {
+        id: leadId,
+        name: contact.name.trim(),
+        email: contact.email.trim().toLowerCase(),
+        phone: contact.phone.trim(),
+        result_summary: summary,
+      };
+
+      quizLog("Salvataggio lead avviato", {
+        leadId,
+        payload: {
+          ...leadPayload,
+          name: leadPayload.name ? "presente" : "mancante",
+          email: maskEmail(leadPayload.email),
+          phone: maskPhone(leadPayload.phone),
+        },
+      });
+
+      const { error: leadErr } = await supabase
         .from("quiz_leads")
-        .insert({
-          name: contact.name.trim(),
-          email: contact.email.trim().toLowerCase(),
-          phone: contact.phone.trim(),
-          result_summary: summary,
-        })
-        .select("id")
-        .single();
-      if (leadErr) throw leadErr;
+        .insert(leadPayload);
+      if (leadErr) {
+        console.error(QUIZ_DEBUG_PREFIX, "Errore salvataggio lead", leadErr);
+        throw leadErr;
+      }
+
+      quizLog("Lead salvato correttamente", { leadId });
 
       const rows = Object.entries(newAnswers).map(([questionId, a]) => ({
-        lead_id: lead.id,
+        lead_id: leadId,
         question_id: questionId,
         option_id: a.optionId,
       }));
+      quizLog("Salvataggio risposte avviato", {
+        leadId,
+        responseCount: rows.length,
+        rows,
+      });
       const { error: respErr } = await supabase.from("quiz_responses").insert(rows);
-      if (respErr) throw respErr;
+      if (respErr) {
+        console.error(QUIZ_DEBUG_PREFIX, "Errore salvataggio risposte", respErr);
+        throw respErr;
+      }
+
+      quizLog("Risposte salvate correttamente", { leadId, responseCount: rows.length });
 
       // best-effort email (server function may not exist yet)
       try {
-        await fetch("/lovable/email/transactional/send", {
+        quizLog("Invio email best-effort avviato", { leadId, email: maskEmail(contact.email) });
+        const emailResponse = await fetch("/lovable/email/transactional/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             templateName: "quiz-result",
             recipientEmail: contact.email.trim().toLowerCase(),
-            idempotencyKey: `quiz-${lead.id}`,
+            idempotencyKey: `quiz-${leadId}`,
             templateData: { name: contact.name.trim(), profile: profile?.name, tagline: profile?.tagline },
           }),
         });
-      } catch {
+        quizLog("Invio email best-effort completato", { leadId, status: emailResponse.status, ok: emailResponse.ok });
+      } catch (emailError) {
+        console.warn(QUIZ_DEBUG_PREFIX, "Email non inviata, il quiz resta valido", emailError);
         // ignored — email infra may not be configured yet
       }
 
+      quizLog("Quiz completato correttamente", { leadId, dominant });
       setResultProfile(dominant);
       setStep("done");
     } catch (e: any) {
-      console.error(e);
+      console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", {
+        error: e,
+        currentQuestionIndex: current + 1,
+        totalQuestions: questions.length,
+        totalAnswers: Object.keys(newAnswers).length,
+      });
       toast.error("Si è verificato un errore. Riprova tra poco.");
     } finally {
       setSubmitting(false);
