@@ -85,7 +85,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "MM Sport — Allenamento mentale per atleti" },
       {
         property: "og:description",
-        content: "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
+        content:
+          "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
