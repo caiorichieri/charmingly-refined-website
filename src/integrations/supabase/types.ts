@@ -230,6 +230,150 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_leads: {
+        Row: {
+          created_at: string
+          email: string
+          email_sent: boolean
+          id: string
+          name: string
+          phone: string
+          result_summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          email_sent?: boolean
+          id?: string
+          name: string
+          phone: string
+          result_summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          email_sent?: boolean
+          id?: string
+          name?: string
+          phone?: string
+          result_summary?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quiz_options: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          profile_tag: string
+          question_id: string
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          profile_tag?: string
+          question_id: string
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          profile_tag?: string
+          question_id?: string
+          text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_options_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          published: boolean
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          published?: boolean
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          published?: boolean
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quiz_responses: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          option_id: string
+          question_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          option_id: string
+          question_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          option_id?: string
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_responses_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       testimonials: {
         Row: {
           approved: boolean
