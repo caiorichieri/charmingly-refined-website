@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,56 +12,20 @@ type AuthState = {
   loading: boolean;
 };
 
-export function useAuthSubscription() {
+const initialAuthState: AuthState = {
+  session: null,
+  user: undefined,
+  isAuthenticated: false,
+  isAdmin: false,
+  isTherapist: false,
+  loading: true,
+};
+
+const AuthContext = createContext<AuthState>(initialAuthState);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      queryClient.invalidateQueries({ queryKey: ["session"] });
-      queryClient.invalidateQueries({ queryKey: ["roles"] });
-    });
-    return () => subscription.unsubscribe();
-  }, [queryClient]);
-}
-
-export function useSession() {
-  return useQuery({
-    queryKey: ["session"],
-    queryFn: async (): Promise<Session | null> => {
-      const { data } = await supabase.auth.getSession();
-      return data.session ?? null;
-    },
-    staleTime: 1000 * 60,
-  });
-}
-
-export function useRoles(userId: string | undefined) {
-  return useQuery({
-    queryKey: ["roles", userId],
-    queryFn: async (): Promise<string[]> => {
-      if (!userId) return [];
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId);
-      if (error) return [];
-      return (data ?? []).map((r) => r.role);
-    },
-    enabled: !!userId,
-    staleTime: 1000 * 60,
-  });
-}
-
-export function useAuth(): AuthState {
-  const [auth, setAuth] = useState<AuthState>({
-    session: null,
-    user: undefined,
-    isAuthenticated: false,
-    isAdmin: false,
-    isTherapist: false,
-    loading: true,
-  });
+  const [auth, setAuth] = useState<AuthState>(initialAuthState);
 
   useEffect(() => {
     let active = true;
@@ -84,9 +48,11 @@ export function useAuth(): AuthState {
         isTherapist: roles.includes("therapist"),
         loading: false,
       });
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
     }
 
-    supabase.auth.getSession().then(({ data }) => load(data.session ?? null));
+    void supabase.auth.getSession().then(({ data }) => load(data.session ?? null));
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -97,9 +63,13 @@ export function useAuth(): AuthState {
       active = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
-  return auth;
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth(): AuthState {
+  return useContext(AuthContext);
 }
 
 export function useHydratedAuth() {
