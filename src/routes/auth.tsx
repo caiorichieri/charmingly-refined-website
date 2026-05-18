@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Navigate, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -17,7 +17,6 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const navigate = useNavigate();
   const { isAuthenticated, isAdmin, isTherapist, loading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -27,9 +26,9 @@ function AuthPage() {
 
   // If already logged in, push to right area
   if (isAuthenticated && !loading) {
-    if (isAdmin) navigate({ to: "/admin" });
-    else if (isTherapist) navigate({ to: "/area-terapeuta" });
-    else navigate({ to: "/" });
+    if (isAdmin) return <Navigate to="/admin" />;
+    if (isTherapist) return <Navigate to="/area-terapeuta" />;
+    return <Navigate to="/" />;
   }
 
   async function handleEmail(e: FormEvent) {
