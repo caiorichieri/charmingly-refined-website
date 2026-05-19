@@ -130,6 +130,9 @@ export function Nav() {
           </SheetTrigger>
           <SheetContent id="mobile-nav-panel" side="right" className="w-[280px] sm:w-80 bg-white p-0 flex flex-col" role="dialog" aria-modal="true">
             <SheetTitle className="sr-only">Menu di navigazione</SheetTitle>
+            <SheetDescription className="sr-only">
+              Menu principale del sito MeMindSport con collegamenti alle sezioni, area personale e logout.
+            </SheetDescription>
             <div className="flex items-center justify-between px-5 py-4 border-b border-line">
               <span className="font-display text-lg font-extrabold tracking-tight text-ink">
                 Me<span className="text-brand-green">Mind</span>Sport
