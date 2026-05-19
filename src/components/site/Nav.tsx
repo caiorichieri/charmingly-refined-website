@@ -20,7 +20,15 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const { isAuthenticated, isAdmin, isTherapist, user } = useAuth();
+
+  useEffect(() => {
+    if (mobileMenuOpen && firstLinkRef.current) {
+      const timer = setTimeout(() => firstLinkRef.current?.focus(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
