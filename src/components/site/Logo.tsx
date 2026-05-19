@@ -6,7 +6,7 @@ export function Logo({ variant = "light", className = "" }: LogoProps) {
   return (
     <img
       src={logoSrc}
-      alt="MMSport"
+      alt="MeMindSport — Psicologia dello sport e mental coaching"
       className={`${className} ${variant === "dark" ? "brightness-0 invert" : ""}`}
     />
   );

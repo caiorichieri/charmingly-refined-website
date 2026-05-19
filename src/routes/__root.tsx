@@ -75,31 +75,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MM Sport — Allenamento mentale per atleti" },
-      {
-        name: "description",
-        content:
-          "Psicologia sportiva, mental coaching e ambienti immersivi VR per atleti, squadre e federazioni.",
-      },
-      { name: "author", content: "MM Sport" },
-      { property: "og:title", content: "MM Sport — Allenamento mentale per atleti" },
-      {
-        property: "og:description",
-        content: "Percorsi di psicologia sportiva e mental coaching con professionisti certificati.",
-      },
+      { name: "google-site-verification", content: "uaaogfBkcG46kyGh4IbM8lWCmXpfj3hWQ-ibNG_A2HU" },
+      { name: "author", content: "MeMindSport — MetaCare SRL" },
+      { property: "og:site_name", content: "MeMindSport" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "MM Sport — Allenamento mentale per atleti" },
-      { name: "description", content: "MMsport is a website designed to enhance user engagement and provide clear information about training plans." },
-      { property: "og:description", content: "MMsport is a website designed to enhance user engagement and provide clear information about training plans." },
-      { name: "twitter:description", content: "MMsport is a website designed to enhance user engagement and provide clear information about training plans." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca48ca22-234d-40a1-9b18-447480655090/id-preview-6bcea930--11587f5b-b352-4fd8-a4c3-64a0cd8bbfba.lovable.app-1779123076794.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca48ca22-234d-40a1-9b18-447480655090/id-preview-6bcea930--11587f5b-b352-4fd8-a4c3-64a0cd8bbfba.lovable.app-1779123076794.png" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "MeMindSport",
+          alternateName: "MeMindSport — MetaCare SRL",
+          url: "https://memindsport.it",
+          logo: "https://memindsport.it/favicon.ico",
+          description:
+            "Psicologia dello sport, mental coaching e ambienti immersivi VR per atleti, squadre e federazioni.",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Codroipo",
+            addressRegion: "UD",
+            addressCountry: "IT",
+          },
+        }),
       },
     ],
   }),
