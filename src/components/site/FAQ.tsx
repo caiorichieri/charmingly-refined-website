@@ -18,8 +18,28 @@ export function FAQ() {
     },
   });
 
+  const faqJsonLd =
+    faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          about: { "@type": "Thing", name: "MeMindSport" },
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }
+      : null;
+
   return (
     <section className="bg-white py-24 md:py-32 px-6 md:px-12">
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <div className="max-w-[1000px] mx-auto">
         <div className="reveal text-center mb-12">
           <div className="eyebrow mb-4 justify-center inline-flex">Domande frequenti</div>
