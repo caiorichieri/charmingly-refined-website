@@ -138,12 +138,13 @@ export function Nav() {
 
             <div className="flex-1 overflow-y-auto py-4">
               <ul className="flex flex-col gap-1 px-3">
-                {links.map((l) => (
+                {links.map((l, i) => (
                   <li key={l.href}>
                     <a
+                      ref={i === 0 ? firstLinkRef : undefined}
                       href={l.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-off rounded-lg transition-colors"
+                      className="block px-3 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-off rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
                     >
                       {l.label}
                     </a>
