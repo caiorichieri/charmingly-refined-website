@@ -6,7 +6,7 @@ import { Logo } from "./Logo";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, LogOut, Menu, Stethoscope, User, X } from "lucide-react";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const links = [
   { href: "/#come-funziona", label: "Come funziona" },
