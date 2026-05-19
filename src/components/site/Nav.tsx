@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { QuizCTA } from "@/components/quiz/QuizCTA";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -6,7 +6,7 @@ import { Logo } from "./Logo";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, LogOut, Menu, Stethoscope, User, X } from "lucide-react";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const links = [
   { href: "/#come-funziona", label: "Come funziona" },
@@ -20,7 +20,15 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const { isAuthenticated, isAdmin, isTherapist, user } = useAuth();
+
+  useEffect(() => {
+    if (mobileMenuOpen && firstLinkRef.current) {
+      const timer = setTimeout(() => firstLinkRef.current?.focus(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -112,13 +120,19 @@ export function Nav() {
           <SheetTrigger asChild>
             <button
               className="lg:hidden grid place-items-center h-10 w-10 rounded-full border border-line text-foreground hover:bg-off transition-colors"
-              aria-label="Apri menu"
+              aria-label={mobileMenuOpen ? "Chiudi menu di navigazione" : "Apri menu di navigazione"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-panel"
+              aria-haspopup="dialog"
             >
-              <Menu size={20} />
+              {mobileMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[280px] sm:w-80 bg-white p-0 flex flex-col">
+          <SheetContent id="mobile-nav-panel" side="right" className="w-[280px] sm:w-80 bg-white p-0 flex flex-col" role="dialog" aria-modal="true">
             <SheetTitle className="sr-only">Menu di navigazione</SheetTitle>
+            <SheetDescription className="sr-only">
+              Menu principale del sito MeMindSport con collegamenti alle sezioni, area personale e logout.
+            </SheetDescription>
             <div className="flex items-center justify-between px-5 py-4 border-b border-line">
               <span className="font-display text-lg font-extrabold tracking-tight text-ink">
                 Me<span className="text-brand-green">Mind</span>Sport
@@ -127,12 +141,13 @@ export function Nav() {
 
             <div className="flex-1 overflow-y-auto py-4">
               <ul className="flex flex-col gap-1 px-3">
-                {links.map((l) => (
+                {links.map((l, i) => (
                   <li key={l.href}>
                     <a
+                      ref={i === 0 ? firstLinkRef : undefined}
                       href={l.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-off rounded-lg transition-colors"
+                      className="block px-3 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-off rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
                     >
                       {l.label}
                     </a>
