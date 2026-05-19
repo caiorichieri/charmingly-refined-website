@@ -120,12 +120,15 @@ export function Nav() {
           <SheetTrigger asChild>
             <button
               className="lg:hidden grid place-items-center h-10 w-10 rounded-full border border-line text-foreground hover:bg-off transition-colors"
-              aria-label="Apri menu"
+              aria-label={mobileMenuOpen ? "Chiudi menu di navigazione" : "Apri menu di navigazione"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-panel"
+              aria-haspopup="dialog"
             >
-              <Menu size={20} />
+              {mobileMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[280px] sm:w-80 bg-white p-0 flex flex-col">
+          <SheetContent id="mobile-nav-panel" side="right" className="w-[280px] sm:w-80 bg-white p-0 flex flex-col" role="dialog" aria-modal="true">
             <SheetTitle className="sr-only">Menu di navigazione</SheetTitle>
             <div className="flex items-center justify-between px-5 py-4 border-b border-line">
               <span className="font-display text-lg font-extrabold tracking-tight text-ink">
