@@ -41,8 +41,11 @@ export function Nav() {
           : "bg-white/60 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <a href="/" className="flex items-center">
+      <a href="/" aria-label="MeMindSport — Home" className="flex items-center gap-2">
         <Logo variant="light" className="h-36 w-auto -my-6 drop-shadow-[0_4px_16px_rgba(0,0,0,0.12)]" />
+        <span className="font-display text-[20px] md:text-[22px] font-extrabold tracking-tight text-ink leading-none">
+          Me<span className="text-brand-green">Mind</span>Sport
+        </span>
       </a>
       <ul className="hidden lg:flex gap-7 list-none">
         {links.map((l) => (

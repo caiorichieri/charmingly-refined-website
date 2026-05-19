@@ -6,6 +6,9 @@ export function Footer() {
       <div className="max-w-[1180px] mx-auto grid grid-cols-1 md:grid-cols-[1.2fr_2fr_1fr] gap-12 items-start">
         <div>
           <Logo variant="dark" className="h-32 w-auto -ml-3 mb-2" />
+          <div className="font-display text-[22px] font-extrabold tracking-tight text-white mb-3">
+            Me<span className="text-brand-green">Mind</span>Sport
+          </div>
           <p className="text-[13px] text-white/35 leading-relaxed max-w-[260px]">
             MetaCare SRL — Centro sanitario autorizzato
             <br />
