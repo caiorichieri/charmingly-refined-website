@@ -35,15 +35,15 @@ export function Nav() {
 
   return (
     <nav
-      className={`fixed inset-x-0 top-0 z-50 flex h-[96px] items-center justify-between px-6 md:px-12 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 flex h-[68px] md:h-[96px] items-center justify-between px-4 md:px-12 transition-all duration-300 ${
         scrolled
           ? "bg-white/90 backdrop-blur-xl border-b border-line shadow-[0_4px_24px_-12px_rgba(0,0,0,0.12)]"
           : "bg-white/60 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <a href="/" aria-label="MeMindSport — Home" className="flex items-center gap-2">
-        <Logo variant="light" className="h-36 w-auto -my-6 drop-shadow-[0_4px_16px_rgba(0,0,0,0.12)]" />
-        <span className="font-display text-[20px] md:text-[22px] font-extrabold tracking-tight text-ink leading-none">
+      <a href="/" aria-label="MeMindSport — Home" className="flex items-center gap-2 min-w-0">
+        <Logo variant="light" className="h-20 md:h-36 w-auto -my-2 md:-my-6 drop-shadow-[0_4px_16px_rgba(0,0,0,0.12)] shrink-0" />
+        <span className="font-display text-[16px] md:text-[22px] font-extrabold tracking-tight text-ink leading-none truncate">
           Me<span className="text-brand-green">Mind</span>Sport
         </span>
       </a>
@@ -56,7 +56,7 @@ export function Nav() {
           </li>
         ))}
       </ul>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {!isAuthenticated ? (
           <Link to="/auth" className="hidden md:inline text-sm font-medium text-muted-foreground hover:text-foreground">
             Accedi
@@ -94,8 +94,9 @@ export function Nav() {
             )}
           </div>
         )}
-        <QuizCTA className="font-display text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-5 py-2.5 rounded-full transition-all">
-          Che tipo di atleta sei? →
+        <QuizCTA className="font-display text-[12px] md:text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-3 md:px-5 py-2 md:py-2.5 rounded-full transition-all whitespace-nowrap">
+          <span className="md:hidden">Quiz →</span>
+          <span className="hidden md:inline">Che tipo di atleta sei? →</span>
         </QuizCTA>
       </div>
     </nav>
