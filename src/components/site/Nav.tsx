@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { Logo } from "./Logo";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, LogOut, Stethoscope, User } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, Stethoscope, User, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const links = [
   { href: "/#come-funziona", label: "Come funziona" },
@@ -18,6 +19,7 @@ const links = [
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated, isAdmin, isTherapist, user } = useAuth();
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export function Nav() {
   async function logout() {
     await supabase.auth.signOut();
     setMenuOpen(false);
+    setMobileMenuOpen(false);
     toast.success("Disconnesso");
   }
 
@@ -47,6 +50,8 @@ export function Nav() {
           Me<span className="text-brand-green">Mind</span>Sport
         </span>
       </a>
+
+      {/* Desktop links */}
       <ul className="hidden lg:flex gap-7 list-none">
         {links.map((l) => (
           <li key={l.href}>
@@ -56,13 +61,15 @@ export function Nav() {
           </li>
         ))}
       </ul>
+
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
+        {/* Desktop auth */}
         {!isAuthenticated ? (
           <Link to="/auth" className="hidden md:inline text-sm font-medium text-muted-foreground hover:text-foreground">
             Accedi
           </Link>
         ) : (
-          <div className="relative">
+          <div className="relative hidden md:block">
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-brand-green"
@@ -94,10 +101,92 @@ export function Nav() {
             )}
           </div>
         )}
+
         <QuizCTA className="font-display text-[12px] md:text-[15px] font-bold tracking-wider text-white bg-brand-green hover:brightness-110 px-3 md:px-5 py-2 md:py-2.5 rounded-full transition-all whitespace-nowrap">
           <span className="md:hidden">Quiz →</span>
           <span className="hidden md:inline">Che tipo di atleta sei? →</span>
         </QuizCTA>
+
+        {/* Mobile hamburger */}
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <button
+              className="lg:hidden grid place-items-center h-10 w-10 rounded-full border border-line text-foreground hover:bg-off transition-colors"
+              aria-label="Apri menu"
+            >
+              <Menu size={20} />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[280px] sm:w-80 bg-white p-0 flex flex-col">
+            <SheetTitle className="sr-only">Menu di navigazione</SheetTitle>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-line">
+              <span className="font-display text-lg font-extrabold tracking-tight text-ink">
+                Me<span className="text-brand-green">Mind</span>Sport
+              </span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-4">
+              <ul className="flex flex-col gap-1 px-3">
+                {links.map((l) => (
+                  <li key={l.href}>
+                    <a
+                      href={l.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-3 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-off rounded-lg transition-colors"
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 px-6 border-t border-line pt-6 flex flex-col gap-3">
+                {!isAuthenticated ? (
+                  <Link
+                    to="/auth"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-line text-sm font-medium text-foreground hover:bg-off transition-colors"
+                  >
+                    Accedi
+                  </Link>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 px-1">
+                      <span className="grid place-items-center h-9 w-9 rounded-full bg-brand-green/10 text-brand-green shrink-0">
+                        <User size={16} />
+                      </span>
+                      <span className="text-sm font-medium text-foreground truncate">{user?.email}</span>
+                    </div>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-off rounded-lg transition-colors"
+                      >
+                        <LayoutDashboard size={16} /> Dashboard admin
+                      </Link>
+                    )}
+                    {isTherapist && (
+                      <Link
+                        to="/area-terapeuta"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-off rounded-lg transition-colors"
+                      >
+                        <Stethoscope size={16} /> Area terapeuta
+                      </Link>
+                    )}
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut size={16} /> Logout
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </nav>
   );
