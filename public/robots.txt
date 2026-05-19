@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /auth
+Disallow: /area-terapeuta
+
+Sitemap: https://memindsport.it/sitemap.xml
