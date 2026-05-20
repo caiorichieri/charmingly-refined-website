@@ -13,6 +13,7 @@ const links = [
   { href: "/#professionisti", label: "I professionisti" },
   { href: "/#immersivo", label: "Ambienti immersivi" },
   { href: "/#prezzi", label: "Prezzi" },
+  { href: "/eventi", label: "Eventi" },
   { href: "/blog", label: "Blog" },
 ];
 
