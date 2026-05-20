@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as EventiRouteImport } from './routes/eventi'
 import { Route as ContattiRouteImport } from './routes/contatti'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -33,6 +34,11 @@ import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authentica
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventiRoute = EventiRouteImport.update({
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
   '/eventi': typeof EventiRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
   '/eventi': typeof EventiRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
   '/eventi': typeof EventiRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contatti'
     | '/eventi'
+    | '/privacy'
     | '/sitemap.xml'
     | '/admin'
     | '/area-terapeuta'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contatti'
     | '/eventi'
+    | '/privacy'
     | '/sitemap.xml'
     | '/area-terapeuta'
     | '/blog/$slug'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contatti'
     | '/eventi'
+    | '/privacy'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/area-terapeuta'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   ContattiRoute: typeof ContattiRoute
   EventiRoute: typeof EventiRoute
+  PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -280,6 +293,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eventi': {
@@ -478,6 +498,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   ContattiRoute: ContattiRoute,
   EventiRoute: EventiRoute,
+  PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
