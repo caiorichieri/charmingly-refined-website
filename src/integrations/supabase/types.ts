@@ -65,6 +65,60 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          cover_url: string
+          created_at: string
+          description: string
+          display_order: number
+          event_date: string
+          id: string
+          info: string
+          location: string
+          price: string
+          price_detail: string
+          published: boolean
+          sold_out: boolean
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string
+          created_at?: string
+          description?: string
+          display_order?: number
+          event_date: string
+          id?: string
+          info?: string
+          location?: string
+          price?: string
+          price_detail?: string
+          published?: boolean
+          sold_out?: boolean
+          subtitle?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string
+          created_at?: string
+          description?: string
+          display_order?: number
+          event_date?: string
+          id?: string
+          info?: string
+          location?: string
+          price?: string
+          price_detail?: string
+          published?: boolean
+          sold_out?: boolean
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       faqs: {
         Row: {
           answer: string
