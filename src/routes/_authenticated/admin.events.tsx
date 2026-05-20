@@ -105,7 +105,7 @@ function EventsAdmin() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-ink">Eventi</h1>
+          <h1 className="font-display text-3xl font-extrabold text-ink">Formazione</h1>
           <p className="text-muted-foreground mt-1">
             Gestisci eventi, workshop e convegni. Solo quelli pubblicati appaiono sul sito.
           </p>

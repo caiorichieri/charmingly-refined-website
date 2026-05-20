@@ -23,13 +23,13 @@ type EventRow = {
 export const Route = createFileRoute("/eventi")({
   head: () => ({
     meta: [
-      { title: "Eventi MeMindSport — Formazione per Psicologi dello Sport" },
+      { title: "Formazione MeMindSport — Formazione per Psicologi dello Sport" },
       {
         name: "description",
         content:
-          "Eventi, workshop e convegni MeMindSport dedicati agli psicologi: mental coaching evidence-based, realtà virtuale in psicologia dello sport e neurofeedback per atleti.",
+          "Formazione, workshop e convegni MeMindSport dedicati agli psicologi: mental coaching evidence-based, realtà virtuale in psicologia dello sport e neurofeedback per atleti.",
       },
-      { property: "og:title", content: "Eventi MeMindSport — Formazione per Psicologi" },
+      { property: "og:title", content: "Formazione MeMindSport — Formazione per Psicologi" },
       {
         property: "og:description",
         content:
@@ -88,7 +88,7 @@ function EventiPage() {
           }}
         />
         <div className="relative max-w-[1180px] mx-auto">
-          <div className="eyebrow mb-4">Eventi MeMindSport</div>
+          <div className="eyebrow mb-4">Formazione MeMindSport</div>
           <h1 className="h-display text-[clamp(40px,5vw,72px)] max-w-3xl">
             Formazione per{" "}
             <em
