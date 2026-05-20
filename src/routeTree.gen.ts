@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as EventiRouteImport } from './routes/eventi'
+import { Route as CookieRouteImport } from './routes/cookie'
 import { Route as ContattiRouteImport } from './routes/contatti'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -44,6 +45,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const EventiRoute = EventiRouteImport.update({
   id: '/eventi',
   path: '/eventi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookieRoute = CookieRouteImport.update({
+  id: '/cookie',
+  path: '/cookie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContattiRoute = ContattiRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
+  '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
+  '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
+  '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/contatti'
+    | '/cookie'
     | '/eventi'
     | '/privacy'
     | '/sitemap.xml'
@@ -235,6 +245,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/contatti'
+    | '/cookie'
     | '/eventi'
     | '/privacy'
     | '/sitemap.xml'
@@ -257,6 +268,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/contatti'
+    | '/cookie'
     | '/eventi'
     | '/privacy'
     | '/sitemap.xml'
@@ -281,6 +293,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRouteWithChildren
   ContattiRoute: typeof ContattiRoute
+  CookieRoute: typeof CookieRoute
   EventiRoute: typeof EventiRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       path: '/eventi'
       fullPath: '/eventi'
       preLoaderRoute: typeof EventiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie': {
+      id: '/cookie'
+      path: '/cookie'
+      fullPath: '/cookie'
+      preLoaderRoute: typeof CookieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contatti': {
@@ -497,6 +517,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BlogRoute: BlogRouteWithChildren,
   ContattiRoute: ContattiRoute,
+  CookieRoute: CookieRoute,
   EventiRoute: EventiRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
