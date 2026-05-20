@@ -1,3 +1,5 @@
+import { openQuiz } from "@/components/quiz/openQuiz";
+
 type Figure = {
   title: string;
   badge: string;
