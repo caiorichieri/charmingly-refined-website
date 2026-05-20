@@ -33,7 +33,7 @@ export function FAQ() {
       : null;
 
   return (
-    <section className="bg-white py-24 md:py-32 px-6 md:px-12">
+    <section id="faq" className="bg-white py-24 md:py-32 px-6 md:px-12">
       {faqJsonLd && (
         <script
           type="application/ld+json"
