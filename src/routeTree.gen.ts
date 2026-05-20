@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TerminiRouteImport } from './routes/termini'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as EventiRouteImport } from './routes/eventi'
@@ -32,6 +33,11 @@ import { Route as AuthenticatedAdminFaqsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated/admin.blog'
 
+const TerminiRoute = TerminiRouteImport.update({
+  id: '/termini',
+  path: '/termini',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termini': typeof TerminiRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termini': typeof TerminiRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termini': typeof TerminiRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/eventi'
     | '/privacy'
     | '/sitemap.xml'
+    | '/termini'
     | '/admin'
     | '/area-terapeuta'
     | '/blog/$slug'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/eventi'
     | '/privacy'
     | '/sitemap.xml'
+    | '/termini'
     | '/area-terapeuta'
     | '/blog/$slug'
     | '/admin/blog'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/eventi'
     | '/privacy'
     | '/sitemap.xml'
+    | '/termini'
     | '/_authenticated/admin'
     | '/_authenticated/area-terapeuta'
     | '/blog/$slug'
@@ -297,10 +309,18 @@ export interface RootRouteChildren {
   EventiRoute: typeof EventiRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TerminiRoute: typeof TerminiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/termini': {
+      id: '/termini'
+      path: '/termini'
+      fullPath: '/termini'
+      preLoaderRoute: typeof TerminiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -521,6 +541,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventiRoute: EventiRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TerminiRoute: TerminiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
