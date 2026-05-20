@@ -55,9 +55,7 @@ export function ComeFunziona() {
           ))}
         </div>
         <div className="reveal mt-14 flex flex-col items-center gap-3">
-          <a href="#cta" className="btn-primary">
-            Inizia l'allenamento mentale →
-          </a>
+          <QuizCTA className="btn-primary">Inizia l'allenamento mentale →</QuizCTA>
           <div className="text-[13px] text-muted-foreground">
             Questionario di orientamento · Profilo mentale sportivo · Percorso personalizzato
           </div>
