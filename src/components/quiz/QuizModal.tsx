@@ -310,7 +310,7 @@ export function QuizModal() {
                   onChange={(e) => setConsent(e.target.checked)}
                 />
                 <span>
-                  Acconsento al trattamento dei miei dati personali (nome, email, telefono e risposte al questionario) ai fini della elaborazione del mio profilo psicologico-sportivo e della ricezione del risultato via email, ai sensi del Reg. UE 2016/679 (GDPR). I dati non saranno ceduti a terzi e potrò richiederne in qualsiasi momento la cancellazione scrivendo a <span className="text-foreground font-medium">caiorichieri@gmail.com</span>. *
+                  Acconsento al trattamento dei miei dati personali (nome, email, telefono e risposte al questionario) ai fini della elaborazione del mio profilo psicologico-sportivo e della ricezione del risultato via email, ai sensi del Reg. UE 2016/679 (GDPR). I dati non saranno ceduti a terzi e potrò richiederne in qualsiasi momento la cancellazione scrivendo a <span className="text-foreground font-medium">info@memindsport.it</span>. *
                 </span>
               </label>
 
