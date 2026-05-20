@@ -1,4 +1,66 @@
+import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
+import { openQuiz } from "@/components/quiz/openQuiz";
+
+type FooterLink = { label: string; to?: string; href?: string; onClick?: () => void };
+
+const columns: { h: string; links: FooterLink[] }[] = [
+  {
+    h: "Servizi",
+    links: [
+      { label: "Psicologo sportivo", to: "/", href: "/#professionisti" },
+      { label: "Mental coach", to: "/", href: "/#professionisti" },
+      { label: "Sessioni VR", to: "/", href: "/#immersivo" },
+      { label: "App MeMindSport", onClick: openQuiz },
+      { label: "Per le squadre", to: "/contatti" },
+    ],
+  },
+  {
+    h: "Azienda",
+    links: [
+      { label: "Chi siamo", to: "/", href: "/#professionisti" },
+      { label: "Come funziona", to: "/", href: "/#come-funziona" },
+      { label: "Formazione", to: "/eventi" },
+      { label: "Blog", to: "/blog" },
+      { label: "FAQ", to: "/", href: "/#faq" },
+    ],
+  },
+  {
+    h: "Legale",
+    links: [
+      { label: "Privacy Policy", to: "/privacy" },
+      { label: "Cookie Policy", to: "/cookie" },
+      { label: "Termini", to: "/termini" },
+      { label: "Contatti", to: "/contatti" },
+    ],
+  },
+];
+
+function FooterItem({ link }: { link: FooterLink }) {
+  const cls = "block text-[13px] text-white/45 hover:text-white mb-2 transition-colors text-left";
+  if (link.onClick) {
+    return (
+      <button type="button" onClick={link.onClick} className={cls}>
+        {link.label}
+      </button>
+    );
+  }
+  if (link.href) {
+    return (
+      <a href={link.href} className={cls}>
+        {link.label}
+      </a>
+    );
+  }
+  if (link.to) {
+    return (
+      <Link to={link.to} className={cls}>
+        {link.label}
+      </Link>
+    );
+  }
+  return null;
+}
 
 export function Footer() {
   return (
@@ -16,33 +78,20 @@ export function Footer() {
             <br />
             Finanziato da PR FESR 2021-2027 Regione FVG
           </p>
-          <form className="mt-6 flex gap-2 max-w-[300px]">
-            <input
-              type="email"
-              placeholder="La tua email"
-              className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-[13px] text-white placeholder:text-white/35 focus:outline-none focus:border-brand-green transition-colors"
-            />
-            <button
-              type="button"
-              className="font-display font-bold text-[13px] tracking-wide bg-brand-green text-white px-5 rounded-full hover:brightness-110 transition-all"
-            >
-              Iscriviti
-            </button>
-          </form>
+          <a
+            href="mailto:info@memindsport.it"
+            className="inline-block mt-4 text-[13px] text-white/60 hover:text-white transition-colors"
+          >
+            info@memindsport.it
+          </a>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
-          {[
-            { h: "Servizi", links: ["Psicologo sportivo", "Mental coach", "Sessioni VR", "App MeMindSport", "Per le squadre"] },
-            { h: "Azienda", links: ["Chi siamo", "Come funziona", "Blog", "Lavora con noi", "FAQ"] },
-            { h: "Legale", links: ["Privacy Policy", "Cookie Policy", "Termini", "Contatti"] },
-          ].map((col) => (
+          {columns.map((col) => (
             <div key={col.h}>
               <h4 className="text-[11px] font-bold tracking-[0.14em] uppercase text-white/30 mb-4">{col.h}</h4>
               {col.links.map((l) => (
-                <a key={l} href="#" className="block text-[13px] text-white/45 hover:text-white mb-2 transition-colors">
-                  {l}
-                </a>
+                <FooterItem key={l.label} link={l} />
               ))}
             </div>
           ))}
