@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as EventiRouteImport } from './routes/eventi'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -25,11 +26,17 @@ import { Route as AuthenticatedAdminPlansRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminPathsRouteImport } from './routes/_authenticated/admin.paths'
 import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin.media'
 import { Route as AuthenticatedAdminFaqsRouteImport } from './routes/_authenticated/admin.faqs'
+import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated/admin.blog'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventiRoute = EventiRouteImport.update({
+  id: '/eventi',
+  path: '/eventi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -108,6 +115,12 @@ const AuthenticatedAdminFaqsRoute = AuthenticatedAdminFaqsRouteImport.update({
   path: '/faqs',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminEventsRoute =
+  AuthenticatedAdminEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminBlogRoute = AuthenticatedAdminBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -118,11 +131,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
+  '/eventi': typeof EventiRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
   '/admin/paths': typeof AuthenticatedAdminPathsRoute
@@ -136,10 +151,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
+  '/eventi': typeof EventiRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
   '/admin/paths': typeof AuthenticatedAdminPathsRoute
@@ -155,11 +172,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
+  '/eventi': typeof EventiRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
+  '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
   '/_authenticated/admin/paths': typeof AuthenticatedAdminPathsRoute
@@ -175,11 +194,13 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/blog'
+    | '/eventi'
     | '/sitemap.xml'
     | '/admin'
     | '/area-terapeuta'
     | '/blog/$slug'
     | '/admin/blog'
+    | '/admin/events'
     | '/admin/faqs'
     | '/admin/media'
     | '/admin/paths'
@@ -193,10 +214,12 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/blog'
+    | '/eventi'
     | '/sitemap.xml'
     | '/area-terapeuta'
     | '/blog/$slug'
     | '/admin/blog'
+    | '/admin/events'
     | '/admin/faqs'
     | '/admin/media'
     | '/admin/paths'
@@ -211,11 +234,13 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/blog'
+    | '/eventi'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/area-terapeuta'
     | '/blog/$slug'
     | '/_authenticated/admin/blog'
+    | '/_authenticated/admin/events'
     | '/_authenticated/admin/faqs'
     | '/_authenticated/admin/media'
     | '/_authenticated/admin/paths'
@@ -231,6 +256,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRouteWithChildren
+  EventiRoute: typeof EventiRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -241,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eventi': {
+      id: '/eventi'
+      path: '/eventi'
+      fullPath: '/eventi'
+      preLoaderRoute: typeof EventiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -348,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFaqsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/events': {
+      id: '/_authenticated/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/blog': {
       id: '/_authenticated/admin/blog'
       path: '/blog'
@@ -360,6 +400,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBlogRoute: typeof AuthenticatedAdminBlogRoute
+  AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminFaqsRoute: typeof AuthenticatedAdminFaqsRoute
   AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
   AuthenticatedAdminPathsRoute: typeof AuthenticatedAdminPathsRoute
@@ -372,6 +413,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBlogRoute: AuthenticatedAdminBlogRoute,
+  AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminFaqsRoute: AuthenticatedAdminFaqsRoute,
   AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
   AuthenticatedAdminPathsRoute: AuthenticatedAdminPathsRoute,
@@ -414,6 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRouteWithChildren,
+  EventiRoute: EventiRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport

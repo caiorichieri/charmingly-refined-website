@@ -68,7 +68,9 @@ function EventsAdmin() {
       const { id, ...rest } = p;
       const payload = {
         ...rest,
-        event_date: rest.event_date ? new Date(rest.event_date).toISOString() : null,
+        event_date: rest.event_date
+          ? new Date(rest.event_date).toISOString()
+          : new Date().toISOString(),
       };
       if (id) {
         const { error } = await supabase.from("events").update(payload).eq("id", id);
