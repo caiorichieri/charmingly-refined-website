@@ -82,9 +82,9 @@ export function Prezzi() {
         )}
         <p className="text-center mt-8 text-[14px] text-muted-foreground">
           Le sessioni con psicologo sportivo sono prestazioni sanitarie.{" "}
-          <a href="#" className="text-brand-green font-semibold hover:underline">
-            Informazioni →
-          </a>
+          <button type="button" onClick={openQuiz} className="text-brand-green font-semibold hover:underline">
+            Inizia dal questionario →
+          </button>
         </p>
       </div>
     </section>

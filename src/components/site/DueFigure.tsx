@@ -130,13 +130,14 @@ export function DueFigure() {
                     {f.quote}
                   </div>
                   <p className="text-[12px] text-muted-foreground mb-4">{f.note}</p>
-                  <a
-                    href="#"
-                    className="flex items-center justify-center gap-2 font-display font-bold text-[15px] tracking-wide text-white rounded-full py-3.5 transition-all hover:brightness-110"
+                  <button
+                    type="button"
+                    onClick={openQuiz}
+                    className="flex items-center justify-center gap-2 font-display font-bold text-[15px] tracking-wide text-white rounded-full py-3.5 transition-all hover:brightness-110 w-full"
                     style={{ background: accent }}
                   >
                     {f.cta} →
-                  </a>
+                  </button>
                 </div>
               </article>
             );
@@ -145,9 +146,9 @@ export function DueFigure() {
 
         <div className="reveal mt-8 px-6 py-5 bg-off rounded text-center text-[14px] text-muted-foreground">
           Non sai quale scegliere?{" "}
-          <a href="#" className="text-brand-green font-semibold hover:underline">
+          <button type="button" onClick={openQuiz} className="text-brand-green font-semibold hover:underline">
             Il questionario di orientamento ti guida →
-          </a>
+          </button>
         </div>
       </div>
     </section>

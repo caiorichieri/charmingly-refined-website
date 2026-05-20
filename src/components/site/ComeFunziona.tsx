@@ -1,3 +1,5 @@
+import { QuizCTA } from "@/components/quiz/QuizCTA";
+
 const steps = [
   {
     t: "Scopri il tuo profilo mentale",
