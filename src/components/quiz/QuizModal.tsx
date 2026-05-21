@@ -18,6 +18,7 @@ import {
 } from "@/lib/quiz-profile";
 import { MappaDelCampo } from "./MappaDelCampo";
 import { RagnatelaProfilo } from "./RagnatelaProfilo";
+import quizGrazieImg from "@/assets/quiz-grazie.jpg";
 
 type Option = { id: string; text: string; profile_tag: string; display_order: number };
 type Question = {
@@ -27,7 +28,8 @@ type Question = {
   quiz_options: Option[];
 };
 
-type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags";
+type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags" | "grazie";
+
 
 const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
 
@@ -502,8 +504,49 @@ export function QuizModal() {
               </p>
 
               <div className="flex flex-col gap-2">
-                <button onClick={scrollToPlans} className="btn-primary w-full justify-center">
-                  Inizia il percorso col professionista →
+                <button onClick={() => setStep("grazie")} className="btn-primary w-full justify-center">
+                  Continua →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === "grazie" && (
+            <div className="space-y-6 text-center">
+              <DialogTitle className="sr-only">Grazie</DialogTitle>
+              <div className="relative -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 overflow-hidden">
+                <img
+                  src={quizGrazieImg}
+                  alt="Atleta che taglia il traguardo all'alba"
+                  width={1280}
+                  height={768}
+                  loading="lazy"
+                  className="w-full h-48 sm:h-56 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground leading-tight">
+                  Grazie per aver risposto<br />alle domande!
+                </h2>
+                <p className="text-base text-foreground/80">
+                  Abbiamo inviato il tuo report a{" "}
+                  <span className="text-foreground font-semibold">{contact.email}</span>.
+                  Controlla la tua casella (anche lo spam).
+                </p>
+              </div>
+
+              <p className="text-[11px] leading-relaxed text-muted-foreground px-2">
+                Il risultato non costituisce una diagnosi clinica né una valutazione psicologica
+                professionale. Si tratta di un'analisi orientativa basata sulle informazioni
+                raccolte dalle tue risposte, utile a tracciare il tuo profilo sportivo e a
+                suggerire aree di lavoro mentale.
+              </p>
+
+              <div className="flex flex-col gap-2">
+                <button onClick={scrollToPlans} className="btn-primary w-full justify-center text-base py-3">
+                  Scarica l'app adesso ↓
                 </button>
                 <button onClick={close} className="text-xs text-muted-foreground hover:text-foreground">
                   Chiudi
@@ -511,6 +554,7 @@ export function QuizModal() {
               </div>
             </div>
           )}
+
         </div>
       </DialogContent>
     </Dialog>
