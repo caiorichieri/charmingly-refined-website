@@ -15,12 +15,12 @@ export function VRSection() {
       <div
         className="absolute inset-0 opacity-70"
         style={{
-          background: "radial-gradient(60% 60% at 80% 50%, color-mix(in oklab, var(--brand-blue) 22%, transparent), transparent 70%)",
+          background: "radial-gradient(60% 60% at 80% 50%, color-mix(in oklab, var(--brand-green) 22%, transparent), transparent 70%)",
         }}
       />
       <div className="relative grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
         <div className="px-6 md:px-12 lg:px-16 py-20 lg:py-24 flex flex-col justify-center order-2 lg:order-1">
-          <div className="eyebrow mb-4 reveal" style={{ color: "var(--brand-blue)" }}>
+          <div className="eyebrow mb-4 reveal" style={{ color: "var(--brand-green)" }}>
             Ambienti immersivi
           </div>
           <h2 className="h-display text-[clamp(34px,4.2vw,56px)] mb-5 reveal">
@@ -28,7 +28,7 @@ export function VRSection() {
             <em
               className="not-italic"
               style={{
-                background: "linear-gradient(135deg, var(--brand-blue), color-mix(in oklab, var(--brand-blue) 60%, white))",
+                background: "linear-gradient(135deg, var(--brand-green), color-mix(in oklab, var(--brand-green) 60%, white))",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontStyle: "italic",
@@ -43,19 +43,19 @@ export function VRSection() {
           <ul className="reveal flex flex-col gap-3 mb-7">
             {list.map((l) => (
               <li key={l} className="flex items-start gap-3 text-[15px] text-white/75 leading-snug">
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand-blue flex-shrink-0" />
+                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand-green flex-shrink-0" />
                 {l}
               </li>
             ))}
           </ul>
-          <div className="reveal px-5 py-4 border-l-[3px] border-brand-blue bg-brand-blue/10 italic text-[15px] leading-relaxed text-white/70">
+          <div className="reveal px-5 py-4 border-l-[3px] border-brand-green bg-brand-green/10 italic text-[15px] leading-relaxed text-white/70">
             MeMindSport integra scenari immersivi pensati per visualizzazione, respirazione, concentrazione, gestione dell'errore. Il professionista è sempre presente in videochiamata.
           </div>
           <div className="reveal mt-6 flex flex-wrap gap-2">
             {chips.map((c) => (
               <span
                 key={c}
-                className="text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded bg-brand-blue/15 text-brand-blue border border-brand-blue/30"
+                className="text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded bg-brand-green/15 text-brand-green border border-brand-green/30"
               >
                 {c}
               </span>
@@ -77,7 +77,7 @@ export function VRSection() {
           <div
             className="absolute inset-0"
             style={{
-              background: "radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--brand-blue) 30%, transparent), transparent 70%)",
+              background: "radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--brand-green) 30%, transparent), transparent 70%)",
               mixBlendMode: "screen",
             }}
           />
