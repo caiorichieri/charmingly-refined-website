@@ -18,6 +18,7 @@ import {
 } from "@/lib/quiz-profile";
 import { MappaDelCampo } from "./MappaDelCampo";
 import { RagnatelaProfilo } from "./RagnatelaProfilo";
+import quizGrazieImg from "@/assets/quiz-grazie.jpg";
 
 type Option = { id: string; text: string; profile_tag: string; display_order: number };
 type Question = {
@@ -27,7 +28,8 @@ type Question = {
   quiz_options: Option[];
 };
 
-type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags";
+type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags" | "grazie";
+
 
 const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
 
