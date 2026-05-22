@@ -124,25 +124,21 @@ export function QuizModal() {
     step === "questions" ? Math.round(((current + 1) / Math.max(total, 1)) * 90) :
     100;
 
-  // Transition: wait at least 2.4s AND for email to settle, then advance
+  // Transition: show spinner at least ~1.5s, then advance based on email status
+  const [minDelayDone, setMinDelayDone] = useState(false);
   useEffect(() => {
-    if (step !== "transition") return;
-    let elapsed = false;
-    const t = setTimeout(() => {
-      elapsed = true;
-      if (emailStatus === "sent") setStep("grazie");
-      else if (emailStatus === "failed") setStep("errore");
-    }, 2400);
+    if (step !== "transition") {
+      setMinDelayDone(false);
+      return;
+    }
+    const t = setTimeout(() => setMinDelayDone(true), 1500);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
-
-  // When email settles after the timer already elapsed, advance immediately
   useEffect(() => {
-    if (step !== "transition") return;
+    if (step !== "transition" || !minDelayDone) return;
     if (emailStatus === "sent") setStep("grazie");
     else if (emailStatus === "failed") setStep("errore");
-  }, [emailStatus, step]);
+  }, [emailStatus, minDelayDone, step]);
 
   function validateContact() {
     if (!contact.name.trim()) return "Inserisci il tuo nome";
