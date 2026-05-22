@@ -85,6 +85,9 @@ export function QuizModal() {
       setResult(null);
       setConsent(false);
       setShuffleSeed((s) => s + 1);
+      setEmailStatus("idle");
+      setEmailError(null);
+      setLastPayload(null);
     };
     window.addEventListener(QUIZ_OPEN_EVENT, handler);
     return () => window.removeEventListener(QUIZ_OPEN_EVENT, handler);
