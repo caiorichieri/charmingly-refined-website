@@ -55,13 +55,23 @@ function ContattiPage() {
         <div className="max-w-[800px] mx-auto">
           <div className="eyebrow mb-4">Contatti</div>
           <h1 className="h-display text-[clamp(32px,4vw,52px)] mb-4">Scrivici</h1>
-          <p className="text-[16px] text-foreground/70 leading-[1.75] mb-10 max-w-[640px]">
+          <p className="text-[16px] text-foreground/70 leading-[1.75] mb-6 max-w-[640px]">
             Per percorsi individuali, progetti per squadre, collaborazioni o domande generiche, compila il modulo o scrivi direttamente a{" "}
             <a href="mailto:info@memindsport.it" className="text-brand-green font-semibold hover:underline">
               info@memindsport.it
             </a>
             .
           </p>
+
+          <a
+            href={`https://wa.me/393313904736?text=${encodeURIComponent("Ciao, vengo dal sito memindsport.it e vorrei avere maggiori informazioni.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-display font-bold text-[15px] tracking-wide text-white bg-[#25D366] rounded-full px-6 py-3 mb-10 hover:brightness-110 transition-all"
+          >
+            Scrivici su WhatsApp →
+          </a>
+
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
             {([

@@ -1,5 +1,11 @@
 import { openQuiz } from "@/components/quiz/openQuiz";
 
+const WHATSAPP_NUMBER = "393313904736";
+function whatsappLink(role: "psicologo sportivo" | "mental coach") {
+  const msg = `Ciao, vengo dal sito memindsport.it e vorrei avere informazioni per essere messo in contatto con un ${role}.`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
 type Figure = {
   title: string;
   badge: string;
@@ -132,14 +138,15 @@ export function DueFigure() {
                     {f.quote}
                   </div>
                   <p className="text-[12px] text-muted-foreground mb-4">{f.note}</p>
-                  <button
-                    type="button"
-                    onClick={openQuiz}
+                  <a
+                    href={whatsappLink(f.variant === "psi" ? "psicologo sportivo" : "mental coach")}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 font-display font-bold text-[15px] tracking-wide text-white rounded-full py-3.5 transition-all hover:brightness-110 w-full"
                     style={{ background: accent }}
                   >
-                    {f.cta} →
-                  </button>
+                    Contattaci su WhatsApp →
+                  </a>
                 </div>
               </article>
             );

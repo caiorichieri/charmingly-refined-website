@@ -234,7 +234,7 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
     <!-- CTA -->
     <div style="margin-top:40px;padding:24px;background:#0a0a0a;border-radius:14px;text-align:center;color:white">
       <p style="margin:0 0 12px;font-size:15px;line-height:1.5">Vuoi trasformare questo profilo in un percorso reale di crescita mentale e sportiva?</p>
-      <a href="https://memindsport.it" style="display:inline-block;background:white;color:#0a0a0a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:14px">Scopri i percorsi MeMindSport →</a>
+      <a href="https://app.memindsport.it" style="display:inline-block;background:white;color:#0a0a0a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:14px">Apri l'app MeMindSport →</a>
     </div>
 
     <!-- Footer -->
