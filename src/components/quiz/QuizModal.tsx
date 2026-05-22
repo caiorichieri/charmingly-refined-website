@@ -120,7 +120,7 @@ export function QuizModal() {
   // Auto-advance transition → mappa
   useEffect(() => {
     if (step !== "transition") return;
-    const t = setTimeout(() => setStep("mappa"), 2400);
+    const t = setTimeout(() => setStep("grazie"), 2400);
     return () => clearTimeout(t);
   }, [step]);
 
