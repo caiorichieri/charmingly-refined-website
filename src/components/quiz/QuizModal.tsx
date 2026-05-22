@@ -409,7 +409,42 @@ export function QuizModal() {
                 <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               </div>
               <p className="font-display text-xl text-foreground">Stiamo costruendo il tuo profilo.</p>
-              <p className="text-sm text-muted-foreground italic">Ogni risposta ha detto qualcosa di te.</p>
+              <p className="text-sm text-muted-foreground italic">
+                {emailStatus === "sending" || emailStatus === "idle"
+                  ? "Stiamo inviando il report alla tua email…"
+                  : emailStatus === "sent"
+                  ? "Report inviato. Un attimo…"
+                  : "Quasi pronto…"}
+              </p>
+            </div>
+          )}
+
+          {step === "errore" && (
+            <div className="space-y-5 text-center py-8">
+              <DialogTitle className="font-display text-2xl text-foreground">
+                Non siamo riusciti a inviare il report
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                Le tue risposte sono state salvate, ma l'email a{" "}
+                <span className="text-foreground font-medium">{contact.email}</span>{" "}
+                non è partita.
+              </p>
+              {emailError && (
+                <p className="text-xs text-muted-foreground/80 font-mono break-all px-2">
+                  {emailError}
+                </p>
+              )}
+              <div className="flex flex-col gap-2">
+                <button onClick={retrySendEmail} className="btn-primary w-full justify-center">
+                  Riprova invio →
+                </button>
+                <button
+                  onClick={() => setStep("grazie")}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Continua senza email
+                </button>
+              </div>
             </div>
           )}
 
