@@ -257,13 +257,6 @@ export function QuizModal() {
     setStep("transition");
     void sendResultEmail(lastPayload.leadId, lastPayload.profile);
   }
-    } catch (e: any) {
-      console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", e);
-      toast.error("Si è verificato un errore. Riprova tra poco.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   function close() {
     setOpen(false);
