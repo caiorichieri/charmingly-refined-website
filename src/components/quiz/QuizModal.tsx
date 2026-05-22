@@ -232,7 +232,7 @@ export function QuizModal() {
         phone: contact.phone.trim() || null,
       });
       const profileName = PROFILE_LABELS[computed.primary].name;
-      const subject = `Il tuo profilo MEM IN Sport: ${profileName}`;
+      const subject = `Il tuo profilo MeMindSport: ${profileName}`;
 
       const { data, error } = await supabase.functions.invoke("send-smtp-email", {
         body: {
