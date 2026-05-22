@@ -7,7 +7,7 @@ import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 const SMTP_HOST = "mail.memindsport.it";
 const SMTP_PORT = 465; // SSL/TLS
 const SMTP_USER = "noreply@memindsport.it";
-const SMTP_FROM_NAME = "MEM IN Sport";
+const SMTP_FROM_NAME = "MeMindSport";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
