@@ -599,11 +599,22 @@ export function QuizModal() {
                 <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground leading-tight">
                   Grazie per aver risposto<br />alle domande!
                 </h2>
-                <p className="text-base text-foreground/80">
-                  Abbiamo inviato il tuo report a{" "}
-                  <span className="text-foreground font-semibold">{contact.email}</span>.
-                  Controlla la tua casella (anche lo spam).
-                </p>
+                {emailStatus === "sent" ? (
+                  <p className="text-base text-foreground/80">
+                    <span className="inline-flex items-center gap-1.5 text-brand-green font-medium">
+                      ✓ Report inviato
+                    </span>{" "}
+                    a{" "}
+                    <span className="text-foreground font-semibold">{contact.email}</span>.
+                    Controlla la tua casella (anche lo spam).
+                  </p>
+                ) : (
+                  <p className="text-base text-foreground/80">
+                    Le tue risposte sono state salvate. L'email a{" "}
+                    <span className="text-foreground font-semibold">{contact.email}</span>{" "}
+                    non è partita: ti contatteremo a breve.
+                  </p>
+                )}
               </div>
 
               <p className="text-[11px] leading-relaxed text-muted-foreground px-2">
