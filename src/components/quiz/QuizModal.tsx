@@ -199,39 +199,64 @@ export function QuizModal() {
         throw respErr;
       }
 
-      // best-effort email (server function may not exist yet)
-      try {
-        const insight = buildInsight(computed);
-        const tags = buildTags(computed);
-        await fetch("/lovable/email/transactional/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            templateName: "quiz-result",
-            recipientEmail: contact.email.trim().toLowerCase(),
-            idempotencyKey: `quiz-${leadId}`,
-            templateData: {
-              name: contact.name.trim(),
-              profile: PROFILE_LABELS[computed.primary].name,
-              fraseMappa: FRASE_MAPPA[computed.primary],
-              insight,
-              tagForza: tags.forza,
-              tagLavoro: tags.lavoro,
-              secondaryProfile: computed.secondary ? PROFILE_LABELS[computed.secondary].name : null,
-            },
-          }),
-        });
-      } catch (emailError) {
-        console.warn(QUIZ_DEBUG_PREFIX, "Email non inviata, il quiz resta valido", {
-          leadId,
-          email: maskEmail(contact.email),
-          phone: maskPhone(contact.phone),
-          emailError,
-        });
-      }
-
       setResult(computed);
+      setLastPayload({ leadId, profile: computed });
       setStep("transition");
+      void sendResultEmail(leadId, computed);
+    } catch (e: any) {
+      console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", e);
+      toast.error("Si è verificato un errore. Riprova tra poco.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function sendResultEmail(leadId: string, computed: ProfileResult) {
+    setEmailStatus("sending");
+    setEmailError(null);
+    try {
+      const insight = buildInsight(computed);
+      const tags = buildTags(computed);
+      const res = await fetch("/lovable/email/transactional/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          templateName: "quiz-result",
+          recipientEmail: contact.email.trim().toLowerCase(),
+          idempotencyKey: `quiz-${leadId}`,
+          templateData: {
+            name: contact.name.trim(),
+            profile: PROFILE_LABELS[computed.primary].name,
+            fraseMappa: FRASE_MAPPA[computed.primary],
+            insight,
+            tagForza: tags.forza,
+            tagLavoro: tags.lavoro,
+            secondaryProfile: computed.secondary ? PROFILE_LABELS[computed.secondary].name : null,
+          },
+        }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status} ${text.slice(0, 200)}`);
+      }
+      setEmailStatus("sent");
+    } catch (emailError: any) {
+      console.error(QUIZ_DEBUG_PREFIX, "Invio email fallito", {
+        leadId,
+        email: maskEmail(contact.email),
+        phone: maskPhone(contact.phone),
+        emailError,
+      });
+      setEmailStatus("failed");
+      setEmailError(emailError?.message ?? "Errore sconosciuto");
+    }
+  }
+
+  function retrySendEmail() {
+    if (!lastPayload) return;
+    setStep("transition");
+    void sendResultEmail(lastPayload.leadId, lastPayload.profile);
+  }
     } catch (e: any) {
       console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", e);
       toast.error("Si è verificato un errore. Riprova tra poco.");
