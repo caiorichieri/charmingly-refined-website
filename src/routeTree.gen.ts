@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TerminiRouteImport } from './routes/termini'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as EventiRouteImport } from './routes/eventi'
 import { Route as CookieRouteImport } from './routes/cookie'
@@ -42,6 +43,11 @@ const TerminiRoute = TerminiRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/cookie'
     | '/eventi'
     | '/privacy'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/termini'
     | '/admin'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/cookie'
     | '/eventi'
     | '/privacy'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/termini'
     | '/area-terapeuta'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/cookie'
     | '/eventi'
     | '/privacy'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/termini'
     | '/_authenticated/admin'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   CookieRoute: typeof CookieRoute
   EventiRoute: typeof EventiRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TerminiRoute: typeof TerminiRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -561,6 +581,7 @@ const rootRouteChildren: RootRouteChildren = {
   CookieRoute: CookieRoute,
   EventiRoute: EventiRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TerminiRoute: TerminiRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
@@ -568,13 +589,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
