@@ -1,5 +1,11 @@
 import { openQuiz } from "@/components/quiz/openQuiz";
 
+const WHATSAPP_NUMBER = "393313904736";
+function whatsappLink(role: "psicologo sportivo" | "mental coach") {
+  const msg = `Ciao, vengo dal sito memindsport.it e vorrei avere informazioni per essere messo in contatto con un ${role}.`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
 type Figure = {
   title: string;
   badge: string;
