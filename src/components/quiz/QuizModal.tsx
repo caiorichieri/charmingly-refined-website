@@ -16,6 +16,7 @@ import {
   formatSummary,
   type ProfileResult,
 } from "@/lib/quiz-profile";
+import { buildReportHTML } from "@/lib/quiz-report-html";
 import { MappaDelCampo } from "./MappaDelCampo";
 import { RagnatelaProfilo } from "./RagnatelaProfilo";
 import quizGrazieImg from "@/assets/quiz-grazie.jpg";
@@ -224,30 +225,28 @@ export function QuizModal() {
     setEmailStatus("sending");
     setEmailError(null);
     try {
-      const insight = buildInsight(computed);
-      const tags = buildTags(computed);
-      const res = await fetch("/lovable/email/transactional/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          templateName: "quiz-result",
-          recipientEmail: contact.email.trim().toLowerCase(),
-          idempotencyKey: `quiz-${leadId}`,
-          templateData: {
-            name: contact.name.trim(),
-            profile: PROFILE_LABELS[computed.primary].name,
-            fraseMappa: FRASE_MAPPA[computed.primary],
-            insight,
-            tagForza: tags.forza,
-            tagLavoro: tags.lavoro,
-            secondaryProfile: computed.secondary ? PROFILE_LABELS[computed.secondary].name : null,
-          },
-        }),
+      const recipient = contact.email.trim().toLowerCase();
+      const html = buildReportHTML(computed, {
+        name: contact.name.trim(),
+        email: recipient,
+        phone: contact.phone.trim() || null,
       });
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`HTTP ${res.status} ${text.slice(0, 200)}`);
-      }
+      const profileName = PROFILE_LABELS[computed.primary].name;
+      const subject = `Il tuo profilo MEM IN Sport: ${profileName}`;
+
+      const { data, error } = await supabase.functions.invoke("send-smtp-email", {
+        body: {
+          to: recipient,
+          subject,
+          html,
+        },
+      });
+      if (error) throw error;
+      if (data && (data as any).error) throw new Error((data as any).error);
+
+      // Marca lead como email_sent (best effort)
+      void supabase.from("quiz_leads").update({ email_sent: true }).eq("id", leadId);
+
       setEmailStatus("sent");
     } catch (emailError: any) {
       console.error(QUIZ_DEBUG_PREFIX, "Invio email fallito", {
