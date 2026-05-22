@@ -72,6 +72,9 @@ export function QuizModal() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ProfileResult | null>(null);
   const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>("idle");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [lastPayload, setLastPayload] = useState<{ leadId: string; profile: ProfileResult } | null>(null);
 
   useEffect(() => {
     const handler = () => {
