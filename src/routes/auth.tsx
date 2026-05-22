@@ -163,6 +163,30 @@ function AuthPage() {
             </button>
           </form>
 
+          {mode === "login" && (
+            <p className="text-center text-sm mt-4">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!email) {
+                    toast.error("Inserisci la tua email per ricevere il link di recupero");
+                    return;
+                  }
+                  setBusy(true);
+                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + "/reset-password",
+                  });
+                  setBusy(false);
+                  if (error) toast.error(error.message);
+                  else toast.success("Ti abbiamo inviato un link per reimpostare la password.");
+                }}
+                className="text-muted-foreground hover:text-foreground underline"
+              >
+                Password dimenticata?
+              </button>
+            </p>
+          )}
+
           <p className="text-center text-sm text-muted-foreground mt-6">
             {mode === "login" ? "Non hai un account?" : "Hai già un account?"}{" "}
             <button
@@ -173,6 +197,7 @@ function AuthPage() {
               {mode === "login" ? "Registrati" : "Accedi"}
             </button>
           </p>
+
         </div>
       </main>
     </div>
