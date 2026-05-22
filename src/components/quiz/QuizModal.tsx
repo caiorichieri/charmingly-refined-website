@@ -124,12 +124,25 @@ export function QuizModal() {
     step === "questions" ? Math.round(((current + 1) / Math.max(total, 1)) * 90) :
     100;
 
-  // Auto-advance transition → mappa
+  // Transition: wait at least 2.4s AND for email to settle, then advance
   useEffect(() => {
     if (step !== "transition") return;
-    const t = setTimeout(() => setStep("grazie"), 2400);
+    let elapsed = false;
+    const t = setTimeout(() => {
+      elapsed = true;
+      if (emailStatus === "sent") setStep("grazie");
+      else if (emailStatus === "failed") setStep("errore");
+    }, 2400);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
+
+  // When email settles after the timer already elapsed, advance immediately
+  useEffect(() => {
+    if (step !== "transition") return;
+    if (emailStatus === "sent") setStep("grazie");
+    else if (emailStatus === "failed") setStep("errore");
+  }, [emailStatus, step]);
 
   function validateContact() {
     if (!contact.name.trim()) return "Inserisci il tuo nome";
