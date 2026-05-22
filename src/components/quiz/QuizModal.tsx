@@ -624,9 +624,14 @@ export function QuizModal() {
               </p>
 
               <div className="flex flex-col gap-2">
-                <button onClick={scrollToPlans} className="btn-primary w-full justify-center text-base py-3">
+                <a
+                  href="https://app.memindsport.it"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary w-full justify-center text-base py-3"
+                >
                   Scarica l'app adesso ↓
-                </button>
+                </a>
                 <button onClick={close} className="text-xs text-muted-foreground hover:text-foreground">
                   Chiudi
                 </button>
