@@ -28,7 +28,8 @@ type Question = {
   quiz_options: Option[];
 };
 
-type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags" | "grazie";
+type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags" | "grazie" | "errore";
+type EmailStatus = "idle" | "sending" | "sent" | "failed";
 
 
 const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
