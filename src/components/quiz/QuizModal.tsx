@@ -28,7 +28,8 @@ type Question = {
   quiz_options: Option[];
 };
 
-type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags" | "grazie";
+type Step = "contact" | "questions" | "transition" | "mappa" | "ragnatela" | "tags" | "grazie" | "errore";
+type EmailStatus = "idle" | "sending" | "sent" | "failed";
 
 
 const QUIZ_DEBUG_PREFIX = "[Quiz diagnostica]";
@@ -71,6 +72,9 @@ export function QuizModal() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ProfileResult | null>(null);
   const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>("idle");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [lastPayload, setLastPayload] = useState<{ leadId: string; profile: ProfileResult } | null>(null);
 
   useEffect(() => {
     const handler = () => {
@@ -81,6 +85,9 @@ export function QuizModal() {
       setResult(null);
       setConsent(false);
       setShuffleSeed((s) => s + 1);
+      setEmailStatus("idle");
+      setEmailError(null);
+      setLastPayload(null);
     };
     window.addEventListener(QUIZ_OPEN_EVENT, handler);
     return () => window.removeEventListener(QUIZ_OPEN_EVENT, handler);
@@ -117,12 +124,21 @@ export function QuizModal() {
     step === "questions" ? Math.round(((current + 1) / Math.max(total, 1)) * 90) :
     100;
 
-  // Auto-advance transition → mappa
+  // Transition: show spinner at least ~1.5s, then advance based on email status
+  const [minDelayDone, setMinDelayDone] = useState(false);
   useEffect(() => {
-    if (step !== "transition") return;
-    const t = setTimeout(() => setStep("grazie"), 2400);
+    if (step !== "transition") {
+      setMinDelayDone(false);
+      return;
+    }
+    const t = setTimeout(() => setMinDelayDone(true), 1500);
     return () => clearTimeout(t);
   }, [step]);
+  useEffect(() => {
+    if (step !== "transition" || !minDelayDone) return;
+    if (emailStatus === "sent") setStep("grazie");
+    else if (emailStatus === "failed") setStep("errore");
+  }, [emailStatus, minDelayDone, step]);
 
   function validateContact() {
     if (!contact.name.trim()) return "Inserisci il tuo nome";
@@ -192,45 +208,63 @@ export function QuizModal() {
         throw respErr;
       }
 
-      // best-effort email (server function may not exist yet)
-      try {
-        const insight = buildInsight(computed);
-        const tags = buildTags(computed);
-        await fetch("/lovable/email/transactional/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            templateName: "quiz-result",
-            recipientEmail: contact.email.trim().toLowerCase(),
-            idempotencyKey: `quiz-${leadId}`,
-            templateData: {
-              name: contact.name.trim(),
-              profile: PROFILE_LABELS[computed.primary].name,
-              fraseMappa: FRASE_MAPPA[computed.primary],
-              insight,
-              tagForza: tags.forza,
-              tagLavoro: tags.lavoro,
-              secondaryProfile: computed.secondary ? PROFILE_LABELS[computed.secondary].name : null,
-            },
-          }),
-        });
-      } catch (emailError) {
-        console.warn(QUIZ_DEBUG_PREFIX, "Email non inviata, il quiz resta valido", {
-          leadId,
-          email: maskEmail(contact.email),
-          phone: maskPhone(contact.phone),
-          emailError,
-        });
-      }
-
       setResult(computed);
+      setLastPayload({ leadId, profile: computed });
       setStep("transition");
+      void sendResultEmail(leadId, computed);
     } catch (e: any) {
       console.error(QUIZ_DEBUG_PREFIX, "Finalizzazione quiz fallita", e);
       toast.error("Si è verificato un errore. Riprova tra poco.");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function sendResultEmail(leadId: string, computed: ProfileResult) {
+    setEmailStatus("sending");
+    setEmailError(null);
+    try {
+      const insight = buildInsight(computed);
+      const tags = buildTags(computed);
+      const res = await fetch("/lovable/email/transactional/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          templateName: "quiz-result",
+          recipientEmail: contact.email.trim().toLowerCase(),
+          idempotencyKey: `quiz-${leadId}`,
+          templateData: {
+            name: contact.name.trim(),
+            profile: PROFILE_LABELS[computed.primary].name,
+            fraseMappa: FRASE_MAPPA[computed.primary],
+            insight,
+            tagForza: tags.forza,
+            tagLavoro: tags.lavoro,
+            secondaryProfile: computed.secondary ? PROFILE_LABELS[computed.secondary].name : null,
+          },
+        }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status} ${text.slice(0, 200)}`);
+      }
+      setEmailStatus("sent");
+    } catch (emailError: any) {
+      console.error(QUIZ_DEBUG_PREFIX, "Invio email fallito", {
+        leadId,
+        email: maskEmail(contact.email),
+        phone: maskPhone(contact.phone),
+        emailError,
+      });
+      setEmailStatus("failed");
+      setEmailError(emailError?.message ?? "Errore sconosciuto");
+    }
+  }
+
+  function retrySendEmail() {
+    if (!lastPayload) return;
+    setStep("transition");
+    void sendResultEmail(lastPayload.leadId, lastPayload.profile);
   }
 
   function close() {
@@ -375,7 +409,42 @@ export function QuizModal() {
                 <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               </div>
               <p className="font-display text-xl text-foreground">Stiamo costruendo il tuo profilo.</p>
-              <p className="text-sm text-muted-foreground italic">Ogni risposta ha detto qualcosa di te.</p>
+              <p className="text-sm text-muted-foreground italic">
+                {emailStatus === "sending" || emailStatus === "idle"
+                  ? "Stiamo inviando il report alla tua email…"
+                  : emailStatus === "sent"
+                  ? "Report inviato. Un attimo…"
+                  : "Quasi pronto…"}
+              </p>
+            </div>
+          )}
+
+          {step === "errore" && (
+            <div className="space-y-5 text-center py-8">
+              <DialogTitle className="font-display text-2xl text-foreground">
+                Non siamo riusciti a inviare il report
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                Le tue risposte sono state salvate, ma l'email a{" "}
+                <span className="text-foreground font-medium">{contact.email}</span>{" "}
+                non è partita.
+              </p>
+              {emailError && (
+                <p className="text-xs text-muted-foreground/80 font-mono break-all px-2">
+                  {emailError}
+                </p>
+              )}
+              <div className="flex flex-col gap-2">
+                <button onClick={retrySendEmail} className="btn-primary w-full justify-center">
+                  Riprova invio →
+                </button>
+                <button
+                  onClick={() => setStep("grazie")}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Continua senza email
+                </button>
+              </div>
             </div>
           )}
 
@@ -530,11 +599,22 @@ export function QuizModal() {
                 <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground leading-tight">
                   Grazie per aver risposto<br />alle domande!
                 </h2>
-                <p className="text-base text-foreground/80">
-                  Abbiamo inviato il tuo report a{" "}
-                  <span className="text-foreground font-semibold">{contact.email}</span>.
-                  Controlla la tua casella (anche lo spam).
-                </p>
+                {emailStatus === "sent" ? (
+                  <p className="text-base text-foreground/80">
+                    <span className="inline-flex items-center gap-1.5 text-brand-green font-medium">
+                      ✓ Report inviato
+                    </span>{" "}
+                    a{" "}
+                    <span className="text-foreground font-semibold">{contact.email}</span>.
+                    Controlla la tua casella (anche lo spam).
+                  </p>
+                ) : (
+                  <p className="text-base text-foreground/80">
+                    Le tue risposte sono state salvate. L'email a{" "}
+                    <span className="text-foreground font-semibold">{contact.email}</span>{" "}
+                    non è partita: ti contatteremo a breve.
+                  </p>
+                )}
               </div>
 
               <p className="text-[11px] leading-relaxed text-muted-foreground px-2">
