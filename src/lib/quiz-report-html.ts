@@ -205,7 +205,7 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
         <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${primaryColor};font-weight:600">Atto 1 — La mappa del campo</div>
         <h2 style="font-size:22px;margin:6px 0 0;font-weight:700">${escape(zone.name)}</h2>
       </div>
-      ${mappaSVG(result)}
+      ${ragnatelaSVG(result)}
       <div style="margin-top:16px;padding:16px 18px;border:1px solid ${primaryColor}55;background:${primaryColor}11;border-radius:12px">
         <p style="margin:0;font-size:15px;color:#222">${escape(fraseMappa)}</p>
       </div>
@@ -217,7 +217,7 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
         <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${primaryColor};font-weight:600">Atto 2 — La tua forma</div>
         <h2 style="font-size:22px;margin:6px 0 0;font-weight:700">${titolo}</h2>
       </div>
-      ${ragnatelaSVG(result)}
+      ${mappaSVG(result)}
       <div style="margin-top:16px;padding:16px 18px;border:1px solid ${primaryColor}55;background:${primaryColor}11;border-radius:12px">
         <p style="margin:0;font-size:15px;color:#222">${escape(insight)}</p>
       </div>
