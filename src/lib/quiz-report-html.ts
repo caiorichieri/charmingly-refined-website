@@ -194,9 +194,10 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
 
     <!-- Header -->
     <div style="text-align:center;padding-bottom:24px;border-bottom:1px solid #eee">
-      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#888">MeMindSport · Profiler</div>
-      <h1 style="font-size:24px;margin:8px 0 4px;font-weight:700">Ciao ${escape(lead.name.split(" ")[0])},</h1>
-      <p style="font-size:15px;color:#555;margin:0">ecco il tuo profilo mentale di atleta.</p>
+      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#888">MeMindSport · Profilo</div>
+      <h1 style="font-size:24px;margin:8px 0 4px;font-weight:700">Gentile ${escape(lead.name.split(" ")[0])},</h1>
+      <p style="font-size:15px;color:#555;margin:0">di seguito il profilo elaborato sulla base delle Sue risposte al questionario.</p>
+      <p style="font-size:13px;color:#888;margin:8px 0 0">Il presente documento è una restituzione informativa elaborata secondo i modelli di studio sviluppati da MeMindSport e non costituisce diagnosi, valutazione clinica né consulenza sportiva personalizzata.</p>
     </div>
 
     <!-- Atto 1 -->
