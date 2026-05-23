@@ -23,17 +23,31 @@ type EventRow = {
 export const Route = createFileRoute("/eventi")({
   head: () => ({
     meta: [
-      { title: "Formazione MeMindSport — Formazione per Psicologi dello Sport" },
+      { title: "Formazione MeMindSport — Workshop per psicologi dello sport" },
       {
         name: "description",
         content:
-          "Formazione, workshop e convegni MeMindSport dedicati agli psicologi: mental coaching evidence-based, realtà virtuale in psicologia dello sport e neurofeedback per atleti.",
+          "Workshop e convegni per psicologi: mental coaching evidence-based, realtà virtuale e neurofeedback nell'allenamento mentale degli atleti.",
       },
-      { property: "og:title", content: "Formazione MeMindSport — Formazione per Psicologi" },
+      { property: "og:title", content: "Formazione MeMindSport — Workshop per psicologi" },
       {
         property: "og:description",
         content:
           "Workshop e convegni per psicologi: mental coaching, realtà virtuale immersiva e neurofeedback nell'allenamento mentale degli atleti.",
+      },
+      { property: "og:url", content: "https://memindsport.it/eventi" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://memindsport.it/eventi" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Formazione MeMindSport per psicologi dello sport",
+          url: "https://memindsport.it/eventi",
+        }),
       },
     ],
   }),

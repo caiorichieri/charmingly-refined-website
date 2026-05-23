@@ -19,6 +19,53 @@ type Post = {
 };
 
 export const Route = createFileRoute("/blog/$slug")({
+  loader: async ({ params }) => {
+    const { data } = await supabase
+      .from("blog_posts")
+      .select("slug, title, excerpt, cover_url, published_at")
+      .eq("slug", params.slug)
+      .eq("published", true)
+      .maybeSingle();
+    return { post: data as { slug: string; title: string; excerpt: string; cover_url: string; published_at: string } | null };
+  },
+  head: ({ params, loaderData }) => {
+    const url = `https://memindsport.it/blog/${params.slug}`;
+    const post = loaderData?.post;
+    const title = post ? `${post.title} — Blog MeMindSport` : "Articolo — Blog MeMindSport";
+    const description = post?.excerpt ?? "Articolo del blog MeMindSport su psicologia dello sport e mental coaching.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description.length > 160 ? description.slice(0, 157) + "..." : description },
+        { property: "og:title", content: post?.title ?? title },
+        { property: "og:description", content: description.length > 160 ? description.slice(0, 157) + "..." : description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        ...(post?.cover_url ? [{ property: "og:image", content: post.cover_url }] : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      ...(post
+        ? {
+            scripts: [
+              {
+                type: "application/ld+json",
+                children: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Article",
+                  headline: post.title,
+                  description: post.excerpt,
+                  image: post.cover_url,
+                  datePublished: post.published_at,
+                  author: { "@type": "Organization", name: "MeMindSport" },
+                  publisher: { "@type": "Organization", name: "MeMindSport" },
+                  mainEntityOfPage: url,
+                }),
+              },
+            ],
+          }
+        : {}),
+    };
+  },
   notFoundComponent: () => (
     <main className="min-h-screen grid place-items-center bg-background">
       <div className="text-center">
