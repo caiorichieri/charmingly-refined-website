@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, ChevronDown, ChevronUp, Save, Mail, Phone, User, Eye } from "lucide-react";
-import { computeProfile } from "@/lib/quiz-profile";
+import { Plus, Trash2, ChevronDown, ChevronUp, Save, Mail, Phone, User, Eye, Send, Pencil, X, Check } from "lucide-react";
+import { computeProfile, PROFILE_LABELS } from "@/lib/quiz-profile";
 import { buildReportHTML } from "@/lib/quiz-report-html";
 
 
