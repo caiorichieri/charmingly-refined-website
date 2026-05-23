@@ -131,6 +131,41 @@ Deno.serve(async (req) => {
     );
   }
 
+  // Validate the recipient against quiz_leads (unless caller is service role).
+  const token = authHeader.slice("Bearer ".length).trim();
+  const isServiceRole = !!serviceRoleKey && token === serviceRoleKey;
+  if (!isServiceRole) {
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for recipient validation");
+      return new Response(JSON.stringify({ error: "Email service unavailable" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    try {
+      const admin = createClient(supabaseUrl, serviceRoleKey);
+      const { data: lead, error: leadErr } = await admin
+        .from("quiz_leads")
+        .select("id")
+        .ilike("email", to.trim())
+        .limit(1)
+        .maybeSingle();
+      if (leadErr || !lead) {
+        return new Response(JSON.stringify({ error: "Recipient not allowed" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } catch (e) {
+      console.error("Recipient validation failed:", e);
+      return new Response(JSON.stringify({ error: "Email service unavailable" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
+
   const client = new SMTPClient({
     connection: {
       hostname: SMTP_HOST,
