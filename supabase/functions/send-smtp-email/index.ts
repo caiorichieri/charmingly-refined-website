@@ -57,41 +57,17 @@ Deno.serve(async (req) => {
     });
   }
 
-  // --- AuthN/AuthZ: require a valid Supabase user JWT or the service role key ---
+  // --- AuthN/AuthZ: Supabase gateway enforces verify_jwt=true (anon key or user JWT required).
+  // For anonymous quiz callers we additionally require that the recipient exists in quiz_leads,
+  // preventing arbitrary recipients / spam relay.
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const authHeader = req.headers.get("Authorization") ?? "";
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice("Bearer ".length).trim()
-    : "";
-
-  if (!token || !supabaseUrl || !anonKey) {
+  if (!authHeader.startsWith("Bearer ")) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  }
-
-  const isServiceRole = !!serviceRoleKey && token === serviceRoleKey;
-  if (!isServiceRole) {
-    try {
-      const sb = createClient(supabaseUrl, anonKey, {
-        global: { headers: { Authorization: `Bearer ${token}` } },
-      });
-      const { data, error } = await sb.auth.getUser(token);
-      if (error || !data?.user) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    } catch {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
   }
 
   // Rate limit per IP
