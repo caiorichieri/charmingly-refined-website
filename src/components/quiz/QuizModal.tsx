@@ -429,8 +429,8 @@ export function QuizModal() {
                 non è partita.
               </p>
               {emailError && (
-                <p className="text-xs text-muted-foreground/80 font-mono break-all px-2">
-                  {emailError}
+                <p className="text-xs text-muted-foreground/80 px-2">
+                  Si è verificato un errore durante l'invio. Riprova tra qualche istante.
                 </p>
               )}
               <div className="flex flex-col gap-2">
