@@ -337,40 +337,145 @@ function LeadsTab() {
         </thead>
         <tbody>
           {leads.map((l) => (
-            <tr key={l.id} className="border-t border-line">
-              <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">
-                {new Date(l.created_at).toLocaleString("it-IT")}
-              </td>
-              <td className="p-3">
-                <div className="font-medium flex items-center gap-1.5">
-                  <User size={12} /> {l.name}
-                </div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <Mail size={11} /> {l.email}
-                </div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <Phone size={11} /> {l.phone}
-                </div>
-              </td>
-              <td className="p-3 text-xs">{l.result_summary ?? "—"}</td>
-              <td className="p-3">
-                <span
-                  className={`text-xs px-2 py-1 rounded-full ${
-                    l.email_sent ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-                  }`}
-                >
-                  {l.email_sent ? "Inviata" : "In coda"}
-                </span>
-              </td>
-              <td className="p-3">
-                <PreviewReportButton leadId={l.id} name={l.name} email={l.email} phone={l.phone} />
-              </td>
-            </tr>
+            <LeadRow key={l.id} lead={l} />
           ))}
         </tbody>
       </table>
     </div>
   );
+}
+
+type LeadRowData = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  result_summary: string | null;
+  email_sent: boolean;
+  created_at: string;
+};
+
+function LeadRow({ lead }: { lead: LeadRowData }) {
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [emailDraft, setEmailDraft] = useState(lead.email);
+
+  const saveEmail = useMutation({
+    mutationFn: async () => {
+      const next = emailDraft.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next)) {
+        throw new Error("Email non valida");
+      }
+      const { error } = await supabase
+        .from("quiz_leads")
+        .update({ email: next, email_sent: false })
+        .eq("id", lead.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-quiz-leads"] });
+      toast.success("Email aggiornata");
+      setEditing(false);
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <tr className="border-t border-line align-top">
+      <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">
+        {new Date(lead.created_at).toLocaleString("it-IT")}
+      </td>
+      <td className="p-3 min-w-[260px]">
+        <div className="font-medium flex items-center gap-1.5">
+          <User size={12} /> {lead.name}
+        </div>
+        {editing ? (
+          <div className="flex items-center gap-1 mt-1">
+            <Mail size={11} className="text-muted-foreground" />
+            <input
+              type="email"
+              className="input text-xs flex-1 py-1"
+              value={emailDraft}
+              onChange={(e) => setEmailDraft(e.target.value)}
+              autoFocus
+            />
+            <button
+              onClick={() => saveEmail.mutate()}
+              disabled={saveEmail.isPending}
+              className="p-1 rounded text-green-700 hover:bg-green-50"
+              title="Salva"
+            >
+              <Check size={14} />
+            </button>
+            <button
+              onClick={() => {
+                setEmailDraft(lead.email);
+                setEditing(false);
+              }}
+              className="p-1 rounded text-muted-foreground hover:bg-off"
+              title="Annulla"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ) : (
+          <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+            <Mail size={11} /> {lead.email}
+            <button
+              onClick={() => setEditing(true)}
+              className="p-0.5 rounded hover:bg-off text-muted-foreground hover:text-foreground"
+              title="Modifica email"
+            >
+              <Pencil size={11} />
+            </button>
+          </div>
+        )}
+        <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+          <Phone size={11} /> {lead.phone}
+        </div>
+      </td>
+      <td className="p-3 text-xs">{lead.result_summary ?? "—"}</td>
+      <td className="p-3">
+        <span
+          className={`text-xs px-2 py-1 rounded-full ${
+            lead.email_sent ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+          }`}
+        >
+          {lead.email_sent ? "Inviata" : "Non inviata"}
+        </span>
+      </td>
+      <td className="p-3">
+        <div className="flex flex-col gap-1.5">
+          <PreviewReportButton leadId={lead.id} name={lead.name} email={lead.email} phone={lead.phone} />
+          <SendReportButton
+            leadId={lead.id}
+            name={lead.name}
+            email={lead.email}
+            phone={lead.phone}
+            alreadySent={lead.email_sent}
+          />
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+async function buildReportForLead(leadId: string, name: string, email: string, phone: string | null) {
+  const { data: responses, error } = await supabase
+    .from("quiz_responses")
+    .select("question_id, option_id, quiz_options(profile_tag)")
+    .eq("lead_id", leadId);
+  if (error) throw error;
+  if (!responses?.length) throw new Error("Nessuna risposta salvata per questo lead");
+  const answers: Record<string, { optionId: string; tag: string }> = {};
+  for (const r of responses as any[]) {
+    const tag = r.quiz_options?.profile_tag;
+    if (!tag) continue;
+    answers[r.question_id] = { optionId: r.option_id, tag };
+  }
+  const profile = computeProfile(answers);
+  const html = buildReportHTML(profile, { name, email, phone });
+  return { profile, html };
 }
 
 function PreviewReportButton({
@@ -381,23 +486,7 @@ function PreviewReportButton({
   async function openPreview() {
     setLoading(true);
     try {
-      const { data: responses, error } = await supabase
-        .from("quiz_responses")
-        .select("question_id, option_id, quiz_options(profile_tag)")
-        .eq("lead_id", leadId);
-      if (error) throw error;
-      if (!responses?.length) {
-        toast.error("Nessuna risposta salvata per questo lead");
-        return;
-      }
-      const answers: Record<string, { optionId: string; tag: string }> = {};
-      for (const r of responses as any[]) {
-        const tag = r.quiz_options?.profile_tag;
-        if (!tag) continue;
-        answers[r.question_id] = { optionId: r.option_id, tag };
-      }
-      const profile = computeProfile(answers);
-      const html = buildReportHTML(profile, { name, email, phone });
+      const { html } = await buildReportForLead(leadId, name, email, phone);
       const win = window.open("", "_blank");
       if (!win) {
         toast.error("Blocco popup attivo. Permetti i popup per vedere l'anteprima.");
@@ -421,7 +510,52 @@ function PreviewReportButton({
       className="text-xs px-2.5 py-1.5 rounded-lg border border-line bg-white hover:bg-off inline-flex items-center gap-1.5 disabled:opacity-50"
       title="Anteprima del report come arriverà via email"
     >
-      <Eye size={12} /> {loading ? "…" : "Vedi anteprima"}
+      <Eye size={12} /> {loading ? "…" : "Anteprima"}
+    </button>
+  );
+}
+
+function SendReportButton({
+  leadId, name, email, phone, alreadySent,
+}: { leadId: string; name: string; email: string; phone: string | null; alreadySent: boolean }) {
+  const qc = useQueryClient();
+  const [loading, setLoading] = useState(false);
+
+  async function send() {
+    const recipient = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
+      toast.error("L'email del lead non è valida. Modificala prima di inviare.");
+      return;
+    }
+    if (!confirm(`Inviare il report a ${recipient}?`)) return;
+    setLoading(true);
+    try {
+      const { profile, html } = await buildReportForLead(leadId, name, recipient, phone);
+      const subject = `Il tuo profilo MeMindSport: ${PROFILE_LABELS[profile.primary].name}`;
+      const { data, error } = await supabase.functions.invoke("send-smtp-email", {
+        body: { to: recipient, subject, html },
+      });
+      if (error) throw error;
+      if (data && (data as any).error) throw new Error((data as any).error);
+      await supabase.from("quiz_leads").update({ email_sent: true }).eq("id", leadId);
+      qc.invalidateQueries({ queryKey: ["admin-quiz-leads"] });
+      toast.success(`Report inviato a ${recipient}`);
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e.message ?? "Invio fallito");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <button
+      onClick={send}
+      disabled={loading}
+      className="text-xs px-2.5 py-1.5 rounded-lg bg-brand-green text-white hover:opacity-90 inline-flex items-center gap-1.5 disabled:opacity-50"
+      title={alreadySent ? "Reinvia il report" : "Invia il report via email"}
+    >
+      <Send size={12} /> {loading ? "Invio…" : alreadySent ? "Reinvia" : "Invia email"}
     </button>
   );
 }
