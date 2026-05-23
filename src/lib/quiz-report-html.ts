@@ -194,16 +194,18 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
 
     <!-- Header -->
     <div style="text-align:center;padding-bottom:24px;border-bottom:1px solid #eee">
-      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#888">MeMindSport · Profiler</div>
-      <h1 style="font-size:24px;margin:8px 0 4px;font-weight:700">Ciao ${escape(lead.name.split(" ")[0])},</h1>
-      <p style="font-size:15px;color:#555;margin:0">ecco il tuo profilo mentale di atleta.</p>
+      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#888">MeMindSport · Profilo</div>
+      <h1 style="font-size:24px;margin:8px 0 4px;font-weight:700">Gentile ${escape(lead.name.split(" ")[0])},</h1>
+      <p style="font-size:15px;color:#555;margin:0">di seguito il profilo elaborato sulla base delle Sue risposte al questionario.</p>
+      <p style="font-size:13px;color:#888;margin:8px 0 0">Il presente documento è una restituzione informativa elaborata secondo i modelli di studio sviluppati da MeMindSport e non costituisce diagnosi, valutazione clinica né consulenza sportiva personalizzata.</p>
     </div>
 
     <!-- Atto 1 -->
     <div style="margin-top:32px">
       <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${primaryColor};font-weight:600">Atto 1 — La mappa del campo</div>
+        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${primaryColor};font-weight:600">Sezione 1 — Distribuzione del profilo</div>
         <h2 style="font-size:22px;margin:6px 0 0;font-weight:700">${escape(zone.name)}</h2>
+        <p style="font-size:13px;color:#777;margin:6px 0 0">Rappresentazione grafica dei sei profili previsti dal modello MeMindSport, calcolata sulla base delle risposte fornite.</p>
       </div>
       ${ragnatelaSVG(result)}
       <div style="margin-top:16px;padding:16px 18px;border:1px solid ${primaryColor}55;background:${primaryColor}11;border-radius:12px">
@@ -214,8 +216,9 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
     <!-- Atto 2 -->
     <div style="margin-top:40px;padding-top:32px;border-top:1px solid #eee">
       <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${primaryColor};font-weight:600">Atto 2 — La tua forma</div>
+        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${primaryColor};font-weight:600">Sezione 2 — Collocazione nel modello</div>
         <h2 style="font-size:22px;margin:6px 0 0;font-weight:700">${titolo}</h2>
+        <p style="font-size:13px;color:#777;margin:6px 0 0">Posizionamento all'interno della matrice energia-controllo elaborata negli studi MeMindSport.</p>
       </div>
       ${mappaSVG(result)}
       <div style="margin-top:16px;padding:16px 18px;border:1px solid ${primaryColor}55;background:${primaryColor}11;border-radius:12px">
@@ -225,22 +228,23 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
 
     <!-- Tag -->
     <div style="margin-top:40px;padding-top:32px;border-top:1px solid #eee">
-      <h3 style="font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:#666;margin:0 0 12px">Punti di forza</h3>
+      <h3 style="font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:#666;margin:0 0 12px">Caratteristiche prevalenti</h3>
       <div>${forzaTags}</div>
-      <h3 style="font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:#666;margin:24px 0 12px">Aree di lavoro</h3>
+      <h3 style="font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:#666;margin:24px 0 12px">Aree di approfondimento</h3>
       <div>${lavoroTags}</div>
     </div>
 
-    <!-- CTA -->
-    <div style="margin-top:40px;padding:24px;background:#0a0a0a;border-radius:14px;text-align:center;color:white">
-      <p style="margin:0 0 12px;font-size:15px;line-height:1.5">Vuoi trasformare questo profilo in un percorso reale di crescita mentale e sportiva?</p>
-      <a href="https://app.memindsport.it" style="display:inline-block;background:white;color:#0a0a0a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:14px">Apri l'app MeMindSport →</a>
+    <!-- Nota metodologica -->
+    <div style="margin-top:32px;padding:18px 20px;background:#f7f7f7;border-radius:12px">
+      <p style="margin:0;font-size:13px;color:#555;line-height:1.6">
+        <strong style="color:#333">Nota metodologica.</strong> I contenuti del presente profilo derivano dall'elaborazione delle risposte al questionario secondo i criteri definiti negli studi MeMindSport. Si tratta di una restituzione descrittiva a fini conoscitivi: non esprime giudizi di valore, non prevede esiti sportivi e non sostituisce una valutazione professionale.
+      </p>
     </div>
 
     <!-- Footer -->
     <div style="margin-top:32px;padding-top:24px;border-top:1px solid #eee;text-align:center;font-size:11px;color:#999;line-height:1.6">
-      <p style="margin:0">Report generato per ${escape(lead.email)}</p>
-      <p style="margin:4px 0 0">MeMindSport — il tuo allenamento mentale, su misura.</p>
+      <p style="margin:0">Documento generato per ${escape(lead.email)}</p>
+      <p style="margin:4px 0 0">MeMindSport — Studi e strumenti per la preparazione mentale nello sport.</p>
     </div>
 
   </div>
