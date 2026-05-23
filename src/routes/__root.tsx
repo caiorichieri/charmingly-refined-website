@@ -75,7 +75,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "google-site-verification", content: "uaaogfBkcG46kyGh4IbM8lWCmXpfj3hWQ-ibNG_A2HU" },
+      { name: "google-site-verification", content: "UOehGj0iu0-dDp-fLkznqRRnItodWEx5i8zeMQry42w" },
       { name: "author", content: "MeMindSport — MetaCare SRL" },
       { property: "og:site_name", content: "MeMindSport" },
       { property: "og:type", content: "website" },
