@@ -19,6 +19,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/eventi", changefreq: "weekly", priority: "0.8" },
           { path: "/blog", changefreq: "weekly", priority: "0.8" },
+          { path: "/contatti", changefreq: "monthly", priority: "0.6" },
+          { path: "/privacy", changefreq: "yearly", priority: "0.3" },
+          { path: "/cookie", changefreq: "yearly", priority: "0.3" },
+          { path: "/termini", changefreq: "yearly", priority: "0.3" },
         ];
 
         const { data: posts } = await supabase

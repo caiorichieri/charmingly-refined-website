@@ -1,0 +1,18 @@
+# MeMindSport
+
+> Psicologia dello sport, mental coaching e ambienti immersivi VR per atleti, squadre, federazioni e psicologi. Marchio gestito da MetaCare SRL (Codroipo, UD, Italia).
+
+MeMindSport integra psicologia sportiva, mental coaching evidence-based, app di allenamento mentale e ambienti immersivi in realtà virtuale per migliorare concentrazione, gestione della pressione e performance agonistica.
+
+## Pages
+
+- [Home](/): Panoramica del metodo MeMindSport, pilastri, percorsi e prezzi.
+- [Blog](/blog): Articoli su psicologia dello sport, mental coaching, performance mentale e ambienti immersivi.
+- [Formazione (Eventi)](/eventi): Workshop e convegni per psicologi dello sport su mental coaching, VR e neurofeedback.
+- [Contatti](/contatti): Come raggiungere MeMindSport e MetaCare SRL.
+
+## Optional
+
+- [Privacy Policy](/privacy): Informativa sul trattamento dei dati personali (GDPR).
+- [Cookie Policy](/cookie): Informativa cookie.
+- [Termini e Condizioni](/termini): Termini d'uso dei servizi.

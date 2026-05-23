@@ -25,7 +25,16 @@ export const Route = createFileRoute("/blog")({
         content:
           "Approfondimenti su psicologia dello sport, mental coaching, performance mentale, gestione della pressione, ansia da prestazione e ambienti immersivi.",
       },
+      { property: "og:title", content: "Blog MeMindSport — Mente, sport, performance" },
+      {
+        property: "og:description",
+        content:
+          "Articoli su psicologia dello sport, mental coaching, gestione della pressione e benessere psicologico dell'atleta.",
+      },
+      { property: "og:url", content: "https://memindsport.it/blog" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://memindsport.it/blog" }],
   }),
   component: BlogPage,
 });

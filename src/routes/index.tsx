@@ -22,11 +22,11 @@ import { useReveal } from "@/hooks/use-reveal";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MeMindSport — Psicologia dello sport, mental coaching e ambienti immersivi" },
+      { title: "MeMindSport — Psicologia dello sport e mental coaching" },
       {
         name: "description",
         content:
-          "MeMindSport è il percorso di allenamento mentale per sportivi che integra psicologia dello sport, mental coaching, app e ambienti immersivi per migliorare concentrazione, gestione della pressione e performance agonistica.",
+          "Allenamento mentale per atleti: psicologia dello sport, mental coaching e ambienti immersivi VR per concentrazione, pressione e performance.",
       },
       {
         name: "keywords",
@@ -36,7 +36,9 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "MeMindSport — Allenamento mentale per atleti" },
       { property: "og:description", content: "Psicologia dello sport, mental coaching e ambienti immersivi per migliorare concentrazione, pressione e performance." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://memindsport.it/" },
     ],
+    links: [{ rel: "canonical", href: "https://memindsport.it/" }],
   }),
   component: Index,
 });
