@@ -314,7 +314,7 @@ export function QuizModal() {
               <div className="space-y-3">
                 <input
                   className="input w-full"
-                  placeholder="Nome e cognome *"
+                  placeholder="Nome *"
                   value={contact.name}
                   onChange={(e) => setContact({ ...contact, name: e.target.value })}
                   maxLength={120}
