@@ -187,7 +187,7 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Report MeMindSport — ${escape(lead.name)}</title>
+<title>Report MeMindSport — ${escape(lead.name.split(" ")[0])}</title>
 </head>
 <body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0a0a0a;line-height:1.55">
   <div style="max-width:640px;margin:0 auto;padding:32px 24px">
@@ -196,8 +196,8 @@ export function buildReportHTML(result: ProfileResult, lead: LeadInfo): string {
     <div style="text-align:center;padding-bottom:24px;border-bottom:1px solid #eee">
       <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#888">MeMindSport · Profilo</div>
       <h1 style="font-size:24px;margin:8px 0 4px;font-weight:700">Gentile ${escape(lead.name.split(" ")[0])},</h1>
-      <p style="font-size:15px;color:#555;margin:0">di seguito il profilo elaborato sulla base delle Sue risposte al questionario.</p>
-      <p style="font-size:13px;color:#888;margin:8px 0 0">Il presente documento è una restituzione informativa elaborata secondo i modelli di studio sviluppati da MeMindSport e non costituisce diagnosi, valutazione clinica né consulenza sportiva personalizzata.</p>
+      <p style="font-size:15px;color:#555;margin:0">Ecco il tuo profilo funzionale, secondo il Modello PROFILER — MeMindSport.</p>
+      <p style="font-size:13px;color:#888;margin:12px 0 0"><strong>Disclaimer:</strong> questo profilo non costituisce una diagnosi clinica: è una descrizione del tuo funzionamento come atleta, elaborata sulla base delle risposte al questionario.</p>
     </div>
 
     <!-- Atto 1 -->
