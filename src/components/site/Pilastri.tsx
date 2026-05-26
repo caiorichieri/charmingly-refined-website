@@ -29,7 +29,8 @@ export function Pilastri() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           {rows.map((p, i) => {
-            const img = p.icon || fallbackImages[i % fallbackImages.length];
+            const isUrl = !!p.icon && /^(https?:)?\/\//.test(p.icon);
+            const img = isUrl ? (p.icon as string) : fallbackImages[i % fallbackImages.length];
             const color = colors[i % colors.length];
             const tag = tags[i % tags.length];
             return (
