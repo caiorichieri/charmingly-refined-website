@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/site/Logo";
 import { QuizCTA } from "@/components/quiz/QuizCTA";
 import { LogOut, User as UserIcon, Stethoscope, ClipboardList, MessageSquare, FileText, Calendar } from "lucide-react";
+import { ChatThread } from "@/components/portal/ChatThread";
+import { MaterialsList } from "@/components/portal/MaterialsList";
 
 export const Route = createFileRoute("/_authenticated/area-atleta")({
   component: AthleteArea,
