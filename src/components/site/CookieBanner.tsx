@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Cookie, Settings, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useConsent } from "@/contexts/ConsentContext";
 
-const STORAGE_KEY = "memind:cookie-consent:v1";
 const ANON_ID_KEY = "memind:anon-id";
-
-type Choice = {
-  necessary: true;
-  analytics: boolean;
-  marketing: boolean;
-  decidedAt: string;
-};
 
 function getOrCreateAnonId(): string {
   if (typeof window === "undefined") return "";
@@ -26,38 +19,30 @@ function getOrCreateAnonId(): string {
 }
 
 export function CookieBanner() {
-  const [open, setOpen] = useState(false);
+  const { bannerOpen, setChoice, closeBanner } = useConsent();
   const [showPrefs, setShowPrefs] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  async function persist(choice: { analytics: boolean; marketing: boolean }) {
+    setChoice({ necessary: true, ...choice });
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) setOpen(true);
+      const { data: userData } = await supabase.auth.getUser();
+      const anon = getOrCreateAnonId();
+      await supabase.from("cookie_consents").insert({
+        user_id: userData.user?.id ?? null,
+        anonymous_id: userData.user?.id ? null : anon,
+        necessary: true,
+        analytics: choice.analytics,
+        marketing: choice.marketing,
+        user_agent: navigator.userAgent.slice(0, 500),
+      });
     } catch {
-      setOpen(true);
+      /* silenzioso: il consenso è già salvato in localStorage */
     }
-  }, []);
-
-  async function persist(choice: Omit<Choice, "decidedAt">) {
-    const full: Choice = { ...choice, decidedAt: new Date().toISOString() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(full));
-    const { data: userData } = await supabase.auth.getUser();
-    const anon = getOrCreateAnonId();
-    await supabase.from("cookie_consents").insert({
-      user_id: userData.user?.id ?? null,
-      anonymous_id: userData.user?.id ? null : anon,
-      necessary: true,
-      analytics: choice.analytics,
-      marketing: choice.marketing,
-      user_agent: navigator.userAgent.slice(0, 500),
-    });
-    setOpen(false);
   }
 
-  if (!open) return null;
+  if (!bannerOpen) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-[100] p-3 sm:p-5 pointer-events-none">
@@ -72,7 +57,8 @@ export function CookieBanner() {
             </h2>
             <p className="text-sm text-muted-foreground mt-1.5">
               Usiamo cookie tecnici necessari al funzionamento del sito e, previo tuo consenso,
-              cookie di analisi e marketing. Puoi accettare tutto, rifiutare o personalizzare.{" "}
+              cookie di analisi e marketing. <strong>Nessun cookie non essenziale viene
+              attivato</strong> prima della tua scelta.{" "}
               <Link to="/cookie" className="underline text-brand-green hover:brightness-90">
                 Maggiori informazioni
               </Link>
@@ -83,7 +69,7 @@ export function CookieBanner() {
               <div className="mt-4 space-y-2 bg-off rounded-xl p-4">
                 <ToggleRow
                   label="Necessari"
-                  description="Sempre attivi: indispensabili per il funzionamento del sito."
+                  description="Sempre attivi: indispensabili per il funzionamento del sito (autenticazione, sicurezza)."
                   checked
                   disabled
                 />
@@ -104,7 +90,7 @@ export function CookieBanner() {
 
             <div className="mt-4 flex flex-wrap gap-2">
               <button
-                onClick={() => persist({ necessary: true, analytics: false, marketing: false })}
+                onClick={() => persist({ analytics: false, marketing: false })}
                 className="px-4 py-2 text-sm font-semibold rounded-full border border-line text-foreground hover:bg-off transition"
               >
                 Rifiuta non essenziali
@@ -118,14 +104,14 @@ export function CookieBanner() {
                 </button>
               ) : (
                 <button
-                  onClick={() => persist({ necessary: true, analytics, marketing })}
+                  onClick={() => persist({ analytics, marketing })}
                   className="px-4 py-2 text-sm font-semibold rounded-full border border-brand-green text-brand-green hover:bg-brand-green/10 transition"
                 >
                   Salva preferenze
                 </button>
               )}
               <button
-                onClick={() => persist({ necessary: true, analytics: true, marketing: true })}
+                onClick={() => persist({ analytics: true, marketing: true })}
                 className="px-4 py-2 text-sm font-semibold rounded-full bg-brand-green text-white hover:brightness-110 transition"
               >
                 Accetta tutto
@@ -134,7 +120,7 @@ export function CookieBanner() {
           </div>
           <button
             aria-label="Chiudi"
-            onClick={() => persist({ necessary: true, analytics: false, marketing: false })}
+            onClick={() => closeBanner()}
             className="p-1 text-muted-foreground hover:text-foreground"
           >
             <X size={18} />

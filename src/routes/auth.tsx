@@ -24,6 +24,8 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [consentPrivacy, setConsentPrivacy] = useState(false);
+  const [consentHealth, setConsentHealth] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated || loading) return;
@@ -43,10 +45,14 @@ function AuthPage() {
 
   async function handleEmail(e: FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && (!consentPrivacy || !consentHealth)) {
+      toast.error("Per registrarti devi prestare entrambi i consensi richiesti.");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -55,6 +61,14 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        // Registriamo i consensi prestati (granulari, versionati)
+        const uid = data.user?.id;
+        if (uid) {
+          await supabase.from("user_consents").insert([
+            { user_id: uid, document: "privacy", version: "2.0", granted: true, user_agent: navigator.userAgent.slice(0, 500) },
+            { user_id: uid, document: "health_data_art9", version: "1.0", granted: true, user_agent: navigator.userAgent.slice(0, 500) },
+          ]);
+        }
         toast.success("Account creato. Controlla la tua email per confermare l'accesso.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -154,6 +168,37 @@ function AuthPage() {
                 placeholder="••••••••"
               />
             </label>
+            {mode === "signup" && (
+              <div className="bg-off rounded-lg p-3 space-y-2.5 border border-line">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentPrivacy}
+                    onChange={(e) => setConsentPrivacy(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-brand-green shrink-0"
+                  />
+                  <span className="text-[12.5px] leading-snug text-foreground/80">
+                    Ho letto e accetto la{" "}
+                    <a href="/privacy" target="_blank" className="text-brand-green underline">Privacy Policy</a>
+                    {" "}e i{" "}
+                    <a href="/termini" target="_blank" className="text-brand-green underline">Termini di Servizio</a>.
+                    <span className="text-red-600"> *</span>
+                  </span>
+                </label>
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentHealth}
+                    onChange={(e) => setConsentHealth(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-brand-green shrink-0"
+                  />
+                  <span className="text-[12.5px] leading-snug text-foreground/80">
+                    Acconsento espressamente al trattamento dei miei <strong>dati relativi alla salute</strong> (questionari, conversazioni con il professionista, materiali clinici) ai sensi dell'<strong>Art. 9(2)(a) GDPR</strong>, per la fruizione dei servizi di psicologia sportiva e mental coaching.
+                    <span className="text-red-600"> *</span>
+                  </span>
+                </label>
+              </div>
+            )}
             <button
               type="submit"
               disabled={busy}
