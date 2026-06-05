@@ -168,6 +168,37 @@ function AuthPage() {
                 placeholder="••••••••"
               />
             </label>
+            {mode === "signup" && (
+              <div className="bg-off rounded-lg p-3 space-y-2.5 border border-line">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentPrivacy}
+                    onChange={(e) => setConsentPrivacy(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-brand-green shrink-0"
+                  />
+                  <span className="text-[12.5px] leading-snug text-foreground/80">
+                    Ho letto e accetto la{" "}
+                    <a href="/privacy" target="_blank" className="text-brand-green underline">Privacy Policy</a>
+                    {" "}e i{" "}
+                    <a href="/termini" target="_blank" className="text-brand-green underline">Termini di Servizio</a>.
+                    <span className="text-red-600"> *</span>
+                  </span>
+                </label>
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentHealth}
+                    onChange={(e) => setConsentHealth(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-brand-green shrink-0"
+                  />
+                  <span className="text-[12.5px] leading-snug text-foreground/80">
+                    Acconsento espressamente al trattamento dei miei <strong>dati relativi alla salute</strong> (questionari, conversazioni con il professionista, materiali clinici) ai sensi dell'<strong>Art. 9(2)(a) GDPR</strong>, per la fruizione dei servizi di psicologia sportiva e mental coaching.
+                    <span className="text-red-600"> *</span>
+                  </span>
+                </label>
+              </div>
+            )}
             <button
               type="submit"
               disabled={busy}
