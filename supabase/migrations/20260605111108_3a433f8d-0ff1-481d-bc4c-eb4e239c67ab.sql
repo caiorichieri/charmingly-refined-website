@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.get_my_therapist(uuid) FROM PUBLIC, anon, authenticated;
