@@ -21,6 +21,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthenticatedIMieiDatiRouteImport } from './routes/_authenticated/i-miei-dati'
 import { Route as AuthenticatedAreaTerapeutaRouteImport } from './routes/_authenticated/area-terapeuta'
 import { Route as AuthenticatedAreaAtletaRouteImport } from './routes/_authenticated/area-atleta'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -95,6 +96,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogRoute,
+} as any)
+const AuthenticatedIMieiDatiRoute = AuthenticatedIMieiDatiRouteImport.update({
+  id: '/i-miei-dati',
+  path: '/i-miei-dati',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAreaTerapeutaRoute =
   AuthenticatedAreaTerapeutaRouteImport.update({
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
+  '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/termini': typeof TerminiRoute
   '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
+  '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
+  '/_authenticated/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/_authenticated/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -278,6 +287,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/area-atleta'
     | '/area-terapeuta'
+    | '/i-miei-dati'
     | '/blog/$slug'
     | '/admin/assignments'
     | '/admin/blog'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/area-atleta'
     | '/area-terapeuta'
+    | '/i-miei-dati'
     | '/blog/$slug'
     | '/admin/assignments'
     | '/admin/blog'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/area-atleta'
     | '/_authenticated/area-terapeuta'
+    | '/_authenticated/i-miei-dati'
     | '/blog/$slug'
     | '/_authenticated/admin/assignments'
     | '/_authenticated/admin/blog'
@@ -449,6 +461,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/_authenticated/i-miei-dati': {
+      id: '/_authenticated/i-miei-dati'
+      path: '/i-miei-dati'
+      fullPath: '/i-miei-dati'
+      preLoaderRoute: typeof AuthenticatedIMieiDatiRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/area-terapeuta': {
       id: '/_authenticated/area-terapeuta'
@@ -593,12 +612,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAreaAtletaRoute: typeof AuthenticatedAreaAtletaRoute
   AuthenticatedAreaTerapeutaRoute: typeof AuthenticatedAreaTerapeutaRoute
+  AuthenticatedIMieiDatiRoute: typeof AuthenticatedIMieiDatiRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAreaAtletaRoute: AuthenticatedAreaAtletaRoute,
   AuthenticatedAreaTerapeutaRoute: AuthenticatedAreaTerapeutaRoute,
+  AuthenticatedIMieiDatiRoute: AuthenticatedIMieiDatiRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
