@@ -91,9 +91,15 @@ export function CookieBanner() {
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 onClick={() => persist({ analytics: false, marketing: false })}
-                className="px-4 py-2 text-sm font-semibold rounded-full border border-line text-foreground hover:bg-off transition"
+                className="flex-1 min-w-[140px] px-4 py-2 text-sm font-semibold rounded-full border-2 border-brand-green text-brand-green bg-white hover:bg-brand-green/5 transition"
               >
-                Rifiuta non essenziali
+                Rifiuta tutti
+              </button>
+              <button
+                onClick={() => persist({ analytics: true, marketing: true })}
+                className="flex-1 min-w-[140px] px-4 py-2 text-sm font-semibold rounded-full border-2 border-brand-green bg-brand-green text-white hover:brightness-110 transition"
+              >
+                Accetta tutti
               </button>
               {!showPrefs ? (
                 <button
@@ -110,12 +116,6 @@ export function CookieBanner() {
                   Salva preferenze
                 </button>
               )}
-              <button
-                onClick={() => persist({ analytics: true, marketing: true })}
-                className="px-4 py-2 text-sm font-semibold rounded-full bg-brand-green text-white hover:brightness-110 transition"
-              >
-                Accetta tutto
-              </button>
             </div>
           </div>
           <button
