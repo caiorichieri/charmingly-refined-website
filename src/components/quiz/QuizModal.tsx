@@ -149,9 +149,12 @@ export function QuizModal() {
 
   function validateContact() {
     if (!contact.name.trim()) return "Inserisci il tuo nome";
+    if (!contact.age.trim() || !Number.isFinite(ageNum) || ageNum < 5 || ageNum > 100)
+      return "Inserisci un'età valida";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) return "Email non valida";
     if (!/^[\d+\s()-]{6,}$/.test(contact.phone)) return "Telefono non valido";
     if (!consent) return "Devi accettare l'informativa sulla privacy per continuare";
+    if (!profilingConsent) return "Devi acconsentire alla profilazione per ricevere il tuo profilo";
     return null;
   }
 
