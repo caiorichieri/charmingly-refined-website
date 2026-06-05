@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { openQuiz } from "@/components/quiz/openQuiz";
+import { ManageCookiesLink } from "./ManageCookiesLink";
 
 type FooterLink = { label: string; to?: string; href?: string; onClick?: () => void };
 
@@ -93,6 +94,7 @@ export function Footer() {
               {col.links.map((l) => (
                 <FooterItem key={l.label} link={l} />
               ))}
+              {col.h === "Legale" && <ManageCookiesLink />}
             </div>
           ))}
         </div>

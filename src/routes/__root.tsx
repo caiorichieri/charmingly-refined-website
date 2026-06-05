@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { QuizModal } from "@/components/quiz/QuizModal";
 import { CookieBanner } from "@/components/site/CookieBanner";
+import { ConsentProvider } from "@/contexts/ConsentContext";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -143,12 +144,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <QuizModal />
-        <CookieBanner />
-        <Toaster position="top-right" />
-      </AuthProvider>
+      <ConsentProvider>
+        <AuthProvider>
+          <Outlet />
+          <QuizModal />
+          <CookieBanner />
+          <Toaster position="top-right" />
+        </AuthProvider>
+      </ConsentProvider>
     </QueryClientProvider>
   );
 }
