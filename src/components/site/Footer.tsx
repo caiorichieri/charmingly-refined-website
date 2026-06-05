@@ -75,6 +75,8 @@ export function Footer() {
             MetaCare SRL — Centro sanitario autorizzato
             <br />
             Sede: Codroipo (UD)
+            <br />
+            Finanziato da PR FESR 2021-2027 Regione FVG
           </p>
           <a
             href="mailto:info@memindsport.it"
