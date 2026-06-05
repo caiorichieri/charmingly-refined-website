@@ -1,106 +1,96 @@
+# Piano: Conformità GDPR — 4 interventi
 
-# Piano di sviluppo — Portale MeMind Sport
-
-## Stato attuale (riepilogo)
-
-**Già fatto:** sito pubblico completo, auth (email + Google), area admin completa (CRUD blog/eventi/piani/percorsi/testimonianze/FAQ/quiz/media/utenti), sistema ruoli sicuro (`admin`, `therapist`), email transazionali, RLS su tutte le tabelle, pagine legali base, multi-dominio attivo.
-
-**Solo gate, contenuto vuoto:** `/area-terapeuta`.
-
-**Mancante:** area atleta, funzioni psicologi, GDPR dati sensibili, audit tecnico.
+Il feedback ricevuto è corretto e prioritario. Ecco la mia analisi punto per punto e il piano d'azione.
 
 ---
 
-## Cosa costruire (4 blocchi)
+## 1. IMMEDIATO — CMP con blocco preventivo dei cookie
 
-### Blocco 1 — Area Atleta completa
-Nuovo ruolo `athlete` (default per chi si registra senza essere admin/therapist).
+**Stato attuale:** il `CookieBanner.tsx` esistente raccoglie il consenso e lo salva in `cookie_consents`, ma **non blocca realmente nulla**: è un banner "cosmetico". Al momento però il sito **non carica script di terze parti** (no Google Analytics, no Meta Pixel, no Hotjar, no YouTube embed con cookie). Quindi tecnicamente **non siamo in violazione diretta oggi**, ma lo saremmo nel momento in cui aggiungiamo qualsiasi analytics.
 
-Pagine sotto `/area-atleta/*` (gate authenticated + ruolo athlete):
-- **Dashboard**: panoramica personale, ultimo quiz, prossime sessioni, materiali nuovi
-- **Il mio profilo**: dati personali, risultati quiz salvati con grafico ragnatela e mappa del campo
-- **I miei materiali**: documenti/video condivisi dal terapeuta assegnato
-- **Messaggi**: chat con il proprio terapeuta
-- **Prenotazioni**: vista calendario terapeuta + booking sessione (placeholder se non si vuole subito booking)
-- **I miei dati (GDPR)**: export JSON dei dati + richiesta cancellazione account
+**Due strade:**
 
-### Blocco 2 — Area Psicologi (funzioni prioritarie)
-Espansione di `/area-terapeuta`:
-- **Lista atleti assegnati**: tabella con ultimo accesso, ultimo quiz, ultimo messaggio
-- **Scheda atleta**: anagrafica + tutti i risultati quiz (ragnatela, mappa del campo, storico)
-- **Messaggistica 1-a-1**: chat realtime con ogni atleta assegnato
-- **Condivisione materiali**: upload file (PDF, video, immagini) destinati a un singolo atleta, con scadenza opzionale
-- **Note sessione** (cifrate): note private del terapeuta sull'atleta
+- **A) Soluzione interna (consigliata ora)**: trasformare il banner esistente in un vero CMP gate. Centralizziamo il consenso in un `ConsentProvider` (React context + `localStorage`) che espone `hasConsent('analytics' | 'marketing')`. Tutti gli script di terze parti vengono caricati **solo** dopo il consenso, tramite un componente `<ConditionalScript category="analytics" src="..." />`. Aggiungiamo anche un link "Gestisci cookie" nel Footer per riaprire il banner. **Costo: 0 €, integrato nel design esistente.**
 
-Sezione admin nuova: **assegnazione atleta ↔ terapeuta** (in `/admin/users` o nuova `/admin/assegnazioni`).
+- **B) CMP esterno (Iubenda / Cookiebot / Usercentrics)**: integrazione di uno script di terze parti certificato IAB TCF. Vantaggio: certificazione ufficiale, aggiornamento automatico, scan periodico cookie. Svantaggio: abbonamento (Iubenda ~29 €/anno starter, Cookiebot da 12 €/mese), e ironicamente lo stesso CMP setta cookie.
 
-### Blocco 3 — GDPR completo per dati sensibili
-Le note cliniche e i risultati quiz sono dati sanitari/psicologici → trattamento rafforzato.
-
-- **Cookie banner** con consent management (necessari / analytics / marketing) + tabella `cookie_consents`
-- **Registro consensi**: ogni atleta accetta esplicitamente trattamento dati sanitari al primo login (versione + timestamp + IP) → tabella `user_consents`
-- **Cifratura note cliniche**: campo `notes_encrypted` con pgcrypto (chiave server-side), decifrato solo lato server function per il terapeuta autorizzato
-- **Audit log**: tabella `access_log` che registra ogni accesso a dati sensibili (chi, quando, quale atleta) — solo admin la legge
-- **Export dati utente**: server function che esporta tutto in JSON per l'atleta
-- **Cancellazione account**: workflow soft-delete + hard-delete dopo 30gg
-- **Aggiornamento privacy policy**: testo aggiornato che cita base giuridica art. 9 GDPR (consenso esplicito) e ruolo del DPO se nominato
-
-### Blocco 4 — Audit tecnico (documento consegnabile)
-Report PDF/MD consegnato al cliente, **nessun nuovo codice da scrivere**:
-- Stack tecnologico (TanStack Start, React 19, Supabase, Cloudflare Workers)
-- Architettura sicurezza (RLS, ruoli, cifratura, audit log)
-- SEO check (Lighthouse, Core Web Vitals, sitemap, schema.org)
-- Performance (bundle size, immagini, lazy loading)
-- Conformità GDPR (mappatura dati, base giuridica, misure tecniche)
-- Backup e disaster recovery (gestiti da Lovable Cloud/Supabase)
-- Lista dipendenze e licenze
-- Roadmap manutenzione
+**Scelta proposta:** **A** ora (siamo coerenti perché non abbiamo terze parti attive), con possibilità di passare a **B** quando attiveremo Google Analytics 4 o Meta Pixel.
 
 ---
 
-## Ordine di consegna consigliato (3 step)
+## 2. URGENTE — Privacy Policy: dati sanitari ex Art. 9
 
-| Step | Cosa | Stima |
-|------|------|-------|
-| **1** | Blocco 1 (Area Atleta) + ruolo `athlete` + assegnazione atleta↔terapeuta in admin | 1 iterazione |
-| **2** | Blocco 2 (funzioni psicologi: scheda atleta + messaggistica + materiali + note cifrate) | 1-2 iterazioni |
-| **3** | Blocco 3 (GDPR completo) + Blocco 4 (audit tecnico documento) | 1 iterazione |
+Aggiornare `src/routes/privacy.tsx` aggiungendo una sezione dedicata **"Categorie particolari di dati (Art. 9 GDPR)"** che dichiari espressamente:
 
----
+- I dati raccolti tramite quiz, chat con psicologo, materiali condivisi e note cliniche sono **dati relativi alla salute** ai sensi dell'Art. 9(1) GDPR.
+- Base giuridica autonoma: **consenso esplicito** dell'interessato ex Art. 9(2)(a), separato dal consenso generale al trattamento.
+- Misure di sicurezza rafforzate: cifratura at-rest, RLS, audit log (`access_log`), accesso limitato al terapeuta assegnato.
+- Periodo di conservazione specifico per dati sanitari.
+- Diritto di revoca del consenso in qualsiasi momento.
 
-## Dettagli tecnici (riferimento)
-
-**Nuove tabelle:**
-- `athlete_assignments` (athlete_id, therapist_id, assigned_at, active)
-- `messages` (sender_id, recipient_id, content, read_at, created_at) + Realtime
-- `shared_materials` (therapist_id, athlete_id, storage_path, title, expires_at)
-- `clinical_notes` (therapist_id, athlete_id, notes_encrypted bytea, created_at)
-- `user_consents` (user_id, consent_type, version, ip, accepted_at)
-- `cookie_consents` (session_id/user_id, categories jsonb, version)
-- `access_log` (actor_id, action, target_user_id, resource, created_at)
-
-**Estensioni DB:**
-- enum `app_role`: aggiungere `'athlete'`
-- pgcrypto per cifratura note
-- Realtime su `messages`
-
-**Storage:** nuovo bucket privato `clinical-materials` con RLS scoped per assegnazione.
-
-**Server functions chiave** (`createServerFn` + `requireSupabaseAuth`):
-- `getAssignedAthletes` / `getMyTherapist`
-- `sendMessage` / `getThread`
-- `uploadMaterial` / `getMaterials`
-- `writeNote` (cifra) / `readNote` (decifra, solo terapeuta assegnato + log)
-- `exportMyData` / `requestAccountDeletion`
-
-**RLS:** ogni tabella sensibile filtrata per `auth.uid()` + `has_role()` + check assegnazione attiva.
+**Modifica funzionale richiesta:** nel form di registrazione atleta + nel primo accesso al quiz, aggiungere **checkbox separato** "Acconsento al trattamento dei miei dati relativi alla salute (Art. 9 GDPR)" — registrato in `user_consents` con `document = 'health_data_art9'` e versione.
 
 ---
 
-## Cosa NON è in questo piano (da confermare in futuro)
-- Sistema booking sessioni completo con calendario sincronizzato (Google Calendar)
-- Video sessioni integrate (Jitsi/Daily)
-- Pagamenti per piani in autoservizio (Stripe)
-- App mobile
+## 3. IMPORTANTE — Cookie Policy: fornitori e link
 
-Fammi sapere se il piano è ok o se vuoi modificare priorità / scope prima di partire con lo Step 1.
+Aggiornare `src/routes/cookie.tsx` sostituendo la sezione generica "Cookie di analisi" con una **tabella esplicita** dei cookie effettivamente impostati. Stato attuale del progetto:
+
+| Fornitore | Finalità | Cookie | Durata | Privacy Policy |
+|---|---|---|---|---|
+| MeMindSport (prima parte) | Sessione autenticata | `sb-*` | sessione | — |
+| MeMindSport (prima parte) | Consenso cookie | `memind:cookie-consent:v1` | 12 mesi | — |
+| Supabase (Lovable Cloud) | Backend auth | `sb-access-token`, `sb-refresh-token` | sessione | https://supabase.com/privacy |
+
+**Quando aggiungeremo analytics**, la tabella crescerà (Google Analytics, Meta, ecc.) con link alle rispettive privacy policy. Per ora documentiamo lo stato reale: nessun cookie di terza parte attivo.
+
+---
+
+## 4. RACCOMANDATO — Valutazione DPO e registro del trattamento
+
+**DPO obbligatorio (Art. 37 GDPR)** quando:
+- Attività core consistono nel **trattamento su larga scala di dati ex Art. 9** (salute) → **questo è il vostro caso** ✅
+- Monitoraggio sistematico su larga scala.
+
+**Conclusione:** la nomina del **DPO è obbligatoria**, non opzionale. Non posso nominarlo io — deve essere una decisione di MetaCare SRL (figura interna formata o consulente esterno, costo tipico 1.500–4.000 €/anno).
+
+**Cosa posso fare nel codice:**
+- Aggiungere sezione "Responsabile della Protezione dei Dati (DPO)" in Privacy Policy con placeholder `[Da nominare — contattare privacy@memindsport.it]` o, se mi date il nominativo, lo inserisco.
+- Generare un **template PDF del Registro del Trattamento** (Art. 30 GDPR) precompilato con le attività di MeMindSport (registrazione atleti, quiz salute, chat clinica, materiali, ecc.) come artefatto separato in `/mnt/documents/`. Documento interno, non pubblico.
+
+---
+
+## Riepilogo modifiche al codice
+
+```text
+NUOVI FILE
+  src/contexts/ConsentContext.tsx        # provider centrale consenso
+  src/components/site/ConditionalScript.tsx  # carica script solo dopo consenso
+  src/components/site/ManageCookiesLink.tsx  # link riapri banner nel Footer
+
+MODIFICATI
+  src/components/site/CookieBanner.tsx   # usa ConsentContext, blocco reale
+  src/components/site/Footer.tsx         # aggiunge "Gestisci cookie"
+  src/routes/__root.tsx                  # avvolge in <ConsentProvider>
+  src/routes/privacy.tsx                 # sezione Art. 9 + DPO
+  src/routes/cookie.tsx                  # tabella fornitori reale
+  src/routes/auth.tsx                    # checkbox consenso Art. 9 in signup
+  src/components/quiz/QuizModal.tsx      # checkbox Art. 9 prima del primo quiz
+
+MIGRAZIONE DB
+  - nessuna nuova tabella; user_consents già supporta document='health_data_art9'
+
+ARTEFATTI (in /mnt/documents/)
+  - MeMindSport_Registro_Trattamento.pdf (template Art. 30)
+  - MeMindSport_Privacy_Policy_v2.pdf (versione aggiornata stampabile)
+```
+
+---
+
+## Domande prima di partire
+
+1. **DPO**: avete già nominato qualcuno (nome + email da inserire), oppure metto placeholder?
+2. **Analytics**: confermate che oggi **non** è attivo alcun tracker di terza parte (Google Analytics, Meta Pixel, Hotjar, ecc.)? Se ne avete in mente uno da attivare a breve, conviene predisporre subito l'integrazione CMP.
+3. **Cookie banner**: andiamo con soluzione interna (A) o volete che predisponga l'integrazione di Iubenda/Cookiebot (B)?
+
+Confermami questi 3 punti e procedo con l'implementazione.
