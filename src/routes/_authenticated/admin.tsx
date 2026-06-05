@@ -18,6 +18,7 @@ import {
   Globe,
   ClipboardList,
   CalendarDays,
+  ShieldCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -37,6 +38,7 @@ const nav: NavItem[] = [
   { to: "/admin/media", label: "Media", icon: ImageIcon },
   { to: "/admin/users", label: "Utenti & ruoli", icon: Users },
   { to: "/admin/assignments", label: "Assegnazioni", icon: UserCog },
+  { to: "/admin/compliance", label: "Compliance GDPR", icon: ShieldCheck },
 ];
 
 function AdminLayout() {

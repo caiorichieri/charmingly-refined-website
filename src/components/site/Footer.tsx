@@ -72,10 +72,16 @@ export function Footer() {
           <div className="font-display text-[22px] font-extrabold tracking-tight text-white mb-3">
             Me<span className="text-brand-green">Mind</span>Sport
           </div>
-          <p className="text-[13px] text-white/35 leading-relaxed max-w-[260px]">
-            MetaCare SRL — Centro sanitario autorizzato
+          <p className="text-[13px] text-white/35 leading-relaxed max-w-[280px]">
+            <strong className="text-white/55">MetaCare SRL</strong>
             <br />
-            Sede: Codroipo (UD)
+            Via Pola 7 — 33033 Codroipo (UD)
+            <br />
+            C.F. / P.IVA <span className="text-white/55">03102350307</span>
+            <br />
+            Autorizzazione Sanitaria Regione FVG
+            <br />
+            n. <span className="text-white/55">4710</span> del 13/01/2026
             <br />
             Finanziato da PR FESR 2021-2027 Regione FVG
           </p>
