@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      athlete_assignments: {
+        Row: {
+          active: boolean
+          assigned_at: string
+          athlete_id: string
+          created_at: string
+          ended_at: string | null
+          id: string
+          notes: string | null
+          therapist_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          assigned_at?: string
+          athlete_id: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          therapist_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          assigned_at?: string
+          athlete_id?: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          therapist_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -612,6 +648,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_my_therapist: { Args: { _athlete_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -638,7 +675,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "therapist"
+      app_role: "admin" | "therapist" | "athlete"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -766,7 +803,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "therapist"],
+      app_role: ["admin", "therapist", "athlete"],
     },
   },
 } as const

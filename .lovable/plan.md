@@ -1,68 +1,106 @@
-# Piano: Area Admin & Terapeuta
 
-## 1. Backend — Lovable Cloud
-Attivo Lovable Cloud (database + auth, nessun account esterno) e configuro Google sign-in oltre a email/password.
+# Piano di sviluppo — Portale MeMind Sport
 
-## 2. Schema database
-Tabelle nuove con Row Level Security:
+## Stato attuale (riepilogo)
 
-- **`app_role`** (enum): `admin`, `therapist`
-- **`user_roles`** — collega utente↔ruolo (tabella separata per sicurezza, mai sui profili)
-- **`profiles`** — nome, avatar, bio, creato al signup via trigger
-- **`blog_posts`** — title, slug, excerpt, content, cover, author, published, dates
-- **`plans`** — nome, prezzo, periodicità, descrizione, features (jsonb), badge "più scelto", ordine
-- **`paths`** — i percorsi/aree mentali (titolo, descrizione, icona, ordine)
-- **`testimonials`** — autore, ruolo, contenuto, rating, foto, approvato
-- **`faqs`** — domanda, risposta, ordine
-- **`media_assets`** — chiave (es. `hero`, `photo-break`), url, alt — per swap immagini hero
+**Già fatto:** sito pubblico completo, auth (email + Google), area admin completa (CRUD blog/eventi/piani/percorsi/testimonianze/FAQ/quiz/media/utenti), sistema ruoli sicuro (`admin`, `therapist`), email transazionali, RLS su tutte le tabelle, pagine legali base, multi-dominio attivo.
 
-Funzione `has_role(user_id, role)` security-definer per le policy.
+**Solo gate, contenuto vuoto:** `/area-terapeuta`.
 
-## 3. Bootstrap primo admin
-Trigger sul signup: l'email **caiorichieri@gmail.com** riceve automaticamente il ruolo `admin` al primo accesso. Tutti gli altri nuovi utenti partono senza ruolo.
-
-## 4. Frontend — Autenticazione
-- **`/auth`** — login + registrazione, email/password + bottone Google
-- Hook `useAuth` per stato sessione globale
-- Listener `onAuthStateChange` nel root
-- Logout dal menu utente
-
-## 5. Frontend — Area Admin (`/admin/*`)
-Layout con sidebar (gate: solo `admin`):
-
-- `/admin` — dashboard con conteggi rapidi
-- `/admin/blog` — lista + crea/modifica/elimina articoli (rich editor semplice)
-- `/admin/plans` — gestisci piani, prezzi, feature, toggle "più scelto"
-- `/admin/paths` — percorsi mentali (CRUD + riordino)
-- `/admin/testimonials` — approva/modifica/pubblica
-- `/admin/faqs` — CRUD + riordino
-- `/admin/media` — upload/sostituzione immagini hero
-- `/admin/users` — vedi utenti, assegna/revoca ruolo terapeuta
-
-## 6. Frontend — Area Terapeuta (`/area-terapeuta`)
-Solo gate di accesso + pagina "in arrivo" come placeholder. Costruiremo le feature interne dopo.
-
-## 7. Sito pubblico
-Le sezioni Hero, Blog, Prezzi, Pilastri (percorsi), Testimonial, FAQ leggono dal database invece dei dati statici. Seed iniziale popola le tabelle con i contenuti attuali del sito così non si perde nulla visivamente.
-
-## 8. Navigazione
-- Pulsante "Accedi" nel header
-- Quando autenticato: menu utente con link a "Dashboard admin" (se admin) o "Area terapeuta" (se therapist) + logout
+**Mancante:** area atleta, funzioni psicologi, GDPR dati sensibili, audit tecnico.
 
 ---
 
-## Dettagli tecnici (per riferimento)
-- Stack: TanStack Start + Supabase via Lovable Cloud
-- Auth: server functions con `requireSupabaseAuth`, RLS attivo su tutte le tabelle
-- Admin write: policy `has_role(auth.uid(),'admin')`
-- Public read: policy aperta su contenuti pubblicati (`published=true`, `approved=true`)
-- Google OAuth: configurato via `supabase--configure_social_auth`
-- Storage bucket pubblico `media` per upload immagini
+## Cosa costruire (4 blocchi)
 
-## Ordine di consegna suggerito
-Data la portata propongo di consegnare in **2 step**:
+### Blocco 1 — Area Atleta completa
+Nuovo ruolo `athlete` (default per chi si registra senza essere admin/therapist).
 
-1. **Step 1 (questa risposta)**: Cloud + schema + auth + `/auth` + `/admin` shell + **Blog admin** + **Plans admin** funzionanti, con il sito pubblico che legge blog e prezzi dal DB. Seed dei contenuti attuali.
-2. **Step 2 (prossimo messaggio)**: percorsi, testimonianze, FAQ, media, gestione terapeuti, area terapeuta placeholder.
+Pagine sotto `/area-atleta/*` (gate authenticated + ruolo athlete):
+- **Dashboard**: panoramica personale, ultimo quiz, prossime sessioni, materiali nuovi
+- **Il mio profilo**: dati personali, risultati quiz salvati con grafico ragnatela e mappa del campo
+- **I miei materiali**: documenti/video condivisi dal terapeuta assegnato
+- **Messaggi**: chat con il proprio terapeuta
+- **Prenotazioni**: vista calendario terapeuta + booking sessione (placeholder se non si vuole subito booking)
+- **I miei dati (GDPR)**: export JSON dei dati + richiesta cancellazione account
 
-Confermi questo approccio in 2 step? Se vuoi tutto in una volta lo faccio comunque, ma il risultato sarà più lungo da verificare.
+### Blocco 2 — Area Psicologi (funzioni prioritarie)
+Espansione di `/area-terapeuta`:
+- **Lista atleti assegnati**: tabella con ultimo accesso, ultimo quiz, ultimo messaggio
+- **Scheda atleta**: anagrafica + tutti i risultati quiz (ragnatela, mappa del campo, storico)
+- **Messaggistica 1-a-1**: chat realtime con ogni atleta assegnato
+- **Condivisione materiali**: upload file (PDF, video, immagini) destinati a un singolo atleta, con scadenza opzionale
+- **Note sessione** (cifrate): note private del terapeuta sull'atleta
+
+Sezione admin nuova: **assegnazione atleta ↔ terapeuta** (in `/admin/users` o nuova `/admin/assegnazioni`).
+
+### Blocco 3 — GDPR completo per dati sensibili
+Le note cliniche e i risultati quiz sono dati sanitari/psicologici → trattamento rafforzato.
+
+- **Cookie banner** con consent management (necessari / analytics / marketing) + tabella `cookie_consents`
+- **Registro consensi**: ogni atleta accetta esplicitamente trattamento dati sanitari al primo login (versione + timestamp + IP) → tabella `user_consents`
+- **Cifratura note cliniche**: campo `notes_encrypted` con pgcrypto (chiave server-side), decifrato solo lato server function per il terapeuta autorizzato
+- **Audit log**: tabella `access_log` che registra ogni accesso a dati sensibili (chi, quando, quale atleta) — solo admin la legge
+- **Export dati utente**: server function che esporta tutto in JSON per l'atleta
+- **Cancellazione account**: workflow soft-delete + hard-delete dopo 30gg
+- **Aggiornamento privacy policy**: testo aggiornato che cita base giuridica art. 9 GDPR (consenso esplicito) e ruolo del DPO se nominato
+
+### Blocco 4 — Audit tecnico (documento consegnabile)
+Report PDF/MD consegnato al cliente, **nessun nuovo codice da scrivere**:
+- Stack tecnologico (TanStack Start, React 19, Supabase, Cloudflare Workers)
+- Architettura sicurezza (RLS, ruoli, cifratura, audit log)
+- SEO check (Lighthouse, Core Web Vitals, sitemap, schema.org)
+- Performance (bundle size, immagini, lazy loading)
+- Conformità GDPR (mappatura dati, base giuridica, misure tecniche)
+- Backup e disaster recovery (gestiti da Lovable Cloud/Supabase)
+- Lista dipendenze e licenze
+- Roadmap manutenzione
+
+---
+
+## Ordine di consegna consigliato (3 step)
+
+| Step | Cosa | Stima |
+|------|------|-------|
+| **1** | Blocco 1 (Area Atleta) + ruolo `athlete` + assegnazione atleta↔terapeuta in admin | 1 iterazione |
+| **2** | Blocco 2 (funzioni psicologi: scheda atleta + messaggistica + materiali + note cifrate) | 1-2 iterazioni |
+| **3** | Blocco 3 (GDPR completo) + Blocco 4 (audit tecnico documento) | 1 iterazione |
+
+---
+
+## Dettagli tecnici (riferimento)
+
+**Nuove tabelle:**
+- `athlete_assignments` (athlete_id, therapist_id, assigned_at, active)
+- `messages` (sender_id, recipient_id, content, read_at, created_at) + Realtime
+- `shared_materials` (therapist_id, athlete_id, storage_path, title, expires_at)
+- `clinical_notes` (therapist_id, athlete_id, notes_encrypted bytea, created_at)
+- `user_consents` (user_id, consent_type, version, ip, accepted_at)
+- `cookie_consents` (session_id/user_id, categories jsonb, version)
+- `access_log` (actor_id, action, target_user_id, resource, created_at)
+
+**Estensioni DB:**
+- enum `app_role`: aggiungere `'athlete'`
+- pgcrypto per cifratura note
+- Realtime su `messages`
+
+**Storage:** nuovo bucket privato `clinical-materials` con RLS scoped per assegnazione.
+
+**Server functions chiave** (`createServerFn` + `requireSupabaseAuth`):
+- `getAssignedAthletes` / `getMyTherapist`
+- `sendMessage` / `getThread`
+- `uploadMaterial` / `getMaterials`
+- `writeNote` (cifra) / `readNote` (decifra, solo terapeuta assegnato + log)
+- `exportMyData` / `requestAccountDeletion`
+
+**RLS:** ogni tabella sensibile filtrata per `auth.uid()` + `has_role()` + check assegnazione attiva.
+
+---
+
+## Cosa NON è in questo piano (da confermare in futuro)
+- Sistema booking sessioni completo con calendario sincronizzato (Google Calendar)
+- Video sessioni integrate (Jitsi/Daily)
+- Pagamenti per piani in autoservizio (Stripe)
+- App mobile
+
+Fammi sapere se il piano è ok o se vuoi modificare priorità / scope prima di partire con lo Step 1.
