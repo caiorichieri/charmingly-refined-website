@@ -330,12 +330,28 @@ export function QuizModal() {
                 />
                 <input
                   className="input w-full"
-                  type="email"
-                  placeholder="Email *"
-                  value={contact.email}
-                  onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                  maxLength={200}
+                  type="number"
+                  min={5}
+                  max={100}
+                  placeholder="La tua età *"
+                  value={contact.age}
+                  onChange={(e) => setContact({ ...contact, age: e.target.value })}
                 />
+                <div>
+                  <input
+                    className="input w-full"
+                    type="email"
+                    placeholder={isMinorUnder14 ? "Email del genitore o tutore legale *" : "Email *"}
+                    value={contact.email}
+                    onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                    maxLength={200}
+                  />
+                  {isMinorUnder14 && (
+                    <p className="mt-1.5 text-[11px] text-amber-600 leading-snug">
+                      Sei minore di 14 anni: ai sensi dell'art. 2-quinquies del Dlgs 101/2018, il consenso al trattamento dei dati deve essere prestato da un genitore o tutore legale. Inserisci l'email di un adulto che convaliderà i consensi.
+                    </p>
+                  )}
+                </div>
                 <input
                   className="input w-full"
                   type="tel"
@@ -354,11 +370,23 @@ export function QuizModal() {
                   onChange={(e) => setConsent(e.target.checked)}
                 />
                 <span>
-                  Acconsento al trattamento dei miei dati personali (nome, email, telefono e risposte al questionario) ai fini della elaborazione del mio profilo psicologico-sportivo e della ricezione del risultato via email, ai sensi del Reg. UE 2016/679 (GDPR). I dati non saranno ceduti a terzi e potrò richiederne in qualsiasi momento la cancellazione scrivendo a <span className="text-foreground font-medium">info@memindsport.it</span>. *
+                  {isMinorUnder14 ? "In qualità di genitore/tutore legale, acconsento" : "Acconsento"} al trattamento dei dati personali (nome, email, telefono, età e risposte al questionario) per la elaborazione del profilo psicologico-sportivo e la ricezione del risultato via email, ai sensi del Reg. UE 2016/679 (GDPR). I dati non saranno ceduti a terzi e potrò richiederne in qualsiasi momento la cancellazione scrivendo a <span className="text-foreground font-medium">info@memindsport.it</span>. *
                 </span>
               </label>
 
-              <button onClick={startQuiz} className="btn-primary w-full justify-center" disabled={!consent}>
+              <label className="flex items-start gap-3 text-xs text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+                  checked={profilingConsent}
+                  onChange={(e) => setProfilingConsent(e.target.checked)}
+                />
+                <span>
+                  Acconsento al trattamento dei miei dati personali, incluse le risposte al test (che possono rivelare informazioni su gestione dell'ansia, concentrazione e stato emotivo, riconducibili a categorie particolari ex art. 9 GDPR), per le finalità di <strong className="text-foreground">profilazione e analisi delle performance sportive</strong> in conformità alla <a href="/privacy" target="_blank" rel="noopener" className="underline text-primary">Privacy Policy</a>. *
+                </span>
+              </label>
+
+              <button onClick={startQuiz} className="btn-primary w-full justify-center" disabled={!consent || !profilingConsent}>
                 Inizia il questionario →
               </button>
             </div>
