@@ -34,6 +34,7 @@ import { Route as AuthenticatedAdminPathsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin.media'
 import { Route as AuthenticatedAdminFaqsRouteImport } from './routes/_authenticated/admin.faqs'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
+import { Route as AuthenticatedAdminComplianceRouteImport } from './routes/_authenticated/admin.compliance'
 import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated/admin.blog'
 import { Route as AuthenticatedAdminAssignmentsRouteImport } from './routes/_authenticated/admin.assignments'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -165,6 +166,12 @@ const AuthenticatedAdminEventsRoute =
     path: '/events',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminComplianceRoute =
+  AuthenticatedAdminComplianceRouteImport.update({
+    id: '/compliance',
+    path: '/compliance',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminBlogRoute = AuthenticatedAdminBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
+  '/admin/compliance': typeof AuthenticatedAdminComplianceRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
+  '/admin/compliance': typeof AuthenticatedAdminComplianceRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -260,6 +269,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/_authenticated/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
+  '/_authenticated/admin/compliance': typeof AuthenticatedAdminComplianceRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/admin/assignments'
     | '/admin/blog'
+    | '/admin/compliance'
     | '/admin/events'
     | '/admin/faqs'
     | '/admin/media'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/admin/assignments'
     | '/admin/blog'
+    | '/admin/compliance'
     | '/admin/events'
     | '/admin/faqs'
     | '/admin/media'
@@ -349,6 +361,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/_authenticated/admin/assignments'
     | '/_authenticated/admin/blog'
+    | '/_authenticated/admin/compliance'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/faqs'
     | '/_authenticated/admin/media'
@@ -553,6 +566,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/compliance': {
+      id: '/_authenticated/admin/compliance'
+      path: '/compliance'
+      fullPath: '/admin/compliance'
+      preLoaderRoute: typeof AuthenticatedAdminComplianceRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/blog': {
       id: '/_authenticated/admin/blog'
       path: '/blog'
@@ -580,6 +600,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAssignmentsRoute: typeof AuthenticatedAdminAssignmentsRoute
   AuthenticatedAdminBlogRoute: typeof AuthenticatedAdminBlogRoute
+  AuthenticatedAdminComplianceRoute: typeof AuthenticatedAdminComplianceRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminFaqsRoute: typeof AuthenticatedAdminFaqsRoute
   AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
@@ -594,6 +615,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAssignmentsRoute: AuthenticatedAdminAssignmentsRoute,
   AuthenticatedAdminBlogRoute: AuthenticatedAdminBlogRoute,
+  AuthenticatedAdminComplianceRoute: AuthenticatedAdminComplianceRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminFaqsRoute: AuthenticatedAdminFaqsRoute,
   AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
@@ -653,13 +675,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
