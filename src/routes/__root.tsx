@@ -11,6 +11,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { QuizModal } from "@/components/quiz/QuizModal";
+import { CookieBanner } from "@/components/site/CookieBanner";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
