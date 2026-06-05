@@ -208,13 +208,16 @@ function AthleteArea() {
           {/* Dati GDPR (placeholder Step 3) */}
           <Card>
             <CardHead icon={UserIcon} title="I miei dati (GDPR)" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-3">
               Esporta tutti i tuoi dati personali o richiedi la cancellazione del tuo account in
-              qualsiasi momento.
+              qualsiasi momento (Art. 17 e 20 GDPR).
             </p>
-            <p className="text-xs text-muted-foreground mt-3 italic">
-              Funzione in arrivo nel prossimo aggiornamento.
-            </p>
+            <Link
+              to="/i-miei-dati"
+              className="inline-flex text-sm font-bold tracking-wider text-brand-green border border-brand-green rounded-full px-4 py-2 hover:bg-brand-green hover:text-white transition-all"
+            >
+              Gestisci i miei dati →
+            </Link>
           </Card>
         </div>
       </main>
