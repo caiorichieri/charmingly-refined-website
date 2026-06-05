@@ -32,10 +32,8 @@ function PrivacyPage() {
           </Section>
 
           <Section title="2. Responsabile della Protezione dei Dati (DPO)">
-            Trattando in modo sistematico dati relativi alla salute su larga scala, ai sensi dell'Art. 37(1)(c) GDPR MetaCare SRL ha nominato un Responsabile della Protezione dei Dati. Puoi contattare il DPO all'indirizzo{" "}
-            <a href="mailto:dpo@memindsport.it" className="text-brand-green hover:underline">dpo@memindsport.it</a>.
-            <br /><br />
-            <em className="text-[13px] text-muted-foreground">[Nominativo del DPO da pubblicare a cura di MetaCare SRL una volta formalizzato l'incarico.]</em>
+            Trattando in modo sistematico dati relativi alla salute su larga scala, ai sensi dell'Art. 37(1)(c) GDPR MetaCare SRL ha nominato Responsabile della Protezione dei Dati il <strong>Dott. Rolando Alberto Tavano</strong>. Puoi contattare il DPO all'indirizzo{" "}
+            <a href="mailto:info@tavano.it" className="text-brand-green hover:underline">info@tavano.it</a>.
           </Section>
 
           <Section title="3. Dati trattati">
