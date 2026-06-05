@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Image as ImageIcon,
   Users,
+  UserCog,
   LogOut,
   Globe,
   ClipboardList,
