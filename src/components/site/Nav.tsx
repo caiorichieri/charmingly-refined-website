@@ -196,6 +196,15 @@ export function Nav() {
                         <Stethoscope size={16} /> Area terapeuta
                       </Link>
                     )}
+                    {isAthlete && !isAdmin && !isTherapist && (
+                      <Link
+                        to="/area-atleta"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-off rounded-lg transition-colors"
+                      >
+                        <Trophy size={16} /> La mia area
+                      </Link>
+                    )}
                     <button
                       onClick={logout}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
