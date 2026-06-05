@@ -146,6 +146,7 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <QuizModal />
+        <CookieBanner />
         <Toaster position="top-right" />
       </AuthProvider>
     </QueryClientProvider>
