@@ -66,8 +66,9 @@ function getInitials(name: string) {
 export function QuizModal() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("contact");
-  const [contact, setContact] = useState({ name: "", email: "", phone: "" });
+  const [contact, setContact] = useState({ name: "", email: "", phone: "", age: "" });
   const [consent, setConsent] = useState(false);
+  const [profilingConsent, setProfilingConsent] = useState(false);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { optionId: string; tag: string }>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -77,6 +78,9 @@ export function QuizModal() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [lastPayload, setLastPayload] = useState<{ leadId: string; profile: ProfileResult } | null>(null);
 
+  const ageNum = parseInt(contact.age, 10);
+  const isMinorUnder14 = Number.isFinite(ageNum) && ageNum > 0 && ageNum < 14;
+
   useEffect(() => {
     const handler = () => {
       setOpen(true);
@@ -85,6 +89,8 @@ export function QuizModal() {
       setAnswers({});
       setResult(null);
       setConsent(false);
+      setProfilingConsent(false);
+      setContact({ name: "", email: "", phone: "", age: "" });
       setShuffleSeed((s) => s + 1);
       setEmailStatus("idle");
       setEmailError(null);
