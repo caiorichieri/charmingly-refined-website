@@ -1,0 +1,2 @@
+ALTER TABLE public.user_consents DROP CONSTRAINT IF EXISTS user_consents_document_check;
+ALTER TABLE public.user_consents ADD CONSTRAINT user_consents_document_check CHECK (document = ANY (ARRAY['privacy'::text, 'terms'::text, 'marketing'::text, 'dpa'::text, 'health_data_art9'::text]));
