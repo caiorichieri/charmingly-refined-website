@@ -24,6 +24,8 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [consentPrivacy, setConsentPrivacy] = useState(false);
+  const [consentHealth, setConsentHealth] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated || loading) return;
@@ -43,10 +45,14 @@ function AuthPage() {
 
   async function handleEmail(e: FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && (!consentPrivacy || !consentHealth)) {
+      toast.error("Per registrarti devi prestare entrambi i consensi richiesti.");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -55,6 +61,14 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        // Registriamo i consensi prestati (granulari, versionati)
+        const uid = data.user?.id;
+        if (uid) {
+          await supabase.from("user_consents").insert([
+            { user_id: uid, document: "privacy", version: "2.0", granted: true, user_agent: navigator.userAgent.slice(0, 500) },
+            { user_id: uid, document: "health_data_art9", version: "1.0", granted: true, user_agent: navigator.userAgent.slice(0, 500) },
+          ]);
+        }
         toast.success("Account creato. Controlla la tua email per confermare l'accesso.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
