@@ -169,7 +169,7 @@ function AthleteDetail({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("quiz_leads")
-        .select("id, name, email, result_summary, created_at, answers")
+        .select("id, name, email, result_summary, created_at")
         .eq("email", athleteEmail!)
         .order("created_at", { ascending: false })
         .limit(5);
