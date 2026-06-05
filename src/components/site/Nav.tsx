@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Logo } from "./Logo";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, LogOut, Menu, Stethoscope, User, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, Stethoscope, Trophy, User, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const links = [
@@ -22,7 +22,7 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
-  const { isAuthenticated, isAdmin, isTherapist, user } = useAuth();
+  const { isAuthenticated, isAdmin, isTherapist, isAthlete, user } = useAuth();
 
   useEffect(() => {
     if (mobileMenuOpen && firstLinkRef.current) {
@@ -100,6 +100,11 @@ export function Nav() {
                   {isTherapist && (
                     <Link to="/area-terapeuta" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-off">
                       <Stethoscope size={14} /> Area terapeuta
+                    </Link>
+                  )}
+                  {isAthlete && !isAdmin && !isTherapist && (
+                    <Link to="/area-atleta" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-off">
+                      <Trophy size={14} /> La mia area
                     </Link>
                   )}
                   <button onClick={logout} className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-off text-red-600">
@@ -189,6 +194,15 @@ export function Nav() {
                         className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-off rounded-lg transition-colors"
                       >
                         <Stethoscope size={16} /> Area terapeuta
+                      </Link>
+                    )}
+                    {isAthlete && !isAdmin && !isTherapist && (
+                      <Link
+                        to="/area-atleta"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-off rounded-lg transition-colors"
+                      >
+                        <Trophy size={16} /> La mia area
                       </Link>
                     )}
                     <button

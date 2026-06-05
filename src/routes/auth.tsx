@@ -28,7 +28,7 @@ function AuthPage() {
   useEffect(() => {
     if (!isAuthenticated || loading) return;
     void navigate({
-      to: isAdmin ? "/admin" : isTherapist ? "/area-terapeuta" : "/",
+      to: isAdmin ? "/admin" : isTherapist ? "/area-terapeuta" : "/area-atleta",
       replace: true,
     });
   }, [isAuthenticated, isAdmin, isTherapist, loading, navigate]);

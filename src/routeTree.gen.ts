@@ -22,6 +22,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedAreaTerapeutaRouteImport } from './routes/_authenticated/area-terapeuta'
+import { Route as AuthenticatedAreaAtletaRouteImport } from './routes/_authenticated/area-atleta'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -33,6 +34,7 @@ import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminFaqsRouteImport } from './routes/_authenticated/admin.faqs'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated/admin.blog'
+import { Route as AuthenticatedAdminAssignmentsRouteImport } from './routes/_authenticated/admin.assignments'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const TerminiRoute = TerminiRouteImport.update({
@@ -100,6 +102,11 @@ const AuthenticatedAreaTerapeutaRoute =
     path: '/area-terapeuta',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAreaAtletaRoute = AuthenticatedAreaAtletaRouteImport.update({
+  id: '/area-atleta',
+  path: '/area-atleta',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -157,6 +164,12 @@ const AuthenticatedAdminBlogRoute = AuthenticatedAdminBlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminAssignmentsRoute =
+  AuthenticatedAdminAssignmentsRouteImport.update({
+    id: '/assignments',
+    path: '/assignments',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -176,8 +189,10 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -201,8 +216,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
+  '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -229,8 +246,10 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/_authenticated/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -257,8 +276,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/admin'
+    | '/area-atleta'
     | '/area-terapeuta'
     | '/blog/$slug'
+    | '/admin/assignments'
     | '/admin/blog'
     | '/admin/events'
     | '/admin/faqs'
@@ -282,8 +303,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termini'
+    | '/area-atleta'
     | '/area-terapeuta'
     | '/blog/$slug'
+    | '/admin/assignments'
     | '/admin/blog'
     | '/admin/events'
     | '/admin/faqs'
@@ -309,8 +332,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/_authenticated/admin'
+    | '/_authenticated/area-atleta'
     | '/_authenticated/area-terapeuta'
     | '/blog/$slug'
+    | '/_authenticated/admin/assignments'
     | '/_authenticated/admin/blog'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/faqs'
@@ -432,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAreaTerapeutaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/area-atleta': {
+      id: '/_authenticated/area-atleta'
+      path: '/area-atleta'
+      fullPath: '/area-atleta'
+      preLoaderRoute: typeof AuthenticatedAreaAtletaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -509,6 +541,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBlogRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/assignments': {
+      id: '/_authenticated/admin/assignments'
+      path: '/assignments'
+      fullPath: '/admin/assignments'
+      preLoaderRoute: typeof AuthenticatedAdminAssignmentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -520,6 +559,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAssignmentsRoute: typeof AuthenticatedAdminAssignmentsRoute
   AuthenticatedAdminBlogRoute: typeof AuthenticatedAdminBlogRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminFaqsRoute: typeof AuthenticatedAdminFaqsRoute
@@ -533,6 +573,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAssignmentsRoute: AuthenticatedAdminAssignmentsRoute,
   AuthenticatedAdminBlogRoute: AuthenticatedAdminBlogRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminFaqsRoute: AuthenticatedAdminFaqsRoute,
@@ -550,11 +591,13 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedAreaAtletaRoute: typeof AuthenticatedAreaAtletaRoute
   AuthenticatedAreaTerapeutaRoute: typeof AuthenticatedAreaTerapeutaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedAreaAtletaRoute: AuthenticatedAreaAtletaRoute,
   AuthenticatedAreaTerapeutaRoute: AuthenticatedAreaTerapeutaRoute,
 }
 
@@ -589,13 +632,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

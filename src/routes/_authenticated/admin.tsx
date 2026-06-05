@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Image as ImageIcon,
   Users,
+  UserCog,
   LogOut,
   Globe,
   ClipboardList,
@@ -35,6 +36,7 @@ const nav: NavItem[] = [
   { to: "/admin/quiz", label: "Quiz & lead", icon: ClipboardList },
   { to: "/admin/media", label: "Media", icon: ImageIcon },
   { to: "/admin/users", label: "Utenti & ruoli", icon: Users },
+  { to: "/admin/assignments", label: "Assegnazioni", icon: UserCog },
 ];
 
 function AdminLayout() {
