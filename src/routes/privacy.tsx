@@ -32,10 +32,8 @@ function PrivacyPage() {
           </Section>
 
           <Section title="2. Responsabile della Protezione dei Dati (DPO)">
-            Trattando in modo sistematico dati relativi alla salute su larga scala, ai sensi dell'Art. 37(1)(c) GDPR MetaCare SRL ha nominato un Responsabile della Protezione dei Dati. Puoi contattare il DPO all'indirizzo{" "}
-            <a href="mailto:dpo@memindsport.it" className="text-brand-green hover:underline">dpo@memindsport.it</a>.
-            <br /><br />
-            <em className="text-[13px] text-muted-foreground">[Nominativo del DPO da pubblicare a cura di MetaCare SRL una volta formalizzato l'incarico.]</em>
+            Trattando in modo sistematico dati relativi alla salute su larga scala, ai sensi dell'Art. 37(1)(c) GDPR MetaCare SRL ha nominato Responsabile della Protezione dei Dati il <strong>Dott. Rolando Alberto Tavano</strong>. Puoi contattare il DPO all'indirizzo{" "}
+            <a href="mailto:info@tavano.it" className="text-brand-green hover:underline">info@tavano.it</a>.
           </Section>
 
           <Section title="3. Dati trattati">
@@ -53,7 +51,7 @@ function PrivacyPage() {
             <br /><br />
             <strong>Conservazione specifica:</strong> i dati sanitari sono conservati per il tempo necessario all'erogazione del servizio e comunque non oltre <strong>10 anni</strong> dalla cessazione del rapporto, in conformità con la normativa deontologica dell'Ordine degli Psicologi; in caso di revoca del consenso o richiesta di cancellazione i dati sono eliminati entro 30 giorni, fatti salvi gli obblighi legali di conservazione.
             <br /><br />
-            <strong>Revoca:</strong> puoi revocare in qualsiasi momento il consenso al trattamento dei dati sanitari accedendo all'area <a href="/i-miei-dati" className="text-brand-green hover:underline">I miei dati</a> o scrivendo a <a href="mailto:dpo@memindsport.it" className="text-brand-green hover:underline">dpo@memindsport.it</a>. La revoca comporta l'interruzione del servizio clinico ma non pregiudica la liceità dei trattamenti effettuati prima della revoca.
+            <strong>Revoca:</strong> puoi revocare in qualsiasi momento il consenso al trattamento dei dati sanitari accedendo all'area <a href="/i-miei-dati" className="text-brand-green hover:underline">I miei dati</a> o scrivendo a <a href="mailto:info@tavano.it" className="text-brand-green hover:underline">info@tavano.it</a>. La revoca comporta l'interruzione del servizio clinico ma non pregiudica la liceità dei trattamenti effettuati prima della revoca.
           </Section>
 
           <Section title="5. Finalità e base giuridica dei dati comuni">
