@@ -299,6 +299,36 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          athlete_id: string
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+          therapist_id: string
+        }
+        Insert: {
+          athlete_id: string
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+          therapist_id: string
+        }
+        Update: {
+          athlete_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+          therapist_id?: string
+        }
+        Relationships: []
+      }
       paths: {
         Row: {
           created_at: string
@@ -550,6 +580,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shared_materials: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          description: string | null
+          file_path: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          therapist_id: string
+          title: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          description?: string | null
+          file_path: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          therapist_id: string
+          title: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          description?: string | null
+          file_path?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          therapist_id?: string
+          title?: string
+        }
+        Relationships: []
       }
       suppressed_emails: {
         Row: {
