@@ -22,7 +22,7 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
-  const { isAuthenticated, isAdmin, isTherapist, user } = useAuth();
+  const { isAuthenticated, isAdmin, isTherapist, isAthlete, user } = useAuth();
 
   useEffect(() => {
     if (mobileMenuOpen && firstLinkRef.current) {
