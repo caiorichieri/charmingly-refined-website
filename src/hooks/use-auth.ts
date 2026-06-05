@@ -55,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isAdmin: roles.includes("admin"),
         isTherapist: roles.includes("therapist"),
+        isAthlete: roles.includes("athlete"),
         loading: false,
       });
       queryClient.invalidateQueries({ queryKey: ["session"] });
