@@ -128,7 +128,7 @@ function CookiePage() {
           <Section title="Contatti">
             Per qualsiasi domanda relativa all'utilizzo dei cookie scrivi a{" "}
             <a href="mailto:privacy@memindsport.it" className="text-brand-green hover:underline">privacy@memindsport.it</a> o al DPO all'indirizzo{" "}
-            <a href="mailto:dpo@memindsport.it" className="text-brand-green hover:underline">dpo@memindsport.it</a>.
+            <a href="mailto:info@tavano.it" className="text-brand-green hover:underline">info@tavano.it</a>.
           </Section>
         </div>
       </article>
