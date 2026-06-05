@@ -168,28 +168,31 @@ function AthleteArea() {
             )}
           </Card>
 
-          {/* Materiali (placeholder Step 2) */}
-          <Card>
-            <CardHead icon={FileText} title="Materiali condivisi" />
-            <p className="text-sm text-muted-foreground">
-              Qui troverai i documenti, video ed esercizi che il tuo terapeuta condividerà con te.
-            </p>
-            <p className="text-xs text-muted-foreground mt-3 italic">
-              Funzione in arrivo nel prossimo aggiornamento.
-            </p>
-          </Card>
+        </div>
 
-          {/* Messaggi (placeholder Step 2) */}
-          <Card>
-            <CardHead icon={MessageSquare} title="Messaggi" />
-            <p className="text-sm text-muted-foreground">
-              Comunica in modo sicuro con il tuo terapeuta tramite il sistema di messaggistica
-              integrato.
-            </p>
-            <p className="text-xs text-muted-foreground mt-3 italic">
-              Funzione in arrivo nel prossimo aggiornamento.
-            </p>
-          </Card>
+        {assignment?.therapist_id && user?.id && (
+          <div className="grid lg:grid-cols-2 gap-5 mt-5">
+            <Card>
+              <CardHead icon={MessageSquare} title="Messaggi con il terapeuta" />
+              <ChatThread
+                athleteId={user.id}
+                therapistId={assignment.therapist_id}
+                currentUserId={user.id}
+              />
+            </Card>
+
+            <Card>
+              <CardHead icon={FileText} title="Materiali condivisi" />
+              <MaterialsList
+                athleteId={user.id}
+                therapistId={assignment.therapist_id}
+                canUpload={false}
+              />
+            </Card>
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-5 mt-5">
 
           {/* Sessioni (placeholder) */}
           <Card>
