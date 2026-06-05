@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          resource: string
+          subject_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource: string
+          subject_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource?: string
+          subject_id?: string | null
+        }
+        Relationships: []
+      }
+      account_deletion_requests: {
+        Row: {
+          id: string
+          processed_at: string | null
+          reason: string | null
+          requested_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          processed_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          processed_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       athlete_assignments: {
         Row: {
           active: boolean
@@ -98,6 +155,42 @@ export type Database = {
           tag?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      cookie_consents: {
+        Row: {
+          analytics: boolean
+          anonymous_id: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          marketing: boolean
+          necessary: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          analytics?: boolean
+          anonymous_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          marketing?: boolean
+          necessary?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          analytics?: boolean
+          anonymous_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          marketing?: boolean
+          necessary?: boolean
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -677,6 +770,39 @@ export type Database = {
           photo_url?: string | null
           rating?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_consents: {
+        Row: {
+          created_at: string
+          document: string
+          granted: boolean
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          document: string
+          granted?: boolean
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          document?: string
+          granted?: boolean
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string
+          version?: string
         }
         Relationships: []
       }
