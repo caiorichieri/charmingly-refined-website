@@ -16,6 +16,7 @@ type AuthState = {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isTherapist: boolean;
+  isAthlete: boolean;
   loading: boolean;
 };
 
@@ -25,6 +26,7 @@ const initialAuthState: AuthState = {
   isAuthenticated: false,
   isAdmin: false,
   isTherapist: false,
+  isAthlete: false,
   loading: true,
 };
 
