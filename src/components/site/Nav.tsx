@@ -102,6 +102,11 @@ export function Nav() {
                       <Stethoscope size={14} /> Area terapeuta
                     </Link>
                   )}
+                  {isAthlete && !isAdmin && !isTherapist && (
+                    <Link to="/area-atleta" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-off">
+                      <Trophy size={14} /> La mia area
+                    </Link>
+                  )}
                   <button onClick={logout} className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-off text-red-600">
                     <LogOut size={14} /> Logout
                   </button>
