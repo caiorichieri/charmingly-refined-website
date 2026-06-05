@@ -22,6 +22,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedAreaTerapeutaRouteImport } from './routes/_authenticated/area-terapeuta'
+import { Route as AuthenticatedAreaAtletaRouteImport } from './routes/_authenticated/area-atleta'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -100,6 +101,11 @@ const AuthenticatedAreaTerapeutaRoute =
     path: '/area-terapeuta',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAreaAtletaRoute = AuthenticatedAreaAtletaRouteImport.update({
+  id: '/area-atleta',
+  path: '/area-atleta',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
+  '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/admin'
+    | '/area-atleta'
     | '/area-terapeuta'
     | '/blog/$slug'
     | '/admin/blog'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termini'
+    | '/area-atleta'
     | '/area-terapeuta'
     | '/blog/$slug'
     | '/admin/blog'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/_authenticated/admin'
+    | '/_authenticated/area-atleta'
     | '/_authenticated/area-terapeuta'
     | '/blog/$slug'
     | '/_authenticated/admin/blog'
@@ -432,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAreaTerapeutaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/area-atleta': {
+      id: '/_authenticated/area-atleta'
+      path: '/area-atleta'
+      fullPath: '/area-atleta'
+      preLoaderRoute: typeof AuthenticatedAreaAtletaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -550,11 +569,13 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedAreaAtletaRoute: typeof AuthenticatedAreaAtletaRoute
   AuthenticatedAreaTerapeutaRoute: typeof AuthenticatedAreaTerapeutaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedAreaAtletaRoute: AuthenticatedAreaAtletaRoute,
   AuthenticatedAreaTerapeutaRoute: AuthenticatedAreaTerapeutaRoute,
 }
 
