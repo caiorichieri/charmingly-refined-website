@@ -28,7 +28,7 @@ function PrivacyPage() {
 
           <Section title="1. Titolare del trattamento">
             Titolare del trattamento è <strong>MetaCare SRL</strong>, con sede in Codroipo (UD), gestore del marchio MeMindSport. Per qualsiasi richiesta puoi scrivere a{" "}
-            <a href="mailto:info@memindsport.it" className="text-brand-green hover:underline">info@memindsport.it</a>.
+            <a href="mailto:privacy@memindsport.it" className="text-brand-green hover:underline">privacy@memindsport.it</a>.
           </Section>
 
           <Section title="2. Responsabile della Protezione dei Dati (DPO)">
@@ -65,9 +65,9 @@ function PrivacyPage() {
           <Section title="7. Destinatari e responsabili esterni">
             I dati possono essere comunicati a fornitori che operano come responsabili del trattamento (Art. 28 GDPR), selezionati per garantire adeguate misure di sicurezza:
             <br /><br />
-            • <strong>Lovable Cloud / Supabase</strong> (hosting database, autenticazione, storage) — server UE — DPA sottoscritto.
+            • <strong>Lovable Cloud / infrastruttura backend</strong> (hosting database, autenticazione, storage) — server UE ove disponibili, DPA sottoscritto e, per eventuali trasferimenti extra-UE, Clausole Contrattuali Standard approvate dalla Commissione Europea e misure supplementari di sicurezza.
             <br />
-            • <strong>Cloudflare</strong> (CDN, infrastruttura edge) — privacy: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener" className="text-brand-green hover:underline">cloudflare.com/privacypolicy</a>.
+            • <strong>Cloudflare</strong> (CDN, sicurezza, protezione DDoS e infrastruttura edge) — DPA e garanzie per trasferimenti internazionali basate su Clausole Contrattuali Standard; privacy: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener" className="text-brand-green hover:underline">cloudflare.com/privacypolicy</a>.
             <br /><br />
             Non vendiamo dati a terzi. Non effettuiamo trasferimenti extra-UE non protetti da clausole contrattuali standard.
           </Section>
