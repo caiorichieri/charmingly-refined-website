@@ -54,18 +54,24 @@ function BlogAdmin() {
   const save = useMutation({
     mutationFn: async (p: Partial<Post>) => {
       const { id, ...rest } = p;
+      // Auto-generate slug from title if empty, and normalize any user-entered slug
+      const normalizedSlug = slugify(rest.slug && rest.slug.trim() ? rest.slug : (rest.title ?? ""));
+      if (!normalizedSlug) throw new Error("Titolo o slug mancante");
+      const payload = { ...rest, slug: normalizedSlug };
       if (id) {
-        const { error } = await supabase.from("blog_posts").update(rest).eq("id", id);
+        const { error } = await supabase.from("blog_posts").update(payload).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("blog_posts").insert(rest as never);
+        const { error } = await supabase.from("blog_posts").insert(payload as never);
         if (error) throw error;
       }
     },
     onSuccess: () => {
       toast.success("Salvato");
       qc.invalidateQueries({ queryKey: ["admin", "blog_posts"] });
-      qc.invalidateQueries({ queryKey: ["public", "blog_posts"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_featured"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_all"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_post"] });
       setEditing(null);
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Errore"),
@@ -79,7 +85,9 @@ function BlogAdmin() {
     onSuccess: () => {
       toast.success("Eliminato");
       qc.invalidateQueries({ queryKey: ["admin", "blog_posts"] });
-      qc.invalidateQueries({ queryKey: ["public", "blog_posts"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_featured"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_all"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_post"] });
     },
   });
 
