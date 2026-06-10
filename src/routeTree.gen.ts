@@ -20,6 +20,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedIMieiDatiRouteImport } from './routes/_authenticated/i-miei-dati'
 import { Route as AuthenticatedAreaTerapeutaRouteImport } from './routes/_authenticated/area-terapeuta'
@@ -92,6 +93,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BlogRoute,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/': typeof BlogIndexRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/compliance': typeof AuthenticatedAdminComplianceRoute
@@ -223,7 +230,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRouteWithChildren
   '/contatti': typeof ContattiRoute
   '/cookie': typeof CookieRoute
   '/eventi': typeof EventiRoute
@@ -235,6 +241,7 @@ export interface FileRoutesByTo {
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog': typeof BlogIndexRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/compliance': typeof AuthenticatedAdminComplianceRoute
@@ -267,6 +274,7 @@ export interface FileRoutesById {
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/_authenticated/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/': typeof BlogIndexRoute
   '/_authenticated/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/_authenticated/admin/compliance': typeof AuthenticatedAdminComplianceRoute
@@ -299,6 +307,7 @@ export interface FileRouteTypes {
     | '/area-terapeuta'
     | '/i-miei-dati'
     | '/blog/$slug'
+    | '/blog/'
     | '/admin/assignments'
     | '/admin/blog'
     | '/admin/compliance'
@@ -316,7 +325,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/blog'
     | '/contatti'
     | '/cookie'
     | '/eventi'
@@ -328,6 +336,7 @@ export interface FileRouteTypes {
     | '/area-terapeuta'
     | '/i-miei-dati'
     | '/blog/$slug'
+    | '/blog'
     | '/admin/assignments'
     | '/admin/blog'
     | '/admin/compliance'
@@ -359,6 +368,7 @@ export interface FileRouteTypes {
     | '/_authenticated/area-terapeuta'
     | '/_authenticated/i-miei-dati'
     | '/blog/$slug'
+    | '/blog/'
     | '/_authenticated/admin/assignments'
     | '/_authenticated/admin/blog'
     | '/_authenticated/admin/compliance'
@@ -467,6 +477,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/blog/$slug': {
       id: '/blog/$slug'
@@ -650,10 +667,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
 }
 
 const BlogRouteChildren: BlogRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
