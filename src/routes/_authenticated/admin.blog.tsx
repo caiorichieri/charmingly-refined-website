@@ -154,8 +154,16 @@ function PostForm({ post, onClose, onSave }: { post: Partial<Post>; onClose: () 
           <button onClick={onClose} className="p-2 hover:bg-off rounded"><X size={18} /></button>
         </div>
         <div className="p-6 flex flex-col gap-4">
-          <Field label="Titolo"><input className="input" value={form.title ?? ""} onChange={(e) => set("title", e.target.value)} /></Field>
-          <Field label="Slug (URL)"><input className="input" value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} placeholder="ansia-da-prestazione" /></Field>
+          <Field label="Titolo"><input className="input" value={form.title ?? ""} onChange={(e) => {
+            const title = e.target.value;
+            setForm((f) => {
+              const currentSlug = f.slug ?? "";
+              const autoSlugFromPrev = slugify(f.title ?? "");
+              const shouldSync = !currentSlug || currentSlug === autoSlugFromPrev;
+              return { ...f, title, slug: shouldSync ? slugify(title) : currentSlug };
+            });
+          }} /></Field>
+          <Field label="Slug (URL)"><input className="input" value={form.slug ?? ""} onChange={(e) => set("slug", slugify(e.target.value))} placeholder="ansia-da-prestazione" /></Field>
           <Field label="Tag"><input className="input" value={form.tag ?? ""} onChange={(e) => set("tag", e.target.value)} /></Field>
           <Field label="Estratto"><textarea className="input" rows={2} value={form.excerpt ?? ""} onChange={(e) => set("excerpt", e.target.value)} /></Field>
           <Field label="Contenuto"><textarea className="input" rows={6} value={form.content ?? ""} onChange={(e) => set("content", e.target.value)} /></Field>
