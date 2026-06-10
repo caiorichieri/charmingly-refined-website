@@ -26,6 +26,18 @@ function emptyPost(): Partial<Post> {
   return { slug: "", tag: "", title: "", excerpt: "", content: "", cover_url: "", reading_time: "5 min", published: true, display_order: 0 };
 }
 
+function slugify(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function BlogAdmin() {
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Partial<Post> | null>(null);
@@ -42,18 +54,24 @@ function BlogAdmin() {
   const save = useMutation({
     mutationFn: async (p: Partial<Post>) => {
       const { id, ...rest } = p;
+      // Auto-generate slug from title if empty, and normalize any user-entered slug
+      const normalizedSlug = slugify(rest.slug && rest.slug.trim() ? rest.slug : (rest.title ?? ""));
+      if (!normalizedSlug) throw new Error("Titolo o slug mancante");
+      const payload = { ...rest, slug: normalizedSlug };
       if (id) {
-        const { error } = await supabase.from("blog_posts").update(rest).eq("id", id);
+        const { error } = await supabase.from("blog_posts").update(payload).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("blog_posts").insert(rest as never);
+        const { error } = await supabase.from("blog_posts").insert(payload as never);
         if (error) throw error;
       }
     },
     onSuccess: () => {
       toast.success("Salvato");
       qc.invalidateQueries({ queryKey: ["admin", "blog_posts"] });
-      qc.invalidateQueries({ queryKey: ["public", "blog_posts"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_featured"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_all"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_post"] });
       setEditing(null);
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Errore"),
@@ -67,7 +85,9 @@ function BlogAdmin() {
     onSuccess: () => {
       toast.success("Eliminato");
       qc.invalidateQueries({ queryKey: ["admin", "blog_posts"] });
-      qc.invalidateQueries({ queryKey: ["public", "blog_posts"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_featured"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_posts_all"] });
+      qc.invalidateQueries({ queryKey: ["public", "blog_post"] });
     },
   });
 
@@ -134,8 +154,16 @@ function PostForm({ post, onClose, onSave }: { post: Partial<Post>; onClose: () 
           <button onClick={onClose} className="p-2 hover:bg-off rounded"><X size={18} /></button>
         </div>
         <div className="p-6 flex flex-col gap-4">
-          <Field label="Titolo"><input className="input" value={form.title ?? ""} onChange={(e) => set("title", e.target.value)} /></Field>
-          <Field label="Slug (URL)"><input className="input" value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} placeholder="ansia-da-prestazione" /></Field>
+          <Field label="Titolo"><input className="input" value={form.title ?? ""} onChange={(e) => {
+            const title = e.target.value;
+            setForm((f) => {
+              const currentSlug = f.slug ?? "";
+              const autoSlugFromPrev = slugify(f.title ?? "");
+              const shouldSync = !currentSlug || currentSlug === autoSlugFromPrev;
+              return { ...f, title, slug: shouldSync ? slugify(title) : currentSlug };
+            });
+          }} /></Field>
+          <Field label="Slug (URL)"><input className="input" value={form.slug ?? ""} onChange={(e) => set("slug", slugify(e.target.value))} placeholder="ansia-da-prestazione" /></Field>
           <Field label="Tag"><input className="input" value={form.tag ?? ""} onChange={(e) => set("tag", e.target.value)} /></Field>
           <Field label="Estratto"><textarea className="input" rows={2} value={form.excerpt ?? ""} onChange={(e) => set("excerpt", e.target.value)} /></Field>
           <Field label="Contenuto"><textarea className="input" rows={6} value={form.content ?? ""} onChange={(e) => set("content", e.target.value)} /></Field>
