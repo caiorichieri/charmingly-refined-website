@@ -26,6 +26,18 @@ function emptyPost(): Partial<Post> {
   return { slug: "", tag: "", title: "", excerpt: "", content: "", cover_url: "", reading_time: "5 min", published: true, display_order: 0 };
 }
 
+function slugify(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function BlogAdmin() {
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Partial<Post> | null>(null);
