@@ -23,6 +23,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [role, setRole] = useState<"athlete" | "therapist">("athlete");
   const [busy, setBusy] = useState(false);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentHealth, setConsentHealth] = useState(false);
