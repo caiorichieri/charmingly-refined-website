@@ -135,16 +135,45 @@ function AuthPage() {
 
           <form onSubmit={handleEmail} className="flex flex-col gap-4">
             {mode === "signup" && (
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold text-foreground/80">Nome</span>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="border border-line rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                  placeholder="Mario Rossi"
-                />
-              </label>
+              <>
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-xs font-semibold text-foreground/80">Nome</span>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="border border-line rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+                    placeholder="Mario Rossi"
+                  />
+                </label>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-xs font-semibold text-foreground/80">Sono…</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRole("athlete")}
+                      className={`border rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                        role === "athlete"
+                          ? "border-brand-green bg-brand-green/10 text-brand-green"
+                          : "border-line text-foreground/70 hover:bg-off"
+                      }`}
+                    >
+                      Atleta
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole("therapist")}
+                      className={`border rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                        role === "therapist"
+                          ? "border-brand-green bg-brand-green/10 text-brand-green"
+                          : "border-line text-foreground/70 hover:bg-off"
+                      }`}
+                    >
+                      Terapeuta
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
             <label className="flex flex-col gap-1.5">
               <span className="text-xs font-semibold text-foreground/80">Email</span>
