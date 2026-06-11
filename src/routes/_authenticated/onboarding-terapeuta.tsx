@@ -120,18 +120,24 @@ function OnboardingTerapeuta() {
         bio: form.bio.trim() || null,
         completed_at: new Date().toISOString(),
       };
-      const { error } = await supabase
+      const { error: upsertErr } = await supabase
         .from("therapist_profiles")
-        .upsert(payload, { onConflict: "user_id" });
-      if (error) throw error;
-      // sync display_name on profile
-      await supabase
+        .upsert(payload, { onConflict: "user_id" })
+        .select()
+        .maybeSingle();
+      if (upsertErr) {
+        console.error("[onboarding-terapeuta] upsert error", upsertErr);
+        throw upsertErr;
+      }
+      const { error: profileErr } = await supabase
         .from("profiles")
         .update({ display_name: form.full_name.trim() })
         .eq("id", user.id);
+      if (profileErr) console.error("[onboarding-terapeuta] profile update error", profileErr);
       toast.success("Profilo professionale salvato.");
       void navigate({ to: "/area-terapeuta", replace: true });
     } catch (err) {
+      console.error("[onboarding-terapeuta] save failed", err);
       toast.error(err instanceof Error ? err.message : "Errore nel salvataggio");
     } finally {
       setBusy(false);

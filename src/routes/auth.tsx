@@ -52,7 +52,7 @@ function AuthPage() {
     void go();
   }, [isAuthenticated, isAdmin, isTherapist, loading, navigate]);
 
-  if (isAuthenticated && !loading) {
+  if (loading || isAuthenticated || busy) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-off">
         <div className="text-sm text-muted-foreground">Accesso in corso…</div>
@@ -78,7 +78,6 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        // Registriamo i consensi prestati (granulari, versionati)
         const uid = data.user?.id;
         if (uid) {
           await supabase.from("user_consents").insert([
@@ -86,15 +85,19 @@ function AuthPage() {
             { user_id: uid, document: "health_data_art9", version: "1.0", granted: true, user_agent: navigator.userAgent.slice(0, 500) },
           ]);
         }
-        toast.success("Account creato. Controlla la tua email per confermare l'accesso.");
+        if (!data.session) {
+          toast.success("Account creato. Controlla la tua email per confermare l'accesso.");
+          setBusy(false);
+        } else {
+          // session present, stay in busy state — useEffect will redirect
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast.success("Bentornato!");
+        // keep busy=true; useEffect redirects once auth state propagates
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Errore durante l'accesso");
-    } finally {
       setBusy(false);
     }
   }
