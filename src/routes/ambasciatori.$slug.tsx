@@ -263,12 +263,13 @@ function AmbasciatoreDetail() {
               <h2 className="h-display text-white text-[clamp(28px,3.5vw,44px)] mb-8">
                 {a.full_name} racconta MeMindSport.
               </h2>
-              <div className="rounded-2xl overflow-hidden bg-black aspect-video shadow-card">
+              <div className="rounded-2xl overflow-hidden bg-black aspect-video shadow-card relative group">
                 <video
                   src={a.video_url}
                   controls
                   playsInline
                   preload="metadata"
+                  poster={a.photo_url ?? undefined}
                   className="w-full h-full object-contain bg-black"
                 />
               </div>

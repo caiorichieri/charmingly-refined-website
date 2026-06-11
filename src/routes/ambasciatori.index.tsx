@@ -31,6 +31,7 @@ type Row = {
   tagline: string | null;
   location: string | null;
   photo_url: string | null;
+  video_url: string | null;
   roles: { label: string; organization: string }[];
 };
 
@@ -40,7 +41,7 @@ function AmbasciatoriIndex() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("ambassadors" as never)
-        .select("id, slug, full_name, tagline, location, photo_url, roles")
+        .select("id, slug, full_name, tagline, location, photo_url, video_url, roles")
         .eq("published", true)
         .order("display_order");
       if (error) throw error;
