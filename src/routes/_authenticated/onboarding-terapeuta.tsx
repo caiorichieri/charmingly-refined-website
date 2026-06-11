@@ -136,9 +136,16 @@ function OnboardingTerapeuta() {
       if (profileErr) console.error("[onboarding-terapeuta] profile update error", profileErr);
       toast.success("Profilo professionale salvato.");
       void navigate({ to: "/area-terapeuta", replace: true });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("[onboarding-terapeuta] save failed", err);
-      toast.error(err instanceof Error ? err.message : "Errore nel salvataggio");
+      let msg = "Errore nel salvataggio";
+      if (err && typeof err === "object") {
+        const e = err as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown };
+        if (typeof e.message === "string" && e.message) msg = e.message;
+        else if (typeof e.details === "string" && e.details) msg = e.details;
+        if (typeof e.code === "string" && e.code) msg = `[${e.code}] ${msg}`;
+      }
+      toast.error(msg);
     } finally {
       setBusy(false);
     }
