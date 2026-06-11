@@ -773,6 +773,63 @@ export type Database = {
         }
         Relationships: []
       }
+      therapist_profiles: {
+        Row: {
+          anni_esperienza: number | null
+          bio: string | null
+          citta: string | null
+          codice_fiscale: string | null
+          completed_at: string | null
+          created_at: string
+          formazione: string | null
+          full_name: string
+          numero_albo: string | null
+          ordine_regionale: string | null
+          paese: string | null
+          phone: string | null
+          specializzazioni: string[] | null
+          titolo_studio: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          anni_esperienza?: number | null
+          bio?: string | null
+          citta?: string | null
+          codice_fiscale?: string | null
+          completed_at?: string | null
+          created_at?: string
+          formazione?: string | null
+          full_name: string
+          numero_albo?: string | null
+          ordine_regionale?: string | null
+          paese?: string | null
+          phone?: string | null
+          specializzazioni?: string[] | null
+          titolo_studio?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anni_esperienza?: number | null
+          bio?: string | null
+          citta?: string | null
+          codice_fiscale?: string | null
+          completed_at?: string | null
+          created_at?: string
+          formazione?: string | null
+          full_name?: string
+          numero_albo?: string | null
+          ordine_regionale?: string | null
+          paese?: string | null
+          phone?: string | null
+          specializzazioni?: string[] | null
+          titolo_studio?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_consents: {
         Row: {
           created_at: string
