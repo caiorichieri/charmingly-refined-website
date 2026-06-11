@@ -92,6 +92,7 @@ export type Database = {
           tagline: string | null
           updated_at: string
           values: Json
+          video_url: string | null
           website_url: string | null
         }
         Insert: {
@@ -114,6 +115,7 @@ export type Database = {
           tagline?: string | null
           updated_at?: string
           values?: Json
+          video_url?: string | null
           website_url?: string | null
         }
         Update: {
@@ -136,6 +138,7 @@ export type Database = {
           tagline?: string | null
           updated_at?: string
           values?: Json
+          video_url?: string | null
           website_url?: string | null
         }
         Relationships: []
