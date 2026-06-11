@@ -83,6 +83,32 @@ function AmbasciatoreDetail() {
   });
   const a: Ambassador | null = data ?? initial;
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoSectionRef = useRef<HTMLElement>(null);
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+
+  useEffect(() => {
+    if (!videoSectionRef.current || !a?.video_url || hasAutoPlayed) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && videoRef.current && !hasAutoPlayed) {
+            setHasAutoPlayed(true);
+            const timer = setTimeout(() => {
+              videoRef.current?.play().catch(() => {});
+            }, 2500);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(videoSectionRef.current);
+    return () => observer.disconnect();
+  }, [a?.video_url, hasAutoPlayed]);
+
   if (!a) return null;
 
   return (
