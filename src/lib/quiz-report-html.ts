@@ -111,48 +111,44 @@ function mappaSVG(result: ProfileResult): string {
   </svg>`;
 }
 
-// ---------- Ragnatela (SVG) ----------
+// ---------- Distribuzione profilo (HTML bar chart, email-safe) ----------
 function ragnatelaSVG(result: ProfileResult): string {
-  const W = 460, H = 380, cx = W / 2, cy = H / 2, R = 140;
-  const N = PROFILE_ORDER.length;
   const max = 12;
-  const angle = (i: number) => (-Math.PI / 2) + (i * 2 * Math.PI) / N;
-  const point = (i: number, v: number) => ({
-    x: cx + Math.cos(angle(i)) * R * (v / max),
-    y: cy + Math.sin(angle(i)) * R * (v / max),
-  });
-  const grid = [3, 6, 9, 12]
-    .map((step) => {
-      const pts = PROFILE_ORDER.map((_, i) => {
-        const p = point(i, step);
-        return `${p.x},${p.y}`;
-      }).join(" ");
-      return `<polygon points="${pts}" fill="none" stroke="#000" stroke-opacity="0.1"/>`;
-    })
-    .join("");
-  const axes = PROFILE_ORDER.map((_, i) => {
-    const p = point(i, max);
-    return `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#000" stroke-opacity="0.08"/>`;
-  }).join("");
-  const labels = PROFILE_ORDER.map((k, i) => {
-    const p = point(i, max + 2);
-    return `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="${PROFILE_COLORS[k]}" font-weight="600">${PROFILE_LABELS[k].short}</text>`;
-  }).join("");
-  const shape = PROFILE_ORDER.map((_, i) => {
-    const p = point(i, result.scores[i] ?? 0);
-    return `${p.x},${p.y}`;
-  }).join(" ");
-  const primary = PROFILE_COLORS[result.primary];
-  const dots = PROFILE_ORDER.map((_, i) => {
-    const p = point(i, result.scores[i] ?? 0);
-    return `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${primary}"/>`;
+  const rows = PROFILE_ORDER.map((k, i) => {
+    const v = result.scores[i] ?? 0;
+    const pct = Math.max(2, Math.round((v / max) * 100));
+    const col = PROFILE_COLORS[k];
+    const isPrimary = k === result.primary;
+    const isSecondary = k === result.secondary;
+    const weight = isPrimary ? 700 : isSecondary ? 600 : 500;
+    const labelColor = isPrimary || isSecondary ? col : "#333";
+    return `
+      <tr>
+        <td style="padding:6px 10px 6px 0;font-size:13px;color:${labelColor};font-weight:${weight};white-space:nowrap;vertical-align:middle;width:140px">
+          ${escape(PROFILE_LABELS[k].name)}
+        </td>
+        <td style="padding:6px 0;vertical-align:middle">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse">
+            <tr>
+              <td style="background:#f0f0f0;border-radius:6px;height:14px;padding:0">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="${pct}%" style="border-collapse:collapse">
+                  <tr>
+                    <td style="background:${col};height:14px;border-radius:6px;font-size:0;line-height:0">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td style="padding:6px 0 6px 10px;font-size:12px;color:${col};font-weight:${weight};text-align:right;width:40px;vertical-align:middle">
+          ${v}/${max}
+        </td>
+      </tr>`;
   }).join("");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" style="max-width:460px;display:block;margin:0 auto">
-    ${grid}${axes}${labels}
-    <polygon points="${shape}" fill="${primary}" fill-opacity="0.25" stroke="${primary}" stroke-width="2"/>
-    ${dots}
-  </svg>`;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;max-width:560px;margin:0 auto">
+    ${rows}
+  </table>`;
 }
 
 // ---------- HTML report ----------
