@@ -21,7 +21,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as AmbasciatoriIndexRouteImport } from './routes/ambasciatori.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AmbasciatoriSlugRouteImport } from './routes/ambasciatori.$slug'
 import { Route as AuthenticatedOnboardingTerapeutaRouteImport } from './routes/_authenticated/onboarding-terapeuta'
 import { Route as AuthenticatedIMieiDatiRouteImport } from './routes/_authenticated/i-miei-dati'
 import { Route as AuthenticatedAreaTerapeutaRouteImport } from './routes/_authenticated/area-terapeuta'
@@ -39,6 +41,7 @@ import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminComplianceRouteImport } from './routes/_authenticated/admin.compliance'
 import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated/admin.blog'
 import { Route as AuthenticatedAdminAssignmentsRouteImport } from './routes/_authenticated/admin.assignments'
+import { Route as AuthenticatedAdminAmbassadorsRouteImport } from './routes/_authenticated/admin.ambassadors'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const TerminiRoute = TerminiRouteImport.update({
@@ -100,10 +103,20 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BlogRoute,
 } as any)
+const AmbasciatoriIndexRoute = AmbasciatoriIndexRouteImport.update({
+  id: '/ambasciatori/',
+  path: '/ambasciatori/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogRoute,
+} as any)
+const AmbasciatoriSlugRoute = AmbasciatoriSlugRouteImport.update({
+  id: '/ambasciatori/$slug',
+  path: '/ambasciatori/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedOnboardingTerapeutaRoute =
   AuthenticatedOnboardingTerapeutaRouteImport.update({
@@ -196,6 +209,12 @@ const AuthenticatedAdminAssignmentsRoute =
     path: '/assignments',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAmbassadorsRoute =
+  AuthenticatedAdminAmbassadorsRouteImport.update({
+    id: '/ambassadors',
+    path: '/ambassadors',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -219,8 +238,11 @@ export interface FileRoutesByFullPath {
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/onboarding-terapeuta': typeof AuthenticatedOnboardingTerapeutaRoute
+  '/ambasciatori/$slug': typeof AmbasciatoriSlugRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/ambasciatori/': typeof AmbasciatoriIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/admin/ambassadors': typeof AuthenticatedAdminAmbassadorsRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/compliance': typeof AuthenticatedAdminComplianceRoute
@@ -249,8 +271,11 @@ export interface FileRoutesByTo {
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/onboarding-terapeuta': typeof AuthenticatedOnboardingTerapeutaRoute
+  '/ambasciatori/$slug': typeof AmbasciatoriSlugRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/ambasciatori': typeof AmbasciatoriIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/admin/ambassadors': typeof AuthenticatedAdminAmbassadorsRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/compliance': typeof AuthenticatedAdminComplianceRoute
@@ -283,8 +308,11 @@ export interface FileRoutesById {
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/_authenticated/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
   '/_authenticated/onboarding-terapeuta': typeof AuthenticatedOnboardingTerapeutaRoute
+  '/ambasciatori/$slug': typeof AmbasciatoriSlugRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/ambasciatori/': typeof AmbasciatoriIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/_authenticated/admin/ambassadors': typeof AuthenticatedAdminAmbassadorsRoute
   '/_authenticated/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
   '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/_authenticated/admin/compliance': typeof AuthenticatedAdminComplianceRoute
@@ -317,8 +345,11 @@ export interface FileRouteTypes {
     | '/area-terapeuta'
     | '/i-miei-dati'
     | '/onboarding-terapeuta'
+    | '/ambasciatori/$slug'
     | '/blog/$slug'
+    | '/ambasciatori/'
     | '/blog/'
+    | '/admin/ambassadors'
     | '/admin/assignments'
     | '/admin/blog'
     | '/admin/compliance'
@@ -347,8 +378,11 @@ export interface FileRouteTypes {
     | '/area-terapeuta'
     | '/i-miei-dati'
     | '/onboarding-terapeuta'
+    | '/ambasciatori/$slug'
     | '/blog/$slug'
+    | '/ambasciatori'
     | '/blog'
+    | '/admin/ambassadors'
     | '/admin/assignments'
     | '/admin/blog'
     | '/admin/compliance'
@@ -380,8 +414,11 @@ export interface FileRouteTypes {
     | '/_authenticated/area-terapeuta'
     | '/_authenticated/i-miei-dati'
     | '/_authenticated/onboarding-terapeuta'
+    | '/ambasciatori/$slug'
     | '/blog/$slug'
+    | '/ambasciatori/'
     | '/blog/'
+    | '/_authenticated/admin/ambassadors'
     | '/_authenticated/admin/assignments'
     | '/_authenticated/admin/blog'
     | '/_authenticated/admin/compliance'
@@ -409,6 +446,8 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TerminiRoute: typeof TerminiRoute
+  AmbasciatoriSlugRoute: typeof AmbasciatoriSlugRoute
+  AmbasciatoriIndexRoute: typeof AmbasciatoriIndexRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -498,12 +537,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/ambasciatori/': {
+      id: '/ambasciatori/'
+      path: '/ambasciatori'
+      fullPath: '/ambasciatori/'
+      preLoaderRoute: typeof AmbasciatoriIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/ambasciatori/$slug': {
+      id: '/ambasciatori/$slug'
+      path: '/ambasciatori/$slug'
+      fullPath: '/ambasciatori/$slug'
+      preLoaderRoute: typeof AmbasciatoriSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/onboarding-terapeuta': {
       id: '/_authenticated/onboarding-terapeuta'
@@ -624,6 +677,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAssignmentsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/ambassadors': {
+      id: '/_authenticated/admin/ambassadors'
+      path: '/ambassadors'
+      fullPath: '/admin/ambassadors'
+      preLoaderRoute: typeof AuthenticatedAdminAmbassadorsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -635,6 +695,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAmbassadorsRoute: typeof AuthenticatedAdminAmbassadorsRoute
   AuthenticatedAdminAssignmentsRoute: typeof AuthenticatedAdminAssignmentsRoute
   AuthenticatedAdminBlogRoute: typeof AuthenticatedAdminBlogRoute
   AuthenticatedAdminComplianceRoute: typeof AuthenticatedAdminComplianceRoute
@@ -650,6 +711,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAmbassadorsRoute: AuthenticatedAdminAmbassadorsRoute,
   AuthenticatedAdminAssignmentsRoute: AuthenticatedAdminAssignmentsRoute,
   AuthenticatedAdminBlogRoute: AuthenticatedAdminBlogRoute,
   AuthenticatedAdminComplianceRoute: AuthenticatedAdminComplianceRoute,
@@ -711,6 +773,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TerminiRoute: TerminiRoute,
+  AmbasciatoriSlugRoute: AmbasciatoriSlugRoute,
+  AmbasciatoriIndexRoute: AmbasciatoriIndexRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport

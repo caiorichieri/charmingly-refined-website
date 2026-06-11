@@ -74,11 +74,12 @@ export const Route = createFileRoute("/ambasciatori/$slug")({
 function AmbasciatoreDetail() {
   const { slug } = Route.useParams();
   const initial = Route.useLoaderData().ambassador;
-  const { data: a = initial } = useQuery({
+  const { data } = useQuery<Ambassador | null>({
     queryKey: ["public", "ambassador", slug],
     queryFn: () => fetchAmbassador(slug),
     initialData: initial,
   });
+  const a: Ambassador | null = data ?? initial;
 
   if (!a) return null;
 
