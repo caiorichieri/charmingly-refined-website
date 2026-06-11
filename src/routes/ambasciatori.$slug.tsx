@@ -295,6 +295,7 @@ function AmbasciatoreDetail() {
                   src={a.video_url}
                   controls
                   muted
+                  autoPlay={shouldAutoPlay}
                   playsInline
                   preload="metadata"
                   poster={a.photo_url ?? undefined}
