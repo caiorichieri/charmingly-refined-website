@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,8 +20,29 @@ type AthleteRow = {
 };
 
 function TherapistArea() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<string | null>(null);
+
+  const { data: tprofile, isLoading: loadingProfile } = useQuery({
+    queryKey: ["therapist_profile_check", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("therapist_profiles")
+        .select("completed_at")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (loadingProfile || isAdmin) return;
+    if (!tprofile?.completed_at) {
+      void navigate({ to: "/onboarding-terapeuta", replace: true });
+    }
+  }, [tprofile, loadingProfile, isAdmin, navigate]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
