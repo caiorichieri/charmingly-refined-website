@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 const links = [
   { href: "/#come-funziona", label: "Come funziona" },
   { href: "/#professionisti", label: "I professionisti" },
+  { href: "/ambasciatori", label: "Ambasciatori" },
   { href: "/#immersivo", label: "Ambienti immersivi" },
   { href: "/#prezzi", label: "Prezzi" },
   { href: "/eventi", label: "Formazione" },
