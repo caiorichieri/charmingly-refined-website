@@ -1,5 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useRef, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -81,6 +82,31 @@ function AmbasciatoreDetail() {
     initialData: initial,
   });
   const a: Ambassador | null = data ?? initial;
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoSectionRef = useRef<HTMLElement>(null);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
+
+  useEffect(() => {
+    if (!videoSectionRef.current || !a?.video_url || shouldAutoPlay) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !shouldAutoPlay) {
+            const timer = setTimeout(() => {
+              setShouldAutoPlay(true);
+            }, 2500);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(videoSectionRef.current);
+    return () => observer.disconnect();
+  }, [a?.video_url, shouldAutoPlay]);
 
   if (!a) return null;
 
@@ -257,7 +283,7 @@ function AmbasciatoreDetail() {
 
         {/* Video */}
         {a.video_url && (
-          <section className="bg-ink py-20 px-6 md:px-12">
+          <section ref={videoSectionRef} className="bg-ink py-20 px-6 md:px-12">
             <div className="max-w-[1000px] mx-auto">
               <div className="eyebrow text-white/60 mb-3">In sua voce</div>
               <h2 className="h-display text-white text-[clamp(28px,3.5vw,44px)] mb-8">
@@ -265,8 +291,11 @@ function AmbasciatoreDetail() {
               </h2>
               <div className="rounded-2xl overflow-hidden bg-black aspect-video shadow-card relative group">
                 <video
+                  ref={videoRef}
                   src={a.video_url}
                   controls
+                  muted
+                  autoPlay={shouldAutoPlay}
                   playsInline
                   preload="metadata"
                   poster={a.photo_url ?? undefined}
