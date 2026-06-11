@@ -85,18 +85,17 @@ function AmbasciatoreDetail() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoSectionRef = useRef<HTMLElement>(null);
-  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
 
   useEffect(() => {
-    if (!videoSectionRef.current || !a?.video_url || hasAutoPlayed) return;
+    if (!videoSectionRef.current || !a?.video_url || shouldAutoPlay) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && videoRef.current && !hasAutoPlayed) {
-            setHasAutoPlayed(true);
+          if (entry.isIntersecting && !shouldAutoPlay) {
             const timer = setTimeout(() => {
-              videoRef.current?.play().catch(() => {});
+              setShouldAutoPlay(true);
             }, 2500);
             observer.disconnect();
           }
@@ -107,7 +106,7 @@ function AmbasciatoreDetail() {
 
     observer.observe(videoSectionRef.current);
     return () => observer.disconnect();
-  }, [a?.video_url, hasAutoPlayed]);
+  }, [a?.video_url, shouldAutoPlay]);
 
   if (!a) return null;
 
