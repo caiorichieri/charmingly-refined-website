@@ -102,7 +102,7 @@ function AmbasciatoriIndex() {
                           src={a.photo_url}
                           alt={a.full_name}
                           loading="lazy"
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
                         />
                       )}
                     </div>
