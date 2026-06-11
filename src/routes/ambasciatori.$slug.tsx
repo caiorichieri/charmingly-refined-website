@@ -15,6 +15,7 @@ type Ambassador = {
   photo_url: string | null;
   cover_url: string | null;
   website_url: string | null;
+  video_url: string | null;
   social_links: Record<string, string>;
   roles: { label: string; organization: string }[];
   stats: { value: string; label: string }[];
