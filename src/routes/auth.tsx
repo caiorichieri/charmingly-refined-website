@@ -30,10 +30,26 @@ function AuthPage() {
 
   useEffect(() => {
     if (!isAuthenticated || loading) return;
-    void navigate({
-      to: isAdmin ? "/admin" : isTherapist ? "/area-terapeuta" : "/area-atleta",
-      replace: true,
-    });
+    async function go() {
+      if (isAdmin) {
+        void navigate({ to: "/admin", replace: true });
+        return;
+      }
+      if (isTherapist) {
+        const { data } = await supabase
+          .from("therapist_profiles")
+          .select("completed_at")
+          .eq("user_id", (await supabase.auth.getUser()).data.user!.id)
+          .maybeSingle();
+        void navigate({
+          to: data?.completed_at ? "/area-terapeuta" : "/onboarding-terapeuta",
+          replace: true,
+        });
+        return;
+      }
+      void navigate({ to: "/area-atleta", replace: true });
+    }
+    void go();
   }, [isAuthenticated, isAdmin, isTherapist, loading, navigate]);
 
   if (isAuthenticated && !loading) {
