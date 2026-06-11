@@ -106,6 +106,14 @@ function AmbasciatoriIndex() {
                           className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
                         />
                       )}
+                      {a.video_url && (
+                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-ink font-bold text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                          Video
+                        </div>
+                      )}
                     </div>
                     <div className="p-6 flex flex-col gap-3 flex-1">
                       {a.location && (
