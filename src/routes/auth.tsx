@@ -57,7 +57,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            data: { full_name: name || email.split("@")[0] },
+            data: { full_name: name || email.split("@")[0], requested_role: role },
             emailRedirectTo: window.location.origin + "/auth",
           },
         });
