@@ -61,6 +61,7 @@ function Index() {
       <Benefici />
       <Pilastri />
       <Testimonial />
+      <Ambasciatori />
       <Prezzi />
       <Blog />
       <FAQ />
