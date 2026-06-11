@@ -71,6 +71,75 @@ export type Database = {
         }
         Relationships: []
       }
+      ambassadors: {
+        Row: {
+          bio: string | null
+          cover_url: string | null
+          created_at: string
+          display_order: number
+          full_name: string
+          honors: Json
+          id: string
+          location: string | null
+          organizations: Json
+          photo_url: string | null
+          published: boolean
+          quote_text: string | null
+          roles: Json
+          slug: string
+          social_links: Json
+          stats: Json
+          tagline: string | null
+          updated_at: string
+          values: Json
+          website_url: string | null
+        }
+        Insert: {
+          bio?: string | null
+          cover_url?: string | null
+          created_at?: string
+          display_order?: number
+          full_name: string
+          honors?: Json
+          id?: string
+          location?: string | null
+          organizations?: Json
+          photo_url?: string | null
+          published?: boolean
+          quote_text?: string | null
+          roles?: Json
+          slug: string
+          social_links?: Json
+          stats?: Json
+          tagline?: string | null
+          updated_at?: string
+          values?: Json
+          website_url?: string | null
+        }
+        Update: {
+          bio?: string | null
+          cover_url?: string | null
+          created_at?: string
+          display_order?: number
+          full_name?: string
+          honors?: Json
+          id?: string
+          location?: string | null
+          organizations?: Json
+          photo_url?: string | null
+          published?: boolean
+          quote_text?: string | null
+          roles?: Json
+          slug?: string
+          social_links?: Json
+          stats?: Json
+          tagline?: string | null
+          updated_at?: string
+          values?: Json
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       athlete_assignments: {
         Row: {
           active: boolean
