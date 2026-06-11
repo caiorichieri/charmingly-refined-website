@@ -12,6 +12,7 @@ import { DueFigure } from "@/components/site/DueFigure";
 import { Benefici } from "@/components/site/Benefici";
 import { Pilastri } from "@/components/site/Pilastri";
 import { Testimonial } from "@/components/site/Testimonial";
+import { Ambasciatori } from "@/components/site/Ambasciatori";
 import { Prezzi } from "@/components/site/Prezzi";
 import { Blog } from "@/components/site/Blog";
 import { FAQ } from "@/components/site/FAQ";
