@@ -284,7 +284,7 @@ function AmbasciatoreDetail() {
 
         {/* Video */}
         {a.video_url && (
-          <section className="bg-ink py-20 px-6 md:px-12">
+          <section ref={videoSectionRef} className="bg-ink py-20 px-6 md:px-12">
             <div className="max-w-[1000px] mx-auto">
               <div className="eyebrow text-white/60 mb-3">In sua voce</div>
               <h2 className="h-display text-white text-[clamp(28px,3.5vw,44px)] mb-8">
@@ -292,8 +292,10 @@ function AmbasciatoreDetail() {
               </h2>
               <div className="rounded-2xl overflow-hidden bg-black aspect-video shadow-card relative group">
                 <video
+                  ref={videoRef}
                   src={a.video_url}
                   controls
+                  muted
                   playsInline
                   preload="metadata"
                   poster={a.photo_url ?? undefined}
