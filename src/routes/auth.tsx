@@ -52,7 +52,7 @@ function AuthPage() {
     void go();
   }, [isAuthenticated, isAdmin, isTherapist, loading, navigate]);
 
-  if (isAuthenticated && !loading) {
+  if (loading || isAuthenticated || busy) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-off">
         <div className="text-sm text-muted-foreground">Accesso in corso…</div>
