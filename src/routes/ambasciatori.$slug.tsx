@@ -15,6 +15,7 @@ type Ambassador = {
   photo_url: string | null;
   cover_url: string | null;
   website_url: string | null;
+  video_url: string | null;
   social_links: Record<string, string>;
   roles: { label: string; organization: string }[];
   stats: { value: string; label: string }[];
@@ -249,6 +250,27 @@ function AmbasciatoreDetail() {
                     </div>
                   </article>
                 ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Video */}
+        {a.video_url && (
+          <section className="bg-ink py-20 px-6 md:px-12">
+            <div className="max-w-[1000px] mx-auto">
+              <div className="eyebrow text-white/60 mb-3">In sua voce</div>
+              <h2 className="h-display text-white text-[clamp(28px,3.5vw,44px)] mb-8">
+                {a.full_name} racconta MeMindSport.
+              </h2>
+              <div className="rounded-2xl overflow-hidden bg-black aspect-video shadow-card">
+                <video
+                  src={a.video_url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-contain bg-black"
+                />
               </div>
             </div>
           </section>
