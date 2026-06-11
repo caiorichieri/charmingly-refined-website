@@ -22,6 +22,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthenticatedOnboardingTerapeutaRouteImport } from './routes/_authenticated/onboarding-terapeuta'
 import { Route as AuthenticatedIMieiDatiRouteImport } from './routes/_authenticated/i-miei-dati'
 import { Route as AuthenticatedAreaTerapeutaRouteImport } from './routes/_authenticated/area-terapeuta'
 import { Route as AuthenticatedAreaAtletaRouteImport } from './routes/_authenticated/area-atleta'
@@ -104,6 +105,12 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AuthenticatedOnboardingTerapeutaRoute =
+  AuthenticatedOnboardingTerapeutaRouteImport.update({
+    id: '/onboarding-terapeuta',
+    path: '/onboarding-terapeuta',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedIMieiDatiRoute = AuthenticatedIMieiDatiRouteImport.update({
   id: '/i-miei-dati',
   path: '/i-miei-dati',
@@ -211,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
+  '/onboarding-terapeuta': typeof AuthenticatedOnboardingTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
@@ -240,6 +248,7 @@ export interface FileRoutesByTo {
   '/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
+  '/onboarding-terapeuta': typeof AuthenticatedOnboardingTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
   '/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
@@ -273,6 +282,7 @@ export interface FileRoutesById {
   '/_authenticated/area-atleta': typeof AuthenticatedAreaAtletaRoute
   '/_authenticated/area-terapeuta': typeof AuthenticatedAreaTerapeutaRoute
   '/_authenticated/i-miei-dati': typeof AuthenticatedIMieiDatiRoute
+  '/_authenticated/onboarding-terapeuta': typeof AuthenticatedOnboardingTerapeutaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/_authenticated/admin/assignments': typeof AuthenticatedAdminAssignmentsRoute
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/area-atleta'
     | '/area-terapeuta'
     | '/i-miei-dati'
+    | '/onboarding-terapeuta'
     | '/blog/$slug'
     | '/blog/'
     | '/admin/assignments'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/area-atleta'
     | '/area-terapeuta'
     | '/i-miei-dati'
+    | '/onboarding-terapeuta'
     | '/blog/$slug'
     | '/blog'
     | '/admin/assignments'
@@ -367,6 +379,7 @@ export interface FileRouteTypes {
     | '/_authenticated/area-atleta'
     | '/_authenticated/area-terapeuta'
     | '/_authenticated/i-miei-dati'
+    | '/_authenticated/onboarding-terapeuta'
     | '/blog/$slug'
     | '/blog/'
     | '/_authenticated/admin/assignments'
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/_authenticated/onboarding-terapeuta': {
+      id: '/_authenticated/onboarding-terapeuta'
+      path: '/onboarding-terapeuta'
+      fullPath: '/onboarding-terapeuta'
+      preLoaderRoute: typeof AuthenticatedOnboardingTerapeutaRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/i-miei-dati': {
       id: '/_authenticated/i-miei-dati'
@@ -652,6 +672,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAreaAtletaRoute: typeof AuthenticatedAreaAtletaRoute
   AuthenticatedAreaTerapeutaRoute: typeof AuthenticatedAreaTerapeutaRoute
   AuthenticatedIMieiDatiRoute: typeof AuthenticatedIMieiDatiRoute
+  AuthenticatedOnboardingTerapeutaRoute: typeof AuthenticatedOnboardingTerapeutaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -659,6 +680,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAreaAtletaRoute: AuthenticatedAreaAtletaRoute,
   AuthenticatedAreaTerapeutaRoute: AuthenticatedAreaTerapeutaRoute,
   AuthenticatedIMieiDatiRoute: AuthenticatedIMieiDatiRoute,
+  AuthenticatedOnboardingTerapeutaRoute: AuthenticatedOnboardingTerapeutaRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
