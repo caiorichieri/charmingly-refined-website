@@ -11,6 +11,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { QuizModal } from "@/components/quiz/QuizModal";
+import { ConditionalScript } from "@/components/site/ConditionalScript";
 import { CookieBanner } from "@/components/site/CookieBanner";
 import { ConsentProvider } from "@/contexts/ConsentContext";
 import appCss from "../styles.css?url";
