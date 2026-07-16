@@ -1,6 +1,11 @@
 // Edge Function: send-smtp-email
 // Envia emails via SMTP usando o servidor Hestia (mail.memindsport.it)
-// Recebe: { to, subject, html, text?, replyTo? }
+//
+// Public (anonymous quiz) callers MUST pass { lead_id, ... }. The function
+// resolves the recipient from `quiz_leads.email` server-side (caller-supplied
+// `to` is ignored), enforces a fixed subject prefix and sanitizes the HTML
+// body to strip active content. Admin callers (verified via has_role) may
+// send arbitrary { to, subject, html } — e.g. admin resend from /admin/quiz.
 
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -10,6 +15,9 @@ const SMTP_PORT = 465; // SSL/TLS
 const SMTP_USER = "noreply@memindsport.it";
 const SMTP_FROM_NAME = "MeMindSport";
 
+const ALLOWED_SUBJECT_PREFIX = "Il tuo profilo MeMindSport";
+const MAX_HTML_BYTES = 200_000;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -18,8 +26,9 @@ const corsHeaders = {
 };
 
 interface SendPayload {
-  to: string;
-  subject: string;
+  lead_id?: string;
+  to?: string;
+  subject?: string;
   html: string;
   text?: string;
   replyTo?: string;
@@ -27,6 +36,33 @@ interface SendPayload {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isUuid(v: unknown): v is string {
+  return typeof v === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+}
+
+// Strip active/dangerous constructs. This is a defense-in-depth measure — the
+// canonical protection is that the recipient is locked to the lead row.
+function sanitizeHtml(html: string): string {
+  let s = html;
+  // Drop entire dangerous elements including contents.
+  const dropTags = ["script", "iframe", "object", "embed", "form", "style", "link", "meta", "base", "svg", "math"];
+  for (const t of dropTags) {
+    const re = new RegExp(`<\\s*${t}\\b[^>]*>[\\s\\S]*?<\\s*\\/\\s*${t}\\s*>`, "gi");
+    s = s.replace(re, "");
+    // Self-closing / unmatched variants.
+    const reSelf = new RegExp(`<\\s*\\/?\\s*${t}\\b[^>]*>`, "gi");
+    s = s.replace(reSelf, "");
+  }
+  // Remove inline event handlers (onclick=, onload=, etc.).
+  s = s.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, "");
+  s = s.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, "");
+  s = s.replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, "");
+  // Neutralize javascript:, data:, vbscript: URIs in href/src.
+  s = s.replace(/(href|src)\s*=\s*"(\s*(?:javascript|data|vbscript)\s*:[^"]*)"/gi, '$1="#"');
+  s = s.replace(/(href|src)\s*=\s*'(\s*(?:javascript|data|vbscript)\s*:[^']*)'/gi, "$1='#'");
+  return s;
 }
 
 // Simple in-memory rate limit per IP (best-effort, per-instance).
@@ -57,11 +93,9 @@ Deno.serve(async (req) => {
     });
   }
 
-  // --- AuthN/AuthZ: Supabase gateway enforces verify_jwt=true (anon key or user JWT required).
-  // For anonymous quiz callers we additionally require that the recipient exists in quiz_leads,
-  // preventing arbitrary recipients / spam relay.
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const authHeader = req.headers.get("Authorization") ?? "";
   if (!authHeader.startsWith("Bearer ")) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -69,6 +103,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const token = authHeader.slice("Bearer ".length).trim();
 
   // Rate limit per IP
   const ip =
@@ -83,8 +118,8 @@ Deno.serve(async (req) => {
   }
 
   const password = Deno.env.get("SMTP_PASSWORD");
-  if (!password) {
-    console.error("SMTP_PASSWORD não configurado");
+  if (!password || !supabaseUrl || !serviceRoleKey) {
+    console.error("Email service misconfigured");
     return new Response(
       JSON.stringify({ error: "Email service unavailable" }),
       {
@@ -104,26 +139,18 @@ Deno.serve(async (req) => {
     });
   }
 
-  const { to, subject, html, text, replyTo } = payload;
-
-  if (!to || !isValidEmail(to)) {
+  if (!payload.html || typeof payload.html !== "string") {
     return new Response(
-      JSON.stringify({ error: "Destinatario non valido" }),
+      JSON.stringify({ error: "Contenuto HTML mancante" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
   }
-  if (!subject || subject.length > 500) {
-    return new Response(JSON.stringify({ error: "Subject non valido" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  if (!html || html.length > 1_000_000) {
+  if (new TextEncoder().encode(payload.html).byteLength > MAX_HTML_BYTES) {
     return new Response(
-      JSON.stringify({ error: "Contenuto HTML mancante o troppo grande" }),
+      JSON.stringify({ error: "Contenuto HTML troppo grande" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -131,40 +158,95 @@ Deno.serve(async (req) => {
     );
   }
 
-  // Validate the recipient against quiz_leads (unless caller is service role).
-  const token = authHeader.slice("Bearer ".length).trim();
-  const isServiceRole = !!serviceRoleKey && token === serviceRoleKey;
-  if (!isServiceRole) {
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for recipient validation");
-      return new Response(JSON.stringify({ error: "Email service unavailable" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+  // Determine caller class:
+  //   - service role: full trust (server-to-server).
+  //   - authenticated admin: full trust (admin resend UI).
+  //   - anon/authenticated non-admin: MUST provide lead_id; recipient is
+  //     forced to quiz_leads.email; html is sanitized; subject is validated.
+  const admin = createClient(supabaseUrl, serviceRoleKey);
+  const isServiceRole = token === serviceRoleKey;
+
+  let isAdminUser = false;
+  if (!isServiceRole && token !== anonKey) {
     try {
-      const admin = createClient(supabaseUrl, serviceRoleKey);
-      const { data: lead, error: leadErr } = await admin
-        .from("quiz_leads")
-        .select("id")
-        .ilike("email", to.trim())
-        .limit(1)
-        .maybeSingle();
-      if (leadErr || !lead) {
-        return new Response(JSON.stringify({ error: "Recipient not allowed" }), {
-          status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      const { data: userData } = await admin.auth.getUser(token);
+      const uid = userData?.user?.id;
+      if (uid) {
+        const { data: roleRow } = await admin
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", uid)
+          .eq("role", "admin")
+          .maybeSingle();
+        isAdminUser = !!roleRow;
       }
     } catch (e) {
-      console.error("Recipient validation failed:", e);
+      console.error("Admin check failed:", e);
+    }
+  }
+
+  let recipient: string;
+  let subject: string;
+  let html: string;
+
+  if (isServiceRole || isAdminUser) {
+    // Trusted callers may specify recipient/subject/html directly.
+    if (!payload.to || !isValidEmail(payload.to)) {
+      return new Response(JSON.stringify({ error: "Destinatario non valido" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!payload.subject || payload.subject.length > 500) {
+      return new Response(JSON.stringify({ error: "Subject non valido" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    recipient = payload.to.trim();
+    subject = payload.subject;
+    html = payload.html;
+  } else {
+    // Public (anonymous quiz) path — REQUIRES lead_id; recipient is server-derived.
+    if (!isUuid(payload.lead_id)) {
+      return new Response(JSON.stringify({ error: "lead_id mancante o non valido" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    let lead: { email: string | null } | null = null;
+    try {
+      const { data, error } = await admin
+        .from("quiz_leads")
+        .select("email")
+        .eq("id", payload.lead_id)
+        .maybeSingle();
+      if (error) throw error;
+      lead = data;
+    } catch (e) {
+      console.error("Lead lookup failed:", e);
       return new Response(JSON.stringify({ error: "Email service unavailable" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-  }
+    if (!lead || !lead.email || !isValidEmail(lead.email)) {
+      return new Response(JSON.stringify({ error: "Lead non trovato" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    recipient = lead.email.trim();
 
+    // Enforce fixed subject prefix; ignore any deviation.
+    if (payload.subject && payload.subject.startsWith(ALLOWED_SUBJECT_PREFIX) && payload.subject.length <= 200) {
+      subject = payload.subject;
+    } else {
+      subject = ALLOWED_SUBJECT_PREFIX;
+    }
+
+    html = sanitizeHtml(payload.html);
+  }
 
   const client = new SMTPClient({
     connection: {
@@ -181,15 +263,15 @@ Deno.serve(async (req) => {
   try {
     await client.send({
       from: `${SMTP_FROM_NAME} <${SMTP_USER}>`,
-      to,
-      replyTo: replyTo && isValidEmail(replyTo) ? replyTo : undefined,
+      to: recipient,
+      replyTo: payload.replyTo && isValidEmail(payload.replyTo) ? payload.replyTo : undefined,
       subject,
-      content: text ?? "Per visualizzare correttamente questa email usa un client che supporta HTML.",
+      content: payload.text ?? "Per visualizzare correttamente questa email usa un client che supporta HTML.",
       html,
     });
     await client.close();
 
-    console.log(`Email inviata a ${to}: "${subject}"`);
+    console.log(`Email inviata a ${recipient}: "${subject}"`);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -202,7 +284,6 @@ Deno.serve(async (req) => {
       // ignore close errors
     }
     const message = error instanceof Error ? error.message : String(error);
-    // Log details server-side only; never leak SMTP internals to client.
     console.error("SMTP send failed:", message);
     return new Response(
       JSON.stringify({ error: "Email sending failed. Please try again later." }),
