@@ -245,6 +245,7 @@ export function QuizModal() {
 
       const { data, error } = await supabase.functions.invoke("send-smtp-email", {
         body: {
+          lead_id: leadId,
           to: recipient,
           subject,
           html,
