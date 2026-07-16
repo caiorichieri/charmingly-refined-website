@@ -167,7 +167,31 @@ function PostForm({ post, onClose, onSave }: { post: Partial<Post>; onClose: () 
           <Field label="Tag"><input className="input" value={form.tag ?? ""} onChange={(e) => set("tag", e.target.value)} /></Field>
           <Field label="Estratto"><textarea className="input" rows={2} value={form.excerpt ?? ""} onChange={(e) => set("excerpt", e.target.value)} /></Field>
           <Field label="Contenuto"><textarea className="input" rows={6} value={form.content ?? ""} onChange={(e) => set("content", e.target.value)} /></Field>
-          <Field label="URL immagine copertina"><input className="input" value={form.cover_url ?? ""} onChange={(e) => set("cover_url", e.target.value)} /></Field>
+          <Field label="Immagine copertina">
+            <div className="flex flex-col gap-2">
+              <input className="input" placeholder="https://... oppure carica un file" value={form.cover_url ?? ""} onChange={(e) => set("cover_url", e.target.value)} />
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const ext = file.name.split(".").pop() || "jpg";
+                    const path = `blog/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+                    const t = toast.loading("Caricamento immagine...");
+                    const { error } = await supabase.storage.from("media").upload(path, file, { contentType: file.type, upsert: false });
+                    if (error) { toast.error(error.message, { id: t }); return; }
+                    const { data } = supabase.storage.from("media").getPublicUrl(path);
+                    set("cover_url", data.publicUrl);
+                    toast.success("Immagine caricata", { id: t });
+                  }}
+                  className="text-sm"
+                />
+              </div>
+              {form.cover_url && <img src={form.cover_url} alt="anteprima" className="mt-1 max-h-40 rounded-lg border border-line object-cover" />}
+            </div>
+          </Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Tempo di lettura"><input className="input" value={form.reading_time ?? ""} onChange={(e) => set("reading_time", e.target.value)} /></Field>
             <Field label="Ordine"><input type="number" className="input" value={form.display_order ?? 0} onChange={(e) => set("display_order", Number(e.target.value))} /></Field>
