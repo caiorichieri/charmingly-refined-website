@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Pencil, Trash2, Save, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, X, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/blog")({
   component: BlogAdmin,
@@ -169,11 +169,14 @@ function PostForm({ post, onClose, onSave }: { post: Partial<Post>; onClose: () 
           <Field label="Contenuto"><textarea className="input" rows={6} value={form.content ?? ""} onChange={(e) => set("content", e.target.value)} /></Field>
           <Field label="Immagine copertina">
             <div className="flex flex-col gap-2">
-              <input className="input" placeholder="https://... oppure carica un file" value={form.cover_url ?? ""} onChange={(e) => set("cover_url", e.target.value)} />
-              <div className="flex items-center gap-3">
+              <input className="input" placeholder="https://..." value={form.cover_url ?? ""} onChange={(e) => set("cover_url", e.target.value)} />
+              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border-2 border-brand-green bg-white px-5 py-2.5 text-sm font-bold text-brand-green transition hover:bg-brand-green hover:text-white">
+                <Upload size={16} />
+                Carica immagine dal computer
                 <input
                   type="file"
                   accept="image/*"
+                  className="sr-only"
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
@@ -186,9 +189,9 @@ function PostForm({ post, onClose, onSave }: { post: Partial<Post>; onClose: () 
                     set("cover_url", data.publicUrl);
                     toast.success("Immagine caricata", { id: t });
                   }}
-                  className="text-sm"
                 />
-              </div>
+              </label>
+              <p className="text-xs text-muted-foreground">Puoi caricare JPG, PNG o WebP: dopo il caricamento il link viene compilato automaticamente.</p>
               {form.cover_url && <img src={form.cover_url} alt="anteprima" className="mt-1 max-h-40 rounded-lg border border-line object-cover" />}
             </div>
           </Field>
