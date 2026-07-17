@@ -47,7 +47,10 @@ function isUuid(v: unknown): v is string {
 function sanitizeHtml(html: string): string {
   let s = html;
   // Drop entire dangerous elements including contents.
-  const dropTags = ["script", "iframe", "object", "embed", "form", "style", "link", "meta", "base", "svg", "math"];
+  // Note: <svg> is intentionally allowed — the quiz report embeds inline SVG
+  // charts we generate ourselves. Scripts inside SVG are still neutralized
+  // by the <script> drop below and the on*-handler stripping.
+  const dropTags = ["script", "iframe", "object", "embed", "form", "style", "link", "meta", "base"];
   for (const t of dropTags) {
     const re = new RegExp(`<\\s*${t}\\b[^>]*>[\\s\\S]*?<\\s*\\/\\s*${t}\\s*>`, "gi");
     s = s.replace(re, "");
